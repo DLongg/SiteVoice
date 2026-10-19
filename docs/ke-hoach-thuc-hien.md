@@ -1,0 +1,556 @@
+# Kế hoạch thực hiện công việc – SiteVoice
+
+> [!IMPORTANT]
+> Từ 2026-10-19, quy tắc context nằm tại [AGENTS.md](../AGENTS.md). Ghi kết quả task có ý nghĩa, lỗi/blocker quan trọng và quyết định hoãn/hủy vào [WORK_LOG.md](WORK_LOG.md); không log từng thao tác nhỏ.
+> [Nhật ký cũ](nhat-ky-thuc-hien.md) được giữ để tra cứu, không ghi song song. Trạng thái hiện tại: [SUMMARY.md](SUMMARY.md).
+
+---
+
+## Mục lục
+
+- [Quy tắc chung](#quy-tắc-chung)
+- [Giai đoạn 0 – Chuẩn bị](#giai-đoạn-0--chuẩn-bị-không-code)
+- [Giai đoạn 1 – Lõi chạy được](#giai-đoạn-1--lõi-chạy-được)
+- [Giai đoạn 2 – Ra tài liệu](#giai-đoạn-2--ra-tài-liệu)
+- [Giai đoạn 3 – Chạy không cần mạng](#giai-đoạn-3--chạy-không-cần-mạng)
+- [Mẫu ghi log](#mẫu-ghi-log)
+
+---
+
+## Quy tắc chung
+
+| # | Quy tắc |
+|---|---------|
+| 1 | Làm **tuần tự** từ trên xuống. Không nhảy bước. |
+| 2 | Mỗi task xong phải **chạy được trên điện thoại thật** (trừ task tài liệu/chuẩn bị). |
+| 3 | Ghi kết quả task có ý nghĩa vào `docs/WORK_LOG.md` theo AGENTS; cập nhật trạng thái task thực tế và SUMMARY khi cần. Không log từng thao tác nhỏ. |
+| 4 | Nếu thay đổi thiết kế → cập nhật file docs liên quan + thêm file `docs/quyet-dinh/` nếu là quyết định lớn. |
+| 5 | Không làm thêm chức năng ngoài task đang làm. |
+| 6 | Chuỗi hiển thị tiếng Việt (strings.xml); tên biến/hàm/class tiếng Anh. |
+| 7 | API key không bao giờ ghi log, không commit vào git. |
+| 8 | **Thiết kế UI:** Bắt buộc áp dụng skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`) cho mọi màn hình Compose / App Screens (tinh gọn, chống AI-slop, không gradient/shadow thừa, kiểu chữ rõ ràng, độ tương phản cao, phản hồi trạng thái chuẩn). |
+
+---
+
+## Giai đoạn 0 – Chuẩn bị (không code)
+
+### 0.1 Thử luồng thủ công
+| | |
+|---|---|
+| **Mô tả** | Dùng điện thoại ghi âm → dán vào ChatGPT/Claude với prompt từ `templates/nhat-ky-cong-truong/prompt.md` → chép kết quả vào Google Doc mẫu. Làm 2–3 ngày. |
+| **Người làm** | |
+| **Đầu vào** | Prompt có sẵn trong `templates/nhat-ky-cong-truong/prompt.md` |
+| **Kết quả** | 2–3 bản nhật ký Google Doc hoàn chỉnh, ghi nhận điểm cần chỉnh prompt/ngân sách ký tự |
+| **Trạng thái** | ⬜ Chưa làm |
+
+### 0.2 Chốt prompt & ngân sách ký tự
+| | |
+|---|---|
+| **Mô tả** | Dựa trên kết quả thử, chỉnh `templates/nhat-ky-cong-truong/prompt.md` và `schema.json` (số dòng, ký tự/dòng). Chỉnh `prompts/phan-loai-ghi-chu.md` nếu cần. |
+| **Người làm** | |
+| **Đầu vào** | Kết quả từ 0.1 |
+| **Kết quả** | Prompt & schema chốt, commit vào git |
+| **Trạng thái** | ⬜ Chưa làm |
+
+### 0.3 Chuẩn bị Google Doc mẫu
+| | |
+|---|---|
+| **Mô tả** | Tạo Google Doc mẫu với đầy đủ placeholder `{{...}}` theo `templates/nhat-ky-cong-truong/doc-mau.md`. Dán link vào `doc-mau.md`. In thử kiểm tra ≤ 2 trang. |
+| **Người làm** | |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/doc-mau.md` |
+| **Kết quả** | Link Google Doc mẫu trong `doc-mau.md`, in ra giấy đúng ≤ 2 trang |
+| **Trạng thái** | ⬜ Chưa làm |
+
+### 0.4 Cài đặt môi trường phát triển
+| | |
+|---|---|
+| **Mô tả** | Cài Android Studio, bật gỡ lỗi USB trên điện thoại, kiểm tra kết nối `adb devices`. Cài Gemini Code / Claude Code. |
+| **Người làm** | |
+| **Đầu vào** | Không |
+| **Kết quả** | `adb devices` thấy thiết bị, Android Studio chạy được |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+## Giai đoạn 1 – Lõi chạy được
+
+### 1.1 Tạo dự án Android rỗng
+
+#### 1.1.1 Khởi tạo project Kotlin + Compose
+| | |
+|---|---|
+| **Mô tả** | Tạo project Android mới tại `app/`, gói `com.sitevoice.app`, Kotlin + Jetpack Compose, `minSdk = 26`, `targetSdk = 34`. |
+| **Người làm** | |
+| **Đầu vào** | Không |
+| **Kết quả** | `./gradlew assembleDebug` build thành công |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.1.2 Chạy trên điện thoại thật
+| | |
+|---|---|
+| **Mô tả** | Cài app lên điện thoại, hiển thị màn hình "Hello SiteVoice". |
+| **Người làm** | |
+| **Đầu vào** | Project từ 1.1.1 |
+| **Kết quả** | App chạy trên điện thoại, chụp màn hình làm bằng chứng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.1.3 Thiết lập cấu trúc thư mục source
+| | |
+|---|---|
+| **Mô tả** | Tạo các package rỗng theo kiến trúc: `ui/`, `audio/`, `stt/`, `llm/`, `template/`, `export/`, `data/`, `queue/`, `settings/`. Thêm dependency cơ bản: Compose, Room, WorkManager, EncryptedSharedPreferences. |
+| **Người làm** | |
+| **Đầu vào** | `docs/03-kien-truc.md` |
+| **Kết quả** | Build thành công với dependency mới, thư mục package đúng cấu trúc |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.1.4 Copy templates vào assets
+| | |
+|---|---|
+| **Mô tả** | Copy thư mục `templates/nhat-ky-cong-truong/` vào `app/src/main/assets/templates/`. Viết hàm đọc file từ assets (chưa cần parse). |
+| **Người làm** | |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/` |
+| **Kết quả** | Unit test đọc được file từ assets |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 1.2 Nút nhấn giữ ghi âm
+
+#### 1.2.1 Xin quyền RECORD_AUDIO
+| | |
+|---|---|
+| **Mô tả** | Thêm quyền `RECORD_AUDIO` vào manifest, viết logic xin runtime permission khi mở app lần đầu. |
+| **Người làm** | |
+| **Đầu vào** | Không |
+| **Kết quả** | App hỏi quyền micro, cho phép/từ chối đều xử lý đúng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.2.2 UI nút ghi âm (nhấn giữ)
+| | |
+|---|---|
+| **Mô tả** | Compose: một nút tròn lớn giữa màn hình. Nhấn giữ → ghi, thả ra → dừng. Hiển thị trạng thái (đang ghi / sẵn sàng). |
+| **Người làm** | |
+| **Đầu vào** | Quyết định `docs/quyet-dinh/0002-mot-nut-ghi-am.md` |
+| **Kết quả** | Nút đổi màu/animation khi nhấn giữ |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.2.3 Ghi âm bằng MediaRecorder/AudioRecord
+| | |
+|---|---|
+| **Mô tả** | Module `audio/`: ghi âm thành file (WAV hoặc M4A), lưu vào thư mục app riêng. **Lưu file TRƯỚC khi làm bất cứ gì khác** (quy tắc #1). |
+| **Người làm** | |
+| **Đầu vào** | Không |
+| **Kết quả** | Ghi được file âm thanh, kiểm tra file tồn tại sau khi thả nút |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.2.4 Phát lại file âm thanh
+| | |
+|---|---|
+| **Mô tả** | Module `audio/`: phát lại file đã ghi bằng MediaPlayer. UI: nút play/stop nhỏ bên cạnh mỗi ghi chú. |
+| **Người làm** | |
+| **Đầu vào** | File âm thanh từ 1.2.3 |
+| **Kết quả** | Nghe lại được bản ghi vừa thu |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.2.5 Hiển thị thời lượng ghi âm
+| | |
+|---|---|
+| **Mô tả** | Khi đang ghi: hiển thị bộ đếm thời gian. Sau khi ghi: lưu `durationMs` vào entity. |
+| **Người làm** | |
+| **Đầu vào** | Không |
+| **Kết quả** | Thấy thời lượng khi ghi và sau khi ghi xong |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 1.3 STT qua API (Groq Whisper)
+
+#### 1.3.1 Interface SpeechToText
+| | |
+|---|---|
+| **Mô tả** | Module `stt/`: tạo interface `SpeechToText` với hàm `suspend fun transcribe(audioFile: File): Result<String>`. |
+| **Người làm** | |
+| **Đầu vào** | `docs/quyet-dinh/0001-stt-lai-online-offline.md` |
+| **Kết quả** | Interface + data class kết quả |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.3.2 Cài đặt GroqWhisper
+| | |
+|---|---|
+| **Mô tả** | Class `GroqWhisper` implements `SpeechToText`. Gọi Groq Whisper API (multipart upload file âm thanh). Dùng `initial_prompt` kèm từ điển thuật ngữ. |
+| **Người làm** | |
+| **Đầu vào** | API docs của Groq, `docs/09-thuat-ngu.md` |
+| **Kết quả** | Gửi file âm thanh → nhận văn bản tiếng Việt |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.3.3 Màn hình cài đặt API key (cơ bản)
+| | |
+|---|---|
+| **Mô tả** | Module `settings/`: màn hình nhập API key Groq, lưu bằng EncryptedSharedPreferences. Không ghi log key. |
+| **Người làm** | |
+| **Đầu vào** | Quy tắc #7 |
+| **Kết quả** | Nhập key, lưu mã hóa, đọc lại được |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.3.4 Gọi STT sau khi ghi âm
+| | |
+|---|---|
+| **Mô tả** | Sau khi ghi xong → tự động gọi STT → hiển thị văn bản dưới nút ghi âm. Trạng thái Note: RECORDED → TRANSCRIBED. Xử lý lỗi (hiện thông báo, cho thử lại). |
+| **Người làm** | |
+| **Đầu vào** | 1.2.3 + 1.3.2 |
+| **Kết quả** | Ghi xong → vài giây sau thấy văn bản |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 1.4 Danh sách ghi chú trong ngày (Room)
+
+#### 1.4.1 Entity & DAO cho Note
+| | |
+|---|---|
+| **Mô tả** | Module `data/`: tạo `NoteEntity`, `NoteDao` theo `docs/04-du-lieu.md`. Database class với Room. |
+| **Người làm** | |
+| **Đầu vào** | `docs/04-du-lieu.md` |
+| **Kết quả** | Unit test CRUD cho NoteDao |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.4.2 Repository cho Note
+| | |
+|---|---|
+| **Mô tả** | `NoteRepository`: lấy ghi chú theo ngày, thêm, sửa text, sửa label, xóa (soft delete = DISCARDED). |
+| **Người làm** | |
+| **Đầu vào** | 1.4.1 |
+| **Kết quả** | Unit test repository |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.4.3 Tích hợp ghi âm với Room
+| | |
+|---|---|
+| **Mô tả** | Khi ghi âm xong → tạo NoteEntity (status = RECORDED). STT xong → cập nhật text (status = TRANSCRIBED). |
+| **Người làm** | |
+| **Đầu vào** | 1.2.3 + 1.3.4 + 1.4.2 |
+| **Kết quả** | Dữ liệu ghi chú lưu vào DB, tắt app mở lại vẫn còn |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.4.4 Màn hình danh sách ghi chú
+| | |
+|---|---|
+| **Mô tả** | UI Compose: danh sách ghi chú trong ngày, mỗi item hiển thị: thời gian, văn bản (hoặc "đang chuyển..."), nhãn, nút phát lại. LazyColumn, kéo xuống xem thêm. |
+| **Người làm** | |
+| **Đầu vào** | 1.4.2 |
+| **Kết quả** | Thấy danh sách ghi chú, scroll được |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.4.5 Sửa văn bản ghi chú
+| | |
+|---|---|
+| **Mô tả** | Bấm vào ghi chú → dialog/bottom sheet cho sửa text. Lưu lại Room. |
+| **Người làm** | |
+| **Đầu vào** | 1.4.4 |
+| **Kết quả** | Sửa text, đóng, mở lại thấy text đã sửa |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.4.6 Xóa ghi chú
+| | |
+|---|---|
+| **Mô tả** | Vuốt hoặc nút xóa → xác nhận → đổi status = DISCARDED (không xóa file âm thanh). |
+| **Người làm** | |
+| **Đầu vào** | 1.4.4 |
+| **Kết quả** | Ghi chú biến mất khỏi danh sách, file âm thanh vẫn còn |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 1.5 Gán nhãn mục bằng LLM
+
+#### 1.5.1 Interface LlmClient
+| | |
+|---|---|
+| **Mô tả** | Module `llm/`: interface `LlmClient` với `suspend fun chat(messages: List<Message>): Result<String>`. |
+| **Người làm** | |
+| **Đầu vào** | `docs/05-llm.md` |
+| **Kết quả** | Interface + data class |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.5.2 Cài đặt 1 LLM provider (Gemini Flash hoặc GPT-4o-mini)
+| | |
+|---|---|
+| **Mô tả** | Class implement `LlmClient` cho 1 provider. Thêm trường nhập API key vào màn hình cài đặt. |
+| **Người làm** | |
+| **Đầu vào** | API docs của provider |
+| **Kết quả** | Gọi API, nhận response JSON |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.5.3 Logic phân loại ghi chú
+| | |
+|---|---|
+| **Mô tả** | Hàm `classifyNote(note, glossary)`: xây prompt từ `prompts/phan-loai-ghi-chu.md`, gọi LLM, parse JSON kết quả, cập nhật `label` + `labelSource = auto`. |
+| **Người làm** | |
+| **Đầu vào** | `prompts/phan-loai-ghi-chu.md`, 1.5.2 |
+| **Kết quả** | Unit test parse JSON kết quả phân loại |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.5.4 Tự động phân loại sau STT
+| | |
+|---|---|
+| **Mô tả** | Sau STT xong → gọi phân loại → Note: TRANSCRIBED → LABELED. Hiển thị chip nhãn trên mỗi ghi chú. |
+| **Người làm** | |
+| **Đầu vào** | 1.3.4 + 1.5.3 |
+| **Kết quả** | Ghi chú tự có nhãn sau vài giây |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 1.5.5 Đổi nhãn bằng tay
+| | |
+|---|---|
+| **Mô tả** | Bấm vào chip nhãn → dropdown chọn mục mới → cập nhật `label`, `labelSource = user`. |
+| **Người làm** | |
+| **Đầu vào** | 1.5.4, danh sách mục từ `schema.json` |
+| **Kết quả** | Đổi nhãn, đóng mở app vẫn đúng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+## Giai đoạn 2 – Ra tài liệu
+
+### 2.1 Màn hình duyệt cuối ngày
+
+#### 2.1.1 Entity & DAO cho DailyInput
+| | |
+|---|---|
+| **Mô tả** | Tạo `DailyInputEntity`, `DailyInputDao` theo `docs/04-du-lieu.md`. |
+| **Người làm** | |
+| **Đầu vào** | `docs/04-du-lieu.md` |
+| **Kết quả** | Unit test CRUD |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.1.2 UI nhập thời tiết & nhân lực
+| | |
+|---|---|
+| **Mô tả** | Màn hình duyệt: phần trên nhập thời tiết (3 buổi, nắng/mưa), số ban chỉ huy, số công nhân, danh sách máy móc. Mặc định lấy từ ngày hôm qua. |
+| **Người làm** | |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/schema.json` phần `nhap_tay` |
+| **Kết quả** | Nhập liệu, lưu vào Room, mở lại thấy dữ liệu cũ |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.1.3 Danh sách ghi chú cần duyệt
+| | |
+|---|---|
+| **Mô tả** | Phần dưới màn hình duyệt: danh sách ghi chú (LABELED), gom theo nhãn. Cho sửa text, đổi nhãn, loại bỏ. Nút "Duyệt tất cả" → status = APPROVED. |
+| **Người làm** | |
+| **Đầu vào** | 1.4.4 + 1.5.4 |
+| **Kết quả** | Duyệt xong, ghi chú chuyển APPROVED |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.1.4 Navigation giữa các màn hình
+| | |
+|---|---|
+| **Mô tả** | Thiết lập Navigation: Ghi âm (home) ↔ Danh sách ↔ Duyệt cuối ngày ↔ Cài đặt. Bottom nav hoặc drawer. |
+| **Người làm** | |
+| **Đầu vào** | Các màn hình từ giai đoạn 1 + 2.1 |
+| **Kết quả** | Chuyển qua lại giữa các màn hình mượt |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 2.2 Tổng hợp LLM theo Mẫu
+
+#### 2.2.1 Module template – parse schema.json
+| | |
+|---|---|
+| **Mô tả** | Module `template/`: đọc `schema.json` từ assets, parse thành data class `TemplateSchema`. Kiểm tra trường bắt buộc. |
+| **Người làm** | |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/schema.json` |
+| **Kết quả** | Unit test parse schema đúng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.2.2 Xây prompt tổng hợp
+| | |
+|---|---|
+| **Mô tả** | Đọc `prompt.md` từ assets, thay placeholder `{{DANH_SACH_GHI_CHU_THEO_MUC}}`, `{{GIOI_HAN_TU_SCHEMA}}`, `{{TU_DIEN_THUAT_NGU}}`, `{{NGAY}}`. |
+| **Người làm** | |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/prompt.md` |
+| **Kết quả** | Unit test: prompt đúng format, có đủ dữ liệu ghi chú |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.2.3 Gọi LLM tổng hợp
+| | |
+|---|---|
+| **Mô tả** | Gửi prompt → LLM → parse JSON kết quả theo schema. Lỗi parse → thử lại tối đa 2 lần. Tạo `DailyReportEntity` (status = DRAFT). |
+| **Người làm** | |
+| **Đầu vào** | 2.2.2 + 1.5.2 |
+| **Kết quả** | Nhận được JSON đúng schema |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.2.4 Kiểm tra ngân sách ký tự
+| | |
+|---|---|
+| **Mô tả** | Đếm ký tự/số dòng mỗi trường so với giới hạn trong schema. Trả danh sách trường vượt. |
+| **Người làm** | |
+| **Đầu vào** | `docs/05-llm.md` phần ngân sách |
+| **Kết quả** | Unit test: trường vượt bị phát hiện đúng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.2.5 Vòng rút gọn
+| | |
+|---|---|
+| **Mô tả** | Trường vượt → gọi `prompts/rut-gon-muc.md` cho từng trường (tối đa 2 vòng). Còn vượt → báo người dùng. |
+| **Người làm** | |
+| **Đầu vào** | `prompts/rut-gon-muc.md`, 2.2.4 |
+| **Kết quả** | Kết quả cuối cùng nằm trong ngân sách |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 2.3 Xem trước & Xuất Google Doc
+
+#### 2.3.1 Màn hình xem trước
+| | |
+|---|---|
+| **Mô tả** | Hiển thị nội dung DailyReport: thời tiết, nhân lực, từng mục tổng hợp. Ghi chú "chưa phân loại" hiện riêng (không đưa vào Doc). Nút "Sửa" quay lại duyệt, nút "Xuất Google Doc". |
+| **Người làm** | |
+| **Đầu vào** | 2.2.3 |
+| **Kết quả** | Xem được bản xem trước đầy đủ |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.3.2 Google Sign-In
+| | |
+|---|---|
+| **Mô tả** | Tích hợp Google Sign-In, xin quyền `drive.file` + `documents`. Lưu tài khoản vào settings. |
+| **Người làm** | |
+| **Đầu vào** | Google Cloud Console project, `docs/06-google-doc-mau.md` |
+| **Kết quả** | Đăng nhập Google thành công |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.3.3 Cài đặt link Doc mẫu
+| | |
+|---|---|
+| **Mô tả** | Trong Settings: trường nhập link/ID Google Doc mẫu. Lưu vào EncryptedSharedPreferences. |
+| **Người làm** | |
+| **Đầu vào** | 0.3 |
+| **Kết quả** | Lưu và đọc lại link Doc mẫu |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.3.4 Copy Doc mẫu bằng Drive API
+| | |
+|---|---|
+| **Mô tả** | Module `export/`: dùng Drive API copy Doc mẫu → tên "Nhật ký thi công yyyy-MM-dd". Trả về ID Doc mới. |
+| **Người làm** | |
+| **Đầu vào** | 2.3.2 + 2.3.3 |
+| **Kết quả** | Thấy bản sao trong Google Drive |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.3.5 Thay placeholder bằng Docs API
+| | |
+|---|---|
+| **Mô tả** | `batchUpdate` với `replaceAllText` cho từng placeholder. Ô tích thời tiết dùng ☑/☐. Danh sách nối bằng xuống dòng + "- ". Placeholder không có dữ liệu → chuỗi rỗng. |
+| **Người làm** | |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/doc-mau.md`, 2.3.4 |
+| **Kết quả** | Google Doc hoàn chỉnh, không còn `{{...}}` |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 2.3.6 Kiểm tra sau xuất + lưu link
+| | |
+|---|---|
+| **Mô tả** | Kiểm tra Doc không còn sót `{{`. Lưu link vào `DailyReport.docUrl`, status = EXPORTED. Hiện nút mở Doc. |
+| **Người làm** | |
+| **Đầu vào** | 2.3.5 |
+| **Kết quả** | Bấm link → mở Google Doc đúng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+## Giai đoạn 3 – Chạy không cần mạng
+
+### 3.1 Hàng đợi WorkManager
+
+#### 3.1.1 SttWorker
+| | |
+|---|---|
+| **Mô tả** | Worker gọi STT, ràng buộc `NetworkType.CONNECTED`. Thất bại → retry (backoff). Thành công → cập nhật Note. |
+| **Người làm** | |
+| **Đầu vào** | `docs/03-kien-truc.md` |
+| **Kết quả** | Tắt mạng → ghi âm → bật mạng → STT tự chạy |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 3.1.2 ClassifyWorker
+| | |
+|---|---|
+| **Mô tả** | Worker gọi phân loại LLM, chạy sau SttWorker thành công. |
+| **Người làm** | |
+| **Đầu vào** | 1.5.3 |
+| **Kết quả** | Phân loại tự chạy nền khi có mạng |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 3.1.3 ExportWorker
+| | |
+|---|---|
+| **Mô tả** | Worker xuất Google Doc, ràng buộc mạng. Retry khi lỗi. |
+| **Người làm** | |
+| **Đầu vào** | 2.3.4 + 2.3.5 |
+| **Kết quả** | Xuất thành công dù mất mạng giữa chừng (retry) |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 3.1.4 Hiển thị trạng thái hàng đợi
+| | |
+|---|---|
+| **Mô tả** | UI: hiện trạng thái (đang chờ mạng / đang xử lý / xong / lỗi) cho mỗi ghi chú. |
+| **Người làm** | |
+| **Đầu vào** | 3.1.1 + 3.1.2 |
+| **Kết quả** | Người dùng biết trạng thái xử lý từng ghi chú |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+### 3.2 Whisper offline
+
+#### 3.2.1 Tích hợp whisper.cpp
+| | |
+|---|---|
+| **Mô tả** | Thêm dependency whisper.cpp (JNI/NDK). Tải model base (~140MB) hoặc small (~460MB). Class `WhisperCpp` implements `SpeechToText`. |
+| **Người làm** | |
+| **Đầu vào** | `docs/quyet-dinh/0001-stt-lai-online-offline.md` |
+| **Kết quả** | STT offline chạy được (chậm hơn nhưng đúng) |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 3.2.2 Logic chọn online/offline
+| | |
+|---|---|
+| **Mô tả** | Có mạng → Groq API. Không mạng → whisper.cpp (nếu người dùng bật trong settings) hoặc chờ mạng. |
+| **Người làm** | |
+| **Đầu vào** | 3.2.1 + 3.1.1 |
+| **Kết quả** | Tắt mạng, ghi âm → vẫn có text (chậm hơn) |
+| **Trạng thái** | ⬜ Chưa làm |
+
+#### 3.2.3 Quản lý model offline
+| | |
+|---|---|
+| **Mô tả** | Settings: cho người dùng tải/xóa model whisper. Hiển thị dung lượng. |
+| **Người làm** | |
+| **Đầu vào** | 3.2.1 |
+| **Kết quả** | Tải/xóa model trong settings |
+| **Trạng thái** | ⬜ Chưa làm |
+
+---
+
+## Tổng hợp số lượng task
+
+| Giai đoạn | Số task |
+|-----------|---------|
+| 0 – Chuẩn bị | 4 |
+| 1 – Lõi chạy được | 18 |
+| 2 – Ra tài liệu | 13 |
+| 3 – Không cần mạng | 7 |
+| **Tổng** | **42** |
+
+---
+
+## Mẫu ghi log
+
+Quy tắc và cấu trúc ghi mới được duy trì tại [AGENTS.md](../AGENTS.md) và [WORK_LOG.md](WORK_LOG.md), tránh sao chép một mẫu ở nhiều nơi.
+
+- Thêm một mục cuối WORK_LOG theo ngày thực hiện; dùng task ID trong kế hoạch này nếu có.
+- Ghi kết quả thực tế, file/module đổi, kiểm tra đã/chưa chạy và lý do, lỗi/cách xử lý, việc còn lại. Lỗi/hoãn/hủy phải ghi đúng trạng thái, không đánh dấu hoàn thành.
+- Cập nhật trạng thái task ở đây và lộ trình nếu có thay đổi; cập nhật SUMMARY khi cần bàn giao hoặc trạng thái dự án đổi.
+- Khi đổi thiết kế được phép, liên kết tới tài liệu gốc/quyết định tương ứng; không chép lại đặc tả hoặc lịch sử cũ.
+
+Các dòng ngày/tên/kết quả trong mẫu trước đây chỉ là ví dụ, không phải bằng chứng task đã thực hiện. Nhật ký cũ được giữ nguyên bảng và không nhận bản ghi mới.

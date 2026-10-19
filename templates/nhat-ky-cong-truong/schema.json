@@ -1,0 +1,31 @@
+{
+  "id": "nhat-ky-cong-truong",
+  "ten": "Nhật ký thi công hằng ngày",
+  "gom_theo": "ngay",
+  "gioi_han_trang": 2,
+  "nhap_tay": {
+    "ngay": { "kieu": "ngay" },
+    "thoi_tiet_sang": { "kieu": "chon", "lua_chon": ["nang", "mua"] },
+    "thoi_tiet_chieu": { "kieu": "chon", "lua_chon": ["nang", "mua"] },
+    "thoi_tiet_toi": { "kieu": "chon", "lua_chon": ["binh_thuong", "mua"] },
+    "nhan_luc_ban_chi_huy": { "kieu": "so", "mac_dinh": "hom_qua" },
+    "nhan_luc_cong_nhan": { "kieu": "so", "mac_dinh": "hom_qua" },
+    "may_moc": {
+      "kieu": "chuoi",
+      "mac_dinh": "Máy đục, máy cắt rãnh, máy khoan bê tông, máy mài góc, máy laser"
+    }
+  },
+  "muc_ghi_chu": [
+    "thi_cong", "nghiem_thu", "an_toan",
+    "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau", "chua_phan_loai"
+  ],
+  "truong_tong_hop": {
+    "cong_viec_thi_cong": { "kieu": "danh_sach", "toi_da_dong": 8, "ky_tu_moi_dong": 110, "muc_nguon": ["thi_cong"] },
+    "nghiem_thu": { "kieu": "danh_sach", "toi_da_dong": 4, "ky_tu_moi_dong": 120, "muc_nguon": ["nghiem_thu"] },
+    "an_toan": { "kieu": "danh_sach", "toi_da_dong": 3, "ky_tu_moi_dong": 100, "muc_nguon": ["an_toan"] },
+    "y_kien_cdt": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_cdt"] },
+    "y_kien_tvgs": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_tvgs"] },
+    "y_kien_nha_thau": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_nha_thau"] },
+    "chua_phan_loai": { "kieu": "danh_sach", "toi_da_dong": 10, "ky_tu_moi_dong": 160, "hien_trong_doc": false }
+  }
+}
