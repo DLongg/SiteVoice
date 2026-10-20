@@ -35,11 +35,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,13 +56,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.sitevoice.app.R
-import com.sitevoice.app.audio.AudioPlayer
 import com.sitevoice.app.audio.AudioRecorder
 import com.sitevoice.app.settings.SecurePreferences
-import com.sitevoice.app.stt.GroqWhisper
-import com.sitevoice.app.ui.settings.SettingsDialog
+import com.sitevoice.app.ui.CurrentSttStatus
+import com.sitevoice.app.ui.MainViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 
 data class LastRecordedItem(
@@ -70,28 +68,18 @@ data class LastRecordedItem(
     val durationSeconds: Long
 )
 
-sealed class SttState {
-    object Idle : SttState()
-    object Transcribing : SttState()
-    data class Success(val text: String) : SttState()
-    data class Error(val message: String) : SttState()
-    object NoApiKey : SttState()
-}
-
 @Composable
 fun RecordScreen(
+    viewModel: MainViewModel,
+    securePreferences: SecurePreferences,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
-    val scope = rememberCoroutineScope()
-
-    val securePrefs = remember { SecurePreferences(context) }
     val recorder = remember { AudioRecorder(context) }
-    val player = remember { AudioPlayer() }
-    val groqWhisper = remember { GroqWhisper(apiKeyProvider = { securePrefs.groqApiKey }) }
-
-    var showSettingsDialog by remember { mutableStateOf(false) }
+    val audioPlayer = viewModel.audioPlayer
+    val sttStatus by viewModel.currentSttStatus.collectAsState()
 
     var hasPermission by remember {
         mutableStateOf(
@@ -112,26 +100,6 @@ fun RecordScreen(
     var recordingTimerSeconds by remember { mutableLongStateOf(0L) }
     var lastRecordedItem by remember { mutableStateOf<LastRecordedItem?>(null) }
     var isPlayingLastRecord by remember { mutableStateOf(false) }
-    var sttState by remember { mutableStateOf<SttState>(SttState.Idle) }
-
-    // Hàm gọi STT
-    fun runStt(audioFile: File) {
-        val apiKey = securePrefs.groqApiKey
-        if (apiKey.isNullOrBlank()) {
-            sttState = SttState.NoApiKey
-            return
-        }
-
-        sttState = SttState.Transcribing
-        scope.launch {
-            val result = groqWhisper.transcribe(audioFile)
-            sttState = if (result.isSuccess) {
-                SttState.Success(result.getOrThrow())
-            } else {
-                SttState.Error(result.exceptionOrNull()?.message ?: "Lỗi chuyển đổi STT")
-            }
-        }
-    }
 
     // Timer đếm giây khi đang ghi âm
     LaunchedEffect(isRecording) {
@@ -148,7 +116,7 @@ fun RecordScreen(
     DisposableEffect(Unit) {
         onDispose {
             recorder.cancelRecording()
-            player.stop()
+            audioPlayer.stop()
         }
     }
 
@@ -194,18 +162,18 @@ fun RecordScreen(
                 }
 
                 OutlinedButton(
-                    onClick = { showSettingsDialog = true },
+                    onClick = onOpenSettings,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = if (securePrefs.groqApiKey.isNullOrBlank()) "Cài API Key" else "API Key ✓",
+                        text = if (securePreferences.groqApiKey.isNullOrBlank()) "Cài API Key" else "API Key ✓",
                         fontSize = 12.sp,
-                        color = if (securePrefs.groqApiKey.isNullOrBlank()) Color(0xFFDC2626) else Color(0xFF16A34A)
+                        color = if (securePreferences.groqApiKey.isNullOrBlank()) Color(0xFFDC2626) else Color(0xFF16A34A)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(36.dp))
 
             // Phần trung tâm: Nút ghi âm một chạm
             Column(
@@ -309,8 +277,8 @@ fun RecordScreen(
                                                         file = file,
                                                         durationSeconds = duration / 1000L
                                                     )
-                                                    // Tự động gọi STT sau khi ghi âm thành công
-                                                    runStt(file)
+                                                    // Lưu ngay vào Room và kích hoạt STT qua ViewModel
+                                                    viewModel.onRecordFinished(file, duration)
                                                 }
                                             }
                                         } else {
@@ -331,7 +299,7 @@ fun RecordScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Phần kết quả: Thẻ bản ghi âm và kết quả STT
             lastRecordedItem?.let { item ->
@@ -367,10 +335,10 @@ fun RecordScreen(
                             OutlinedButton(
                                 onClick = {
                                     if (isPlayingLastRecord) {
-                                        player.stop()
+                                        audioPlayer.stop()
                                         isPlayingLastRecord = false
                                     } else {
-                                        player.play(item.file.absolutePath) {
+                                        audioPlayer.play(item.file.absolutePath) {
                                             isPlayingLastRecord = false
                                         }
                                         isPlayingLastRecord = true
@@ -390,17 +358,15 @@ fun RecordScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         // Khối hiển thị trạng thái STT
-                        when (val state = sttState) {
-                            is SttState.Idle -> {
-                                OutlinedButton(
-                                    onClick = { runStt(item.file) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Text("Chuyển thành văn bản (STT)")
-                                }
+                        when (val state = sttStatus) {
+                            is CurrentSttStatus.Idle -> {
+                                Text(
+                                    text = "Đã lưu vào danh sách ghi chú",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF64748B)
+                                )
                             }
-                            is SttState.Transcribing -> {
+                            is CurrentSttStatus.Transcribing -> {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -421,7 +387,7 @@ fun RecordScreen(
                                     )
                                 }
                             }
-                            is SttState.Success -> {
+                            is CurrentSttStatus.Success -> {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -444,7 +410,7 @@ fun RecordScreen(
                                     )
                                 }
                             }
-                            is SttState.Error -> {
+                            is CurrentSttStatus.Error -> {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -458,14 +424,16 @@ fun RecordScreen(
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     OutlinedButton(
-                                        onClick = { runStt(item.file) },
+                                        onClick = {
+                                            viewModel.onRecordFinished(item.file, item.durationSeconds * 1000)
+                                        },
                                         shape = RoundedCornerShape(6.dp)
                                     ) {
                                         Text("Thử lại STT", fontSize = 12.sp)
                                     }
                                 }
                             }
-                            is SttState.NoApiKey -> {
+                            is CurrentSttStatus.NoApiKey -> {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -480,7 +448,7 @@ fun RecordScreen(
                                         color = Color(0xFFB45309)
                                     )
                                     Button(
-                                        onClick = { showSettingsDialog = true },
+                                        onClick = onOpenSettings,
                                         shape = RoundedCornerShape(6.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706))
                                     ) {
@@ -492,17 +460,6 @@ fun RecordScreen(
                     }
                 }
             }
-        }
-
-        // Hộp thoại cài đặt API key
-        if (showSettingsDialog) {
-            SettingsDialog(
-                currentApiKey = securePrefs.groqApiKey,
-                onSaveKey = { newKey ->
-                    securePrefs.groqApiKey = newKey
-                },
-                onDismiss = { showSettingsDialog = false }
-            )
         }
     }
 }

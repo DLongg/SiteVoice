@@ -11,4 +11,30 @@
     <string name="record_play">Nghe lại</string>
     <string name="record_stop">Dừng</string>
     <string name="record_file_saved">Đã lưu an toàn:</string>
+    
+    <!-- Tab & Navigation -->
+    <string name="tab_record">Ghi âm</string>
+    <string name="tab_notes">Ghi chú hôm nay</string>
+    <string name="notes_count">%1$d ghi chú</string>
+
+    <!-- Notes List -->
+    <string name="notes_title">Ghi chú hôm nay</string>
+    <string name="notes_empty_title">Chưa có ghi chú nào hôm nay</string>
+    <string name="notes_empty_desc">Nhấn giữ nút ghi âm ở màn hình chính để ghi lại các phát sinh ngoài hiện trường.</string>
+    <string name="notes_transcribing">Đang chuyển âm thanh sang văn bản...</string>
+    <string name="notes_unclassified">Chưa phân loại</string>
+    <string name="notes_retry_stt">Thử lại nhận diện</string>
+    <string name="notes_edit">Sửa</string>
+    <string name="notes_delete">Xóa</string>
+    
+    <!-- Edit Dialog -->
+    <string name="edit_dialog_title">Chỉnh sửa nội dung ghi chú</string>
+    <string name="edit_dialog_hint">Nhập hoặc sửa nội dung phát sinh...</string>
+    <string name="btn_save">Lưu</string>
+    <string name="btn_cancel">Hủy</string>
+
+    <!-- Delete Dialog -->
+    <string name="delete_dialog_title">Xác nhận xóa ghi chú</string>
+    <string name="delete_dialog_message">Ghi chú này sẽ được ẩn khỏi danh sách tổng hợp. Tệp âm thanh gốc vẫn được giữ lại an toàn trong máy để đối chiếu.</string>
+    <string name="btn_confirm_delete">Xác nhận xóa</string>
 </resources>

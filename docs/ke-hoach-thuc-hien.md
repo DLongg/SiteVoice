@@ -209,55 +209,55 @@
 | | |
 |---|---|
 | **Mô tả** | Module `data/`: tạo `NoteEntity`, `NoteDao` theo `docs/04-du-lieu.md`. Database class với Room. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/04-du-lieu.md` |
-| **Kết quả** | Unit test CRUD cho NoteDao |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `NoteEntity`, `NoteDao`, `AppDatabase` cấu hình KSP Room SQLite |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.4.2 Repository cho Note
 | | |
 |---|---|
 | **Mô tả** | `NoteRepository`: lấy ghi chú theo ngày, thêm, sửa text, sửa label, xóa (soft delete = DISCARDED). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.4.1 |
-| **Kết quả** | Unit test repository |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `NoteRepository` & `DefaultNoteRepository`, unit test pass 100% tại `NoteRepositoryTest.kt` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.4.3 Tích hợp ghi âm với Room
 | | |
 |---|---|
 | **Mô tả** | Khi ghi âm xong → tạo NoteEntity (status = RECORDED). STT xong → cập nhật text (status = TRANSCRIBED). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.2.3 + 1.3.4 + 1.4.2 |
-| **Kết quả** | Dữ liệu ghi chú lưu vào DB, tắt app mở lại vẫn còn |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Ghi âm xong lưu ngay vào DB qua `MainViewModel`, cập nhật text sau STT, lưu trữ bền vững |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.4.4 Màn hình danh sách ghi chú
 | | |
 |---|---|
 | **Mô tả** | UI Compose: danh sách ghi chú trong ngày, mỗi item hiển thị: thời gian, văn bản (hoặc "đang chuyển..."), nhãn, nút phát lại. LazyColumn, kéo xuống xem thêm. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.4.2 |
-| **Kết quả** | Thấy danh sách ghi chú, scroll được |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Màn hình `NotesListScreen` hiển thị danh sách cuộn mượt, thẻ từng ghi chú, badge phân loại |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.4.5 Sửa văn bản ghi chú
 | | |
 |---|---|
 | **Mô tả** | Bấm vào ghi chú → dialog/bottom sheet cho sửa text. Lưu lại Room. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.4.4 |
-| **Kết quả** | Sửa text, đóng, mở lại thấy text đã sửa |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `EditNoteDialog` cho phép nhập và lưu văn bản chỉnh sửa vào Room qua repository |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.4.6 Xóa ghi chú
 | | |
 |---|---|
 | **Mô tả** | Vuốt hoặc nút xóa → xác nhận → đổi status = DISCARDED (không xóa file âm thanh). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.4.4 |
-| **Kết quả** | Ghi chú biến mất khỏi danh sách, file âm thanh vẫn còn |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `DeleteConfirmDialog`, cập nhật status DISCARDED, ghi chú ẩn khỏi danh sách, file âm thanh gốc vẫn nguyên |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 

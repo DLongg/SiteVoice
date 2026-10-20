@@ -6,7 +6,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
 - Đang triển khai Giai đoạn 1: Đã khởi tạo hoàn chỉnh project Android Kotlin + Compose trong `app/` (gói `com.sitevoice.app`, compileSdk 34, minSdk 26).
-- Đã hoàn thành Task 1.1 (cấu trúc 9 package, copy assets, test pass), Task 1.2 (Module Audio & RecordScreen nhấn giữ) và Task 1.3 (Module Groq Whisper STT & EncryptedSharedPreferences). Lệnh `.\gradlew.bat assembleDebug test` build thành công 100% ra `app-debug.apk`.
+- Đã hoàn thành Task 1.1, 1.2, 1.3, 1.4 (Room Database, Repository, MainViewModel, NotesListScreen, Edit & Delete Note). Lệnh `.\gradlew.bat assembleDebug test` build thành công 100% (70 tasks pass, APK 11.5 MB).
 - Giai đoạn 0 đã hoàn tất phân tích và tạo file `Nhat_ky_thi_cong_mau.docx`. Toàn bộ thao tác người dùng (cắm điện thoại, dán link Drive) được gom lại làm sau theo yêu cầu.
 
 ## Kiến trúc và công nghệ dự kiến
@@ -29,7 +29,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Tồn đọng cần lưu ý
 
 - `templates/nhat-ky-cong-truong/doc-mau.md` chưa có link Google Doc; prompt/ngân sách ký tự và giới hạn 2 trang cần thử thực tế trước khi chốt.
-- Chưa thể build/test ứng dụng vì chưa có project Gradle; trạng thái Android Studio/điện thoại chưa được kiểm chứng.
+- Đã có Gradle wrapper và build/test hoàn chỉnh trên máy; việc kiểm tra trên điện thoại thật gom lại làm sau theo yêu cầu.
 - Khi triển khai dữ liệu/phân loại, cần thống nhất nhãn `unclassified` trong [thiết kế Room](04-du-lieu.md) với `chua_phan_loai` trong schema/prompt; chưa có quyết định ánh xạ.
 - Yêu cầu hàng đợi mạng áp dụng chung, nhưng lộ trình đặt WorkManager ở giai đoạn 3; cần làm rõ cách triển khai theo giai đoạn khi task mạng được giao, không tự bỏ yêu cầu.
 
@@ -42,6 +42,6 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Task 1.4: Xây dựng Room DAO, Repository và màn hình danh sách ghi chú trong ngày (NotesListScreen).
-2. Triển khai Task 1.5: Gán nhãn mục bằng LLM (ClassifyWorker).
+1. Triển khai Task 1.5: Gán nhãn mục bằng LLM (Interface LlmClient, provider, prompt phân loại, gán nhãn tự động).
+2. Triển khai Giai đoạn 2: Màn hình cuối ngày và tổng hợp báo cáo.
 3. Thao tác người dùng (cắm cáp USB cài app lên điện thoại, dán link Google Doc) gom lại làm khi thuận tiện.

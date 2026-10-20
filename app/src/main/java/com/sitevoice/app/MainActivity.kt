@@ -3,15 +3,33 @@ package com.sitevoice.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
-import com.sitevoice.app.ui.record.RecordScreen
+import com.sitevoice.app.data.AppDatabase
+import com.sitevoice.app.data.DefaultNoteRepository
+import com.sitevoice.app.settings.SecurePreferences
+import com.sitevoice.app.ui.MainScreen
+import com.sitevoice.app.ui.MainViewModel
+import com.sitevoice.app.ui.MainViewModelFactory
 
 class MainActivity : ComponentActivity() {
+
+    private val securePreferences by lazy { SecurePreferences(applicationContext) }
+    private val database by lazy { AppDatabase.getDatabase(applicationContext) }
+    private val repository by lazy { DefaultNoteRepository(database.noteDao()) }
+
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(repository, securePreferences)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                RecordScreen()
+                MainScreen(
+                    viewModel = viewModel,
+                    securePreferences = securePreferences
+                )
             }
         }
     }

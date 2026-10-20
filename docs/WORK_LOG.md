@@ -108,5 +108,15 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/build.gradle.kts` (thêm OkHttp 4.12.0), `gradle/libs.versions.toml`, `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `docs/ke-hoach-thuc-hien.md` (đánh dấu hoàn thành Task 1.3.1 - 1.3.4), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: Unit test `GroqWhisperTest.kt` và `TemplateAssetTest.kt` chạy pass 100%; `.\gradlew.bat test` và `.\gradlew.bat assembleDebug` chạy thành công không lỗi (BUILD SUCCESSFUL).
 - Vấn đề và xử lý: Cần đảm bảo file ghi âm gốc được giữ an toàn trước khi gọi STT theo quyết định 0001; API key được bảo vệ trong EncryptedSharedPreferences không lưu vào Room; UI tuân thủ skill `design-taste-frontend` App Screens.
-- Còn lại: Task 1.4 (Xây dựng Room Database và Màn hình danh sách ghi chú trong ngày).
+- Còn lại: Đã hoàn thành Task 1.3 và Task 1.4. Tiếp tục Task 1.5 (Gán nhãn mục bằng LLM).
+
+## 2026-10-20 — Triển khai Giai đoạn 1: Room Database & Màn hình danh sách ghi chú (Task 1.4) — Hoàn thành
+
+- Kết quả: Hoàn thành toàn diện Task 1.4. Cấu hình KSP compiler cho Room (`androidx.room:room-compiler:2.6.1`). Tạo `NoteDao.kt`, `AppDatabase.kt`, và `NoteRepository.kt` (`DefaultNoteRepository`) hỗ trợ lưu bền vững ghi chú, sửa text, soft delete (DISCARDED). Xây dựng `MainViewModel.kt` quản lý reactive state với StateFlow. Tích hợp ghi âm với Room (lưu ngay sau khi ghi âm, cập nhật văn bản sau khi STT). Xây dựng UI Compose theo chuẩn App Screens: `NotesListScreen.kt` cuộn mượt danh sách ghi chú theo ngày kèm badge số lượng và nhãn mục, `EditNoteDialog.kt` sửa văn bản trực tiếp, `DeleteConfirmDialog.kt` xác nhận soft delete (bảo toàn file audio gốc không bao giờ xóa). Điều hướng 2 tab tại `MainScreen.kt` (Ghi âm & Ghi chú hôm nay).
+- Tạo: `app/src/main/java/com/sitevoice/app/data/NoteDao.kt`, `app/src/main/java/com/sitevoice/app/data/AppDatabase.kt`, `app/src/main/java/com/sitevoice/app/data/NoteRepository.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/notes/NotesListScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/notes/EditNoteDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/notes/DeleteConfirmDialog.kt`, `app/src/test/java/com/sitevoice/app/NoteRepositoryTest.kt`.
+- Cập nhật: `app/build.gradle.kts` (thêm ksp plugin, room-compiler, lifecycle-viewmodel-compose), `gradle/libs.versions.toml`, `app/src/main/res/values/strings.xml`, `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `docs/ke-hoach-thuc-hien.md` (Task 1.4.1 - 1.4.6 hoàn thành), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: `NoteRepositoryTest.kt`, `GroqWhisperTest.kt`, `TemplateAssetTest.kt` chạy pass 100%; `.\gradlew.bat test` và `.\gradlew.bat assembleDebug` chạy thành công không lỗi (BUILD SUCCESSFUL 70/70 tasks); sinh file APK `app/build/outputs/apk/debug/app-debug.apk` (11.5 MB).
+- Vấn đề và xử lý: Room 2.6.1 trên Kotlin 2.0.21 cần KSP `2.0.21-1.0.27` để code generation chính xác; tuân thủ nghiêm ngặt quyết định 0001 và 0006 (giữ nguyên file âm thanh gốc khi soft delete).
+- Còn lại: Task 1.5 (Gán nhãn mục bằng LLM qua ClassifyWorker).
+
 
