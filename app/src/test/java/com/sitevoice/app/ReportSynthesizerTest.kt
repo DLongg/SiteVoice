@@ -85,4 +85,70 @@ class ReportSynthesizerTest {
             assertEquals("Đồng ý chuyển bước thi công.", jsonObj.getString("y_kien_cdt"))
         }
     }
+
+    @Test
+    fun testSynthesizePersonalJournalReport() {
+        runBlocking {
+            val personalSchemaFile = File("src/main/assets/templates/nhat-ky-ca-nhan/schema.json")
+            val altFile = File("app/src/main/assets/templates/nhat-ky-ca-nhan/schema.json")
+            val target = if (personalSchemaFile.exists()) personalSchemaFile else altFile
+            val personalSchema = TemplateSchema.fromJson(target.readText(Charsets.UTF_8))
+
+            val mockResponse = """
+            {
+              "cong_viec_hoan_thanh": [
+                "Hoàn thành thiết kế Thư viện Mẫu cho app",
+                "Chạy xong 29 unit tests pass 100%"
+              ],
+              "viec_ton_dong": [
+                "Cập nhật tài liệu bàn giao buổi tối"
+              ],
+              "suy_nghi_bai_hoc": [
+                "Tách nhỏ task giúp kiểm soát lỗi tốt hơn"
+              ],
+              "suc_khoe_tam_trang": "Tập trung và nhiều năng lượng",
+              "chua_phan_loai": []
+            }
+            """
+
+            val fakeLlm = FakeLlmClient(mockResponse)
+            val customPrompt = "Bạn là trợ lý nhật ký cá nhân..."
+            val synthesizer = ReportSynthesizer(fakeLlm, personalSchema, customSystemPrompt = customPrompt)
+
+            val notes = listOf(
+                NoteEntity(
+                    createdAt = 1000L,
+                    date = "2026-10-20",
+                    audioPath = "/audio/1.m4a",
+                    durationMs = 5000,
+                    text = "Hoàn thành code tính năng thư viện mẫu",
+                    label = "cong_viec",
+                    status = "LABELED"
+                ),
+                NoteEntity(
+                    createdAt = 2000L,
+                    date = "2026-10-20",
+                    audioPath = "/audio/2.m4a",
+                    durationMs = 4000,
+                    text = "Nhớ cập nhật file SUMMARY tối nay",
+                    label = "ton_dong",
+                    status = "LABELED"
+                )
+            )
+
+            val result = synthesizer.synthesizeReport("2026-10-20", notes)
+            assertTrue("Synthesize personal journal should succeed", result.isSuccess)
+
+            val jsonStr = result.getOrThrow()
+            val jsonObj = JSONObject(jsonStr)
+
+            val completed = jsonObj.getJSONArray("cong_viec_hoan_thanh")
+            assertEquals(2, completed.length())
+
+            val pending = jsonObj.getJSONArray("viec_ton_dong")
+            assertEquals(1, pending.length())
+
+            assertEquals("Tập trung và nhiều năng lượng", jsonObj.getString("suc_khoe_tam_trang"))
+        }
+    }
 }

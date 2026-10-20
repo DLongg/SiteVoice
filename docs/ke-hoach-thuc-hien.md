@@ -560,8 +560,8 @@
 | **Mô tả** | Thành phần `TemplateSelector` trên màn hình chính/chuẩn bị báo cáo: cho phép người dùng tùy chọn mẫu phù hợp (chuyển đổi giữa Nhật ký công trường và Nhật ký cá nhân). Cập nhật `ReportSynthesizer` và `BudgetValidator` nạp động schema và prompt từ Mẫu được chọn thay vì đọc cố định asset. |
 | **Người làm** | Agent |
 | **Đầu vào** | 4.1.1, 4.1.2 |
-| **Kết quả** | Chọn mẫu linh hoạt, tổng hợp LLM tuân thủ chính xác schema động của mẫu được chọn |
-| **Trạng thái** | 🔲 Chưa bắt đầu |
+| **Kết quả** | `ReportSynthesizer` nạp động schema và prompt tùy biến, `DailyReportContent` hỗ trợ dynamic fields, banner chọn mẫu trên `DailyInputScreen`, preview linh hoạt theo mẫu, 30 unit tests pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 4.1.4 Xuất Google Doc theo Mẫu tùy biến
 | | |

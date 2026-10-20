@@ -43,6 +43,7 @@ fun DailyReportPreviewScreen(
     dailyInput: DailyInputEntity?,
     isSynthesizing: Boolean,
     isExporting: Boolean = false,
+    activeTemplateName: String? = null,
     onApproveClick: () -> Unit,
     onResynthesizeClick: () -> Unit,
     onBackToEditClick: () -> Unit,
@@ -158,8 +159,9 @@ fun DailyReportPreviewScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF0F172A)
             )
+            val templateDisplayName = activeTemplateName ?: (if (reportEntity.templateId == "nhat-ky-ca-nhan") "Nhật ký cá nhân" else "Nhật ký thi công công trường")
             Text(
-                text = "Ngày: $currentDate • Mẫu: Nhật ký công trường (A4 ≤ 2 trang)",
+                text = "Ngày: $currentDate • Mẫu: $templateDisplayName",
                 fontSize = 12.sp,
                 color = Color(0xFF64748B)
             )
@@ -189,91 +191,133 @@ fun DailyReportPreviewScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Khối 1: Thông tin hiện trường (Thời tiết, Nhân lực, Máy móc)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(10.dp),
-                border = CardDefaults.outlinedCardBorder()
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text(
-                        text = stringResource(id = R.string.report_section_general),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+            val isConstruction = reportEntity.templateId == "nhat-ky-cong-truong" || reportEntity.templateId.isBlank()
 
-                    val weatherText = buildString {
-                        val morning = if (dailyInput?.weatherMorning == "mua") "🌧️ Mưa" else "☀️ Nắng"
-                        val afternoon = if (dailyInput?.weatherAfternoon == "mua") "🌧️ Mưa" else "☀️ Nắng"
-                        val evening = if (dailyInput?.weatherEvening == "mua") "🌧️ Mưa" else "🌙 Bình thường"
-                        append("Sáng: $morning  •  Chiều: $afternoon  •  Tối: $evening")
+            if (isConstruction) {
+                // Khối 1: Thông tin hiện trường (Thời tiết, Nhân lực, Máy móc)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(10.dp),
+                    border = CardDefaults.outlinedCardBorder()
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Text(
+                            text = stringResource(id = R.string.report_section_general),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        val weatherText = buildString {
+                            val morning = if (dailyInput?.weatherMorning == "mua") "🌧️ Mưa" else "☀️ Nắng"
+                            val afternoon = if (dailyInput?.weatherAfternoon == "mua") "🌧️ Mưa" else "☀️ Nắng"
+                            val evening = if (dailyInput?.weatherEvening == "mua") "🌧️ Mưa" else "🌙 Bình thường"
+                            append("Sáng: $morning  •  Chiều: $afternoon  •  Tối: $evening")
+                        }
+                        Text(text = "Thời tiết: $weatherText", fontSize = 13.sp, color = Color(0xFF334155))
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        val bch = dailyInput?.commandStaffCount ?: 0
+                        val cn = dailyInput?.workerCount ?: 0
+                        Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = 13.sp, color = Color(0xFF334155))
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        val eq = dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính"
+                        Text(text = "Thiết bị: $eq", fontSize = 13.sp, color = Color(0xFF334155))
                     }
-                    Text(text = "Thời tiết: $weatherText", fontSize = 13.sp, color = Color(0xFF334155))
-
-                    Spacer(modifier = Modifier.height(4.dp))
-                    val bch = dailyInput?.commandStaffCount ?: 0
-                    val cn = dailyInput?.workerCount ?: 0
-                    Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = 13.sp, color = Color(0xFF334155))
-
-                    Spacer(modifier = Modifier.height(4.dp))
-                    val eq = dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính"
-                    Text(text = "Thiết bị: $eq", fontSize = 13.sp, color = Color(0xFF334155))
                 }
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Khối 2: Công việc thi công (Ngân sách: ≤ 15 dòng)
-            ReportSectionList(
-                title = stringResource(id = R.string.report_section_construction),
-                badgeText = "${content.congViecThiCong.size}/15 dòng",
-                items = content.congViecThiCong
-            )
+                // Khối 2: Công việc thi công (Ngân sách: ≤ 15 dòng)
+                ReportSectionList(
+                    title = stringResource(id = R.string.report_section_construction),
+                    badgeText = "${content.congViecThiCong.size}/15 dòng",
+                    items = content.congViecThiCong
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Khối 3: Nghiệm thu công việc (Ngân sách: ≤ 6 dòng)
-            ReportSectionList(
-                title = stringResource(id = R.string.report_section_inspection),
-                badgeText = "${content.nghiemThu.size}/6 dòng",
-                items = content.nghiemThu
-            )
+                // Khối 3: Nghiệm thu công việc (Ngân sách: ≤ 6 dòng)
+                ReportSectionList(
+                    title = stringResource(id = R.string.report_section_inspection),
+                    badgeText = "${content.nghiemThu.size}/6 dòng",
+                    items = content.nghiemThu
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Khối 4: An toàn lao động & VSMT (Ngân sách: ≤ 3 dòng)
-            ReportSectionList(
-                title = stringResource(id = R.string.report_section_safety),
-                badgeText = "${content.anToan.size}/3 dòng",
-                items = content.anToan
-            )
+                // Khối 4: An toàn lao động & VSMT (Ngân sách: ≤ 3 dòng)
+                ReportSectionList(
+                    title = stringResource(id = R.string.report_section_safety),
+                    badgeText = "${content.anToan.size}/3 dòng",
+                    items = content.anToan
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Khối 5: Ý kiến các bên (Tối đa 200 ký tự mỗi bên)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(10.dp),
-                border = CardDefaults.outlinedCardBorder()
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text(
-                        text = stringResource(id = R.string.report_section_opinions),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
+                // Khối 5: Ý kiến các bên (Tối đa 200 ký tự mỗi bên)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(10.dp),
+                    border = CardDefaults.outlinedCardBorder()
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Text(
+                            text = stringResource(id = R.string.report_section_opinions),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                    OpinionRow(label = stringResource(id = R.string.report_opinion_cdt), content = content.yKienCdt)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OpinionRow(label = stringResource(id = R.string.report_opinion_tvgs), content = content.yKienTvgs)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OpinionRow(label = stringResource(id = R.string.report_opinion_contractor), content = content.yKienNhaThau)
+                        OpinionRow(label = stringResource(id = R.string.report_opinion_cdt), content = content.yKienCdt)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OpinionRow(label = stringResource(id = R.string.report_opinion_tvgs), content = content.yKienTvgs)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OpinionRow(label = stringResource(id = R.string.report_opinion_contractor), content = content.yKienNhaThau)
+                    }
+                }
+            } else {
+                // Hiển thị động theo các trường của Mẫu cá nhân / Mẫu tự tạo
+                val dynamicFields = content.allFields.filterKeys { it != "rawJson" && it != "chua_phan_loai" }
+                dynamicFields.forEach { (key, value) ->
+                    val readableTitle = key.replace("_", " ").replaceFirstChar { it.uppercase() }
+                    if (value is List<*>) {
+                        val stringList = value.mapNotNull { it?.toString() }
+                        ReportSectionList(
+                            title = readableTitle,
+                            badgeText = "${stringList.size} mục",
+                            items = stringList
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    } else {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            shape = RoundedCornerShape(10.dp),
+                            border = CardDefaults.outlinedCardBorder()
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Text(
+                                    text = readableTitle,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF0F172A)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = value.toString().ifBlank { stringResource(id = R.string.report_empty_field) },
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF334155)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
                 }
             }
 

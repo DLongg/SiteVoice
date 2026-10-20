@@ -273,3 +273,24 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/src/main/res/values/strings.xml` (thêm toàn bộ chuỗi tiếng Việt cho Thư viện Mẫu), `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: Toàn bộ 29/29 unit tests pass 100%; `.\gradlew.bat assembleDebug` build thành công không lỗi (BUILD SUCCESSFUL in 27s).
 - Còn lại: Sẵn sàng triển khai Task 4.1.3: Nạp động schema và prompt từ Mẫu được chọn cho `ReportSynthesizer` và `BudgetValidator`.
+
+## 2026-10-20 — Sửa lỗi mất file âm thanh, lọc Hallucination khi im lặng và bóc tách đa mục — Hoàn thành
+
+- Kết quả: Đã giải quyết triệt để 3 vấn đề người dùng phản hồi từ thử nghiệm thực tế:
+  1. Fix lỗi mất file âm thanh: Phát hiện `AudioRecorder.stopRecording()` không gán `currentOutputFile = null`, dẫn đến khi người dùng chuyển màn hình hoặc kéo thanh thông báo, `RecordScreen.onDispose` kích hoạt `cancelRecording()` xóa nhầm file âm thanh vừa ghi. Đã sửa `AudioRecorder` bảo vệ tuyệt đối file đã ghi thành công và chỉ xóa khi đang ghi dở bị hủy.
+  2. Lọc Hallucination khi im lặng: Bổ sung hàm `isHallucinationOrSilence()` trong `GroqWhisper.kt` để chặn đứng các câu hallucination đặc trưng của Whisper YouTube ("subscribe LaLa School...", "like và chia sẻ", lặp lại prompt từ điển...), trả về lỗi không có giọng nói rõ ràng thay vì đưa văn bản rác vào hệ thống.
+  3. Bóc tách & phân bổ đa mục: Nâng cấp `NoteClassifier.kt` và `ReportSynthesizer.kt` cho phép xử lý một bản ghi âm nói gộp nhiều mục (vừa thời tiết, thi công, nghiệm thu...). Khi tổng hợp báo cáo cuối ngày, LLM được cấp toàn văn tất cả các ghi chú kèm chỉ thị đọc từng câu, bóc tách và phân bổ chính xác từng ý vào đúng mục tương ứng trong Google Doc mà không bỏ sót.
+- Code & Test: Cập nhật `AudioRecorder.kt`, `GroqWhisper.kt`, `GroqWhisperTest.kt`, `NoteClassifier.kt`, `ReportSynthesizer.kt`. Toàn bộ 29/29 unit tests pass 100%. Lệnh `assembleDebug` build thành công ra APK 11.94 MB và đã cài đặt (`adb install -r`) lên điện thoại thật `33c4f658`, khởi chạy mượt mà.
+- Còn lại: Người dùng kiểm tra lại trên thiết bị thật: (1) Thử ghi âm offline rồi bật mạng, (2) Thử ghi âm im lặng, (3) Thử ghi âm 1 câu gộp cả thi công và nghiệm thu để kiểm tra phân bổ.
+
+## 2026-10-20 — Triển khai Task 4.1.3: Bộ chọn Mẫu (Template Selector) & Tổng hợp theo Mẫu động — Hoàn thành
+
+- Kết quả: Hoàn thành 100% Task 4.1.3, hiện thực hóa toàn diện cơ chế tổng hợp báo cáo đa mẫu:
+  + Nâng cấp `ReportSynthesizer.kt`: Hỗ trợ tham số `customSystemPrompt`. Tự động gom nhóm ghi chú theo `schema.noteCategories` của mẫu và sinh cấu trúc JSON mong muốn động từ `schema.summaryFields`. Áp dụng mượt mà cho cả Nhật ký công trường, Nhật ký cá nhân và mọi mẫu tùy chỉnh.
+  + Nâng cấp `DailyReportContent.kt`: Bổ sung `allFields: Map<String, Any>` và `rawJson: String`, duy trì tương thích ngược 100% với mẫu công trường đồng thời lưu trữ đầy đủ mọi trường dữ liệu động của các mẫu khác.
+  + Cập nhật `MainViewModel.kt`: Hàm `synthesizeDailyReport()` tự động đọc mẫu kích hoạt hiện thời từ `templateRepository`, nạp schema và prompt tương ứng để khởi tạo `ReportSynthesizer` và lưu `templateId` chuẩn xác.
+  + Thêm `TemplateSelector` vào `DailyInputScreen.kt`: Thẻ banner chọn/đổi mẫu trực quan ở đầu màn hình Tab 2 giúp người dùng nắm rõ mẫu đang áp dụng và 1 chạm đổi mẫu ngay trước khi tổng hợp.
+  + Nâng cấp `DailyReportPreviewScreen.kt`: Hiển thị tên mẫu chính xác; nếu là Mẫu công trường thì render các khối chuẩn (thời tiết, nhân lực, thi công, nghiệm thu, an toàn), nếu là Mẫu cá nhân/tùy chỉnh thì tự động render các khối linh hoạt từ `allFields`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/template/DailyReportContent.kt`, `app/src/main/java/com/sitevoice/app/llm/ReportSynthesizer.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyInputScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyReportPreviewScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/test/java/com/sitevoice/app/ReportSynthesizerTest.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Bộ unit test `ReportSynthesizerTest` được bổ sung kiểm thử tổng hợp Nhật ký cá nhân; toàn bộ 30/30 unit tests chạy pass 100%; `.\gradlew.bat assembleDebug` build APK thành công.
+- Còn lại: Sẵn sàng triển khai Task 4.1.4: Xuất Google Doc theo Mẫu tùy biến.

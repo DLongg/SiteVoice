@@ -49,6 +49,8 @@ fun DailyInputScreen(
     currentDate: String,
     initialDailyInput: DailyInputEntity?,
     dailyReport: DailyReportEntity? = null,
+    activeTemplateName: String? = null,
+    onOpenTemplateLibrary: () -> Unit = {},
     onSaveDailyInput: (DailyInputEntity) -> Unit,
     onGenerateReportClick: () -> Unit,
     onViewReportClick: (() -> Unit)? = null,
@@ -114,6 +116,48 @@ fun DailyInputScreen(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF16A34A)
+                    )
+                }
+            }
+
+            // Banner chọn / đổi Mẫu Báo cáo (TemplateSelector)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 14.dp)
+                    .clickable { onOpenTemplateLibrary() },
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(8.dp),
+                border = CardDefaults.outlinedCardBorder()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "MẪU BÁO CÁO ÁP DỤNG",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "📑 " + (activeTemplateName ?: "Nhật ký thi công hằng ngày"),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
+                        )
+                    }
+
+                    Text(
+                        text = "Đổi mẫu ▾",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF2563EB)
                     )
                 }
             }

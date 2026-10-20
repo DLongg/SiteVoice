@@ -239,12 +239,30 @@ class MainViewModel(
             _isSynthesizing.value = true
             _synthesisError.value = null
             try {
-                val result = reportSynthesizer.synthesizeReport(currentDate, notes)
+                val currentTemplate = templateRepository.getActiveTemplateSync()
+                val currentSchema = if (currentTemplate != null) {
+                    try {
+                        TemplateSchema.fromJson(currentTemplate.schemaJson)
+                    } catch (_: Exception) {
+                        templateSchema
+                    }
+                } else {
+                    templateSchema
+                }
+                val promptToUse = currentTemplate?.systemPrompt
+
+                val dynamicSynthesizer = ReportSynthesizer(
+                    llmClient = GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }),
+                    schema = currentSchema,
+                    customSystemPrompt = promptToUse
+                )
+
+                val result = dynamicSynthesizer.synthesizeReport(currentDate, notes)
                 if (result.isSuccess) {
                     val json = result.getOrThrow()
                     val reportEntity = DailyReportEntity(
                         date = currentDate,
-                        templateId = templateSchema.id,
+                        templateId = currentSchema.id,
                         contentJson = json,
                         status = "DRAFT",
                         updatedAt = System.currentTimeMillis()

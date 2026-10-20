@@ -7,7 +7,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
 - Đã hoàn thành 100% Giai đoạn 0, Giai đoạn 1, Giai đoạn 2 và Giai đoạn 3: Ghi âm M4A an toàn, STT Groq Whisper, phân loại tự động LLM, danh sách ghi chú Room, dữ liệu cố định cuối ngày (kế thừa hôm trước), LLM tổng hợp báo cáo kiểm soát ngân sách dòng, màn hình xem trước và nút duyệt 1 lần duy nhất (quyết định 0006), tích hợp Google Sign-In (`play-services-auth`), sao chép Doc mẫu bằng Drive API v3 và thay thế placeholder bằng Docs API v1 `batchUpdate`. Hàng đợi ngoại tuyến WorkManager (`SttWorker`, `ClassifyWorker`, `ExportWorker`).
 - Theo Quyết định 0007: Bỏ STT offline on-device, chuyển hoàn toàn sang cơ chế lưu speech ngoại tuyến an toàn trên điện thoại và xếp hàng chờ mạng gọi Groq Whisper API (Whisper Large-v3-Turbo). APK giảm xuống 11.94 MB.
-- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (25/25 unit tests pass, APK 11.94 MB đã cài đặt trên máy thật `33c4f658`).
+- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (APK 11.94 MB đã cài đặt trên máy thật `33c4f658`). Đã sửa lỗi mất file âm thanh trong `AudioRecorder`, bổ sung bộ lọc hallucination Whisper khi im lặng và hỗ trợ LLM bóc tách đa mục cho bản ghi âm gộp nhiều ý.
 
 ## Kiến trúc và công nghệ dự kiến
 
@@ -17,8 +17,8 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1, Task 4.1.2 của Giai đoạn 4.
-- Đã hoàn thành UI Thư viện Mẫu (`TemplateLibraryScreen`) và Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`) theo chuẩn `design-taste-frontend` App Screens. Người dùng có thể tự tạo mẫu mới, nhân bản, căn chỉnh số dòng/ký tự và prompt LLM. Tích hợp 1 chạm chuyển đổi mẫu ngay trên màn hình ghi âm và cài đặt. 29/29 unit tests pass 100%, APK build thành công.
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1, 4.1.2, 4.1.3 của Giai đoạn 4.
+- Đã hoàn thành cơ chế nạp động schema và prompt cho `ReportSynthesizer` theo Mẫu được chọn (Nhật ký công trường, Nhật ký cá nhân, Mẫu tự tạo). Thẻ TemplateSelector trên màn hình chuẩn bị báo cáo. Màn hình xem trước hiển thị linh hoạt theo từng mẫu. 30/30 unit tests pass 100%, APK build thành công.
 
 ## Quyết định phải giữ
 
@@ -30,5 +30,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Task 4.1.3: Cập nhật `ReportSynthesizer` và `BudgetValidator` nạp động schema và prompt từ Mẫu được chọn khi tổng hợp báo cáo.
-2. Triển khai Task 4.1.4: Xuất Google Doc theo Mẫu tùy biến (Doc ID và placeholder tương ứng của từng mẫu).
+1. Triển khai Task 4.1.4: Nâng cấp `ExportWorker` và `GoogleDocsExporter` hỗ trợ xuất Google Doc theo Mẫu tùy biến (Doc ID và placeholder tương ứng của từng mẫu).
+2. Chuẩn bị triển khai Nhóm 4.2: Chụp & đính kèm ảnh hiện trường vào ghi chú (Task 4.2.1 - 4.2.3).

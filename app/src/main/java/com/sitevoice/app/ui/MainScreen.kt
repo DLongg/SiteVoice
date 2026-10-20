@@ -204,9 +204,10 @@ fun MainScreen(
                             dailyInput = dailyInput,
                             isSynthesizing = isSynthesizing,
                             isExporting = isExporting,
+                            activeTemplateName = activeTemplate?.name,
                             onApproveClick = {
                                 viewModel.approveDailyReport()
-                                Toast.makeText(context, "✓ Đã phê duyệt nhật ký thi công!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "✓ Đã phê duyệt báo cáo!", Toast.LENGTH_SHORT).show()
                             },
                             onResynthesizeClick = {
                                 viewModel.synthesizeDailyReport()
@@ -233,6 +234,8 @@ fun MainScreen(
                             currentDate = viewModel.currentDate,
                             initialDailyInput = dailyInput,
                             dailyReport = dailyReport,
+                            activeTemplateName = activeTemplate?.name,
+                            onOpenTemplateLibrary = { showTemplateLibrary = true },
                             onSaveDailyInput = { viewModel.saveDailyInput(it) },
                             onGenerateReportClick = {
                                 showReportPreview = true
