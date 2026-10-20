@@ -1,6 +1,6 @@
 # Google Doc mẫu: Nhật ký thi công
 
-Link Doc mẫu: (dán link vào đây)
+Link Doc mẫu: https://docs.google.com/document/d/1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO/edit?usp=sharing (ID: `1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO`)
 
 ## File mẫu điện tử & File gốc tham chiếu
 

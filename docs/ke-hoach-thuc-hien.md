@@ -58,8 +58,8 @@
 | **Mô tả** | Tạo Google Doc mẫu với đầy đủ placeholder `{{...}}` theo `templates/nhat-ky-cong-truong/doc-mau.md`. Dán link vào `doc-mau.md`. In thử kiểm tra ≤ 2 trang. |
 | **Người làm** | Agent + Người dùng |
 | **Đầu vào** | `templates/nhat-ky-cong-truong/Nhat_ky_thi_cong.docx` |
-| **Kết quả** | Đã tạo `Nhat_ky_thi_cong_mau.docx` chứa đầy đủ placeholder; người dùng tải lên Drive lấy link |
-| **Trạng thái** | 🔄 Chờ dán link Doc |
+| **Kết quả** | Đã tạo `Nhat_ky_thi_cong_mau.docx` và lưu link Google Doc mẫu vào `doc-mau.md` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ### 0.4 Cài đặt môi trường phát triển
 | | |
@@ -67,8 +67,8 @@
 | **Mô tả** | Cài Android Studio, bật gỡ lỗi USB trên điện thoại, kiểm tra kết nối `adb devices`. |
 | **Người làm** | Agent + Người dùng |
 | **Đầu vào** | Không |
-| **Kết quả** | Android Studio, JDK 25, Android SDK, ADB đã sẵn sàng; kết nối điện thoại tạm hoãn sang Giai đoạn 1 theo yêu cầu |
-| **Trạng thái** | 🔄 Tạm hoãn kết nối thiết bị sang GĐ1 |
+| **Kết quả** | Android SDK, Adoptium JDK 17 LTS, kết nối ADB thành công với điện thoại thật |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
@@ -89,10 +89,10 @@
 | | |
 |---|---|
 | **Mô tả** | Cài app lên điện thoại, hiển thị màn hình "Hello SiteVoice". |
-| **Người làm** | Người dùng |
+| **Người làm** | Agent + Người dùng |
 | **Đầu vào** | Project từ 1.1.1 |
-| **Kết quả** | Đã build ra file `app-debug.apk`; chờ người dùng cài đặt lên máy thật |
-| **Trạng thái** | 🔄 Tạm hoãn thao tác người dùng |
+| **Kết quả** | Cài đặt `app-debug.apk` thành công qua ADB và khởi chạy trực tiếp trên điện thoại |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.1.3 Thiết lập cấu trúc thư mục source
 | | |

@@ -7,7 +7,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
 - Đã hoàn thành toàn bộ Giai đoạn 1 (Lõi ứng dụng chạy được: Task 1.1 - 1.5): Ghi âm nhấn giữ, STT Groq Whisper, Room Database bền vững, danh sách ghi chú hôm nay, sửa/xóa soft delete, phân loại tự động bằng Groq LLM và đổi nhãn thủ công.
 - Lệnh `.\gradlew.bat test assembleDebug` build thành công 100% (70 tasks pass, 13/13 unit tests pass, sinh file APK 11.5 MB). Sẵn sàng cho Giai đoạn 2 (Ra tài liệu).
-- Giai đoạn 0 đã hoàn tất phân tích và tạo file `Nhat_ky_thi_cong_mau.docx`. Toàn bộ thao tác người dùng (cắm điện thoại, dán link Drive) được gom lại làm sau theo yêu cầu.
+- Giai đoạn 0 đã hoàn tất 100%: đã lưu link Google Doc mẫu tại `doc-mau.md`, môi trường Android SDK/JDK 17 sẵn sàng, kết nối điện thoại thật `33c4f658` và cài app thành công.
 
 ## Kiến trúc và công nghệ dự kiến
 
@@ -19,8 +19,8 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Đang triển khai và bàn giao
 
 - [Lộ trình](07-lo-trinh.md) đang ở giai đoạn 0: Đã hoàn thành thử nghiệm luồng thủ công (Task 0.1) và chốt ngân sách dòng/ký tự trong `schema.json` (Task 0.2).
-- Task 0.3: Đã phân tích file gốc [Nhat_ky_thi_cong.docx](../templates/nhat-ky-cong-truong/Nhat_ky_thi_cong.docx) (chuẩn 2 trang A4) và tạo bản mẫu điện tử [Nhat_ky_thi_cong_mau.docx](../templates/nhat-ky-cong-truong/Nhat_ky_thi_cong_mau.docx) chứa đầy đủ placeholder `{{...}}`. Chờ người dùng tải lên Google Drive lấy link.
-- Task 0.4: Môi trường Android Studio, JDK 25, Android SDK, ADB đã sẵn sàng trên máy. Thao tác cắm cáp kết nối điện thoại tạm hoãn sang Giai đoạn 1 theo yêu cầu người dùng.
+- Task 0.3: Đã lưu link Google Doc mẫu (ID: `1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO`) vào `doc-mau.md`.
+- Task 0.4 & 1.1.2: Kết nối thiết bị thật qua ADB, cài đặt thành công `app-debug.apk` và khởi chạy trên điện thoại.
 - Đã ghi nhận công việc tương lai mục H trong [danh sách mở rộng](08-cong-viec-tuong-lai.md): tự tạo Doc mẫu từ file Word người dùng cung cấp hoặc công cụ hỗ trợ gán trường/placeholder.
 - Đang làm rõ yêu cầu ngày 2026-10-20 về lưu/backup/duyệt: tổ chức Google Docs để thuận tiện lấy tài liệu theo khoảng ngày (không triển khai in); có bản trên điện thoại, máy tính và Google Docs; dọn dữ liệu theo khoảng ngày; thông báo duyệt cuối ngày, chưa duyệt vẫn giữ dữ liệu.
 - Đã chốt: [0006](quyet-dinh/0006-mot-luot-duyet.md) chỉ một lượt duyệt ở bản xem trước cuối cùng; không duyệt Note riêng. Backup ngày đã duyệt giữ nội dung hoàn chỉnh; ngày chưa duyệt giữ văn bản và thông tin liên quan đến khi duyệt xong, không giới hạn số ngày. Backup không kèm âm thanh; điện thoại vẫn giữ đầy đủ dữ liệu chưa duyệt và âm thanh gốc để nghe lại, không tự xóa khi duyệt xong. Nguồn ở [yêu cầu](02-yeu-cau.md#lưu-dữ-liệu-và-backup); đã cập nhật tài liệu, chưa triển khai.
@@ -28,8 +28,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Tồn đọng cần lưu ý
 
-- `templates/nhat-ky-cong-truong/doc-mau.md` chưa có link Google Doc; prompt/ngân sách ký tự và giới hạn 2 trang cần thử thực tế trước khi chốt.
-- Đã có Gradle wrapper và build/test hoàn chỉnh trên máy; việc kiểm tra trên điện thoại thật gom lại làm sau theo yêu cầu.
+- Đã có link Google Doc mẫu và cài đặt app lên thiết bị thật.
 - Khi triển khai dữ liệu/phân loại, cần thống nhất nhãn `unclassified` trong [thiết kế Room](04-du-lieu.md) với `chua_phan_loai` trong schema/prompt; chưa có quyết định ánh xạ.
 - Yêu cầu hàng đợi mạng áp dụng chung, nhưng lộ trình đặt WorkManager ở giai đoạn 3; cần làm rõ cách triển khai theo giai đoạn khi task mạng được giao, không tự bỏ yêu cầu.
 
@@ -45,4 +44,3 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 1. Triển khai Giai đoạn 2 — Task 2.1: Entity & DAO cho DailyInput và Màn hình nhập dữ liệu cố định cuối ngày (thời tiết, nhân lực, thiết bị).
 2. Triển khai Giai đoạn 2 — Task 2.2: LLM tổng hợp báo cáo theo Mẫu nhật ký công trường và kiểm soát ngân sách dòng/ký tự.
 3. Triển khai Giai đoạn 2 — Task 2.3: Màn hình xem trước và duyệt báo cáo 1 lần duy nhất (quyết định 0006).
-4. Thao tác người dùng (cắm cáp USB cài app lên điện thoại, dán link Google Doc) gom lại làm khi thuận tiện.

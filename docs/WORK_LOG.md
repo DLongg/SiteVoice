@@ -129,3 +129,12 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Còn lại: Hoàn thành toàn bộ Giai đoạn 1. Sẵn sàng bước sang Giai đoạn 2 (Ra tài liệu: Entity/DAO cho DailyInput, Màn hình nhập dữ liệu cuối ngày, LLM tổng hợp báo cáo và duyệt bản xem trước một lần duy nhất theo quyết định 0006).
 
 
+
+
+## 2026-10-20 — Hoàn tất kết nối thiết bị thật, cài đặt APK và lưu link Doc mẫu — Hoàn thành
+
+- Kết quả: Người dùng cấp quyền gỡ lỗi USB trên điện thoại thật (`33c4f658`). Đã cài đặt thành công `app-debug.apk` qua `adb install -r` và kích hoạt khởi chạy `MainActivity` trên thiết bị (hoàn thành Task 0.4 và Task 1.1.2). Người dùng tạo bản sao Google Doc mẫu từ `Nhat_ky_thi_cong_mau.docx` và cung cấp link chia sẻ (Doc ID: `1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO`). Đã lưu link vào `templates/nhat-ky-cong-truong/doc-mau.md` (hoàn thành Task 0.3).
+- Cập nhật: `templates/nhat-ky-cong-truong/doc-mau.md`, `docs/ke-hoach-thuc-hien.md` (đánh dấu hoàn thành Task 0.3, 0.4, 1.1.2), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Lệnh `adb devices` xác nhận thiết bị `33c4f658 device`; lệnh `adb install -r` trả về `Success`; lệnh `adb shell am start` khởi động ứng dụng thành công trên máy thật. Link Google Doc mẫu hợp lệ và đúng cấu trúc.
+- Vấn đề và xử lý: Tuân thủ quy tắc bảo mật API Key trong AGENTS.md (không commit API key vào Git hay lưu trong Room/file tài liệu).
+- Còn lại: Sẵn sàng triển khai Giai đoạn 2 (Ra tài liệu: DailyInput, Màn hình nhập dữ liệu cuối ngày, LLM tổng hợp theo mẫu, Màn hình xem trước và duyệt báo cáo 1 lần duy nhất).
