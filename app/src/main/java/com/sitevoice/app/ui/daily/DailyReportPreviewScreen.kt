@@ -21,13 +21,22 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,6 +44,7 @@ import com.sitevoice.app.R
 import com.sitevoice.app.data.DailyInputEntity
 import com.sitevoice.app.data.DailyReportEntity
 import com.sitevoice.app.template.DailyReportContent
+import org.json.JSONObject
 
 @Composable
 fun DailyReportPreviewScreen(
@@ -44,6 +54,8 @@ fun DailyReportPreviewScreen(
     isSynthesizing: Boolean,
     isExporting: Boolean = false,
     activeTemplateName: String? = null,
+    isDeveloperMode: Boolean = false,
+    onUpdateRawJson: ((String) -> Unit)? = null,
     onApproveClick: () -> Unit,
     onResynthesizeClick: () -> Unit,
     onBackToEditClick: () -> Unit,
@@ -501,6 +513,104 @@ fun DailyReportPreviewScreen(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(text = stringResource(id = R.string.report_edit_again), fontSize = 12.sp)
+                }
+            }
+
+            // Khối Chế độ Nhà phát triển: Xem & Sửa dữ liệu JSON do LLM trả về
+            if (isDeveloperMode) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                var rawJsonText by remember(reportEntity.contentJson) {
+                    val formatted = try {
+                        JSONObject(reportEntity.contentJson).toString(2)
+                    } catch (_: Exception) {
+                        reportEntity.contentJson
+                    }
+                    mutableStateOf(formatted)
+                }
+                var isEditingRaw by remember { mutableStateOf(false) }
+                var saveMessage by remember { mutableStateOf<String?>(null) }
+                val clipboardManager = LocalClipboardManager.current
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1))
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "🛠️ Dữ liệu JSON do LLM trả về:",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+
+                            TextButton(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(rawJsonText))
+                                    saveMessage = "Đã sao chép JSON vào bộ nhớ tạm!"
+                                }
+                            ) {
+                                Text("📋 Sao chép", fontSize = 11.sp, color = Color(0xFF2563EB))
+                            }
+                        }
+
+                        Text(
+                            text = "Dữ liệu JSON nguyên bản bóc tách từ ghi chú. Bạn có thể sửa trực tiếp rồi bấm Lưu.",
+                            fontSize = 11.sp,
+                            color = Color(0xFF64748B)
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        OutlinedTextField(
+                            value = rawJsonText,
+                            onValueChange = {
+                                rawJsonText = it
+                                isEditingRaw = true
+                                saveMessage = null
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 8,
+                            maxLines = 18,
+                            textStyle = androidx.compose.ui.text.TextStyle(
+                                fontSize = 11.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
+                        )
+
+                        if (isEditingRaw) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = {
+                                    onUpdateRawJson?.invoke(rawJsonText)
+                                    isEditingRaw = false
+                                    saveMessage = "Đã cập nhật JSON vào báo cáo!"
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                shape = RoundedCornerShape(6.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("💾 Lưu sửa đổi JSON vào Báo cáo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            }
+                        }
+
+                        saveMessage?.let { msg ->
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "✓ $msg",
+                                fontSize = 11.sp,
+                                color = Color(0xFF15803D),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
             }
 

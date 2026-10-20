@@ -236,6 +236,10 @@ fun MainScreen(
                             isSynthesizing = isSynthesizing,
                             isExporting = isExporting,
                             activeTemplateName = activeTemplate?.name,
+                            isDeveloperMode = isDeveloperMode,
+                            onUpdateRawJson = { newJson ->
+                                viewModel.updateDailyReportContent(newJson)
+                            },
                             onApproveClick = {
                                 viewModel.approveDailyReport()
                                 Toast.makeText(context, "✓ Đã phê duyệt báo cáo!", Toast.LENGTH_SHORT).show()
@@ -290,6 +294,7 @@ fun MainScreen(
                 currentGoogleAccountEmail = securePreferences.googleAccountEmail,
                 activeTemplateName = activeTemplate?.name,
                 activeTemplate = activeTemplate,
+                latestReportJson = dailyReport?.contentJson,
                 isDeveloperMode = isDeveloperMode,
                 onToggleDeveloperMode = { viewModel.setDeveloperMode(it) },
                 onSavePrompt = { templateId, newPrompt ->

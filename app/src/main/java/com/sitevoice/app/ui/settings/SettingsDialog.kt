@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import com.sitevoice.app.R
 import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.settings.SecurePreferences
+import org.json.JSONObject
 
 @Composable
 fun SettingsDialog(
@@ -48,6 +49,7 @@ fun SettingsDialog(
     currentGoogleAccountEmail: String? = null,
     activeTemplateName: String? = null,
     activeTemplate: TemplateItemEntity? = null,
+    latestReportJson: String? = null,
     isDeveloperMode: Boolean = false,
     onToggleDeveloperMode: (Boolean) -> Unit = {},
     onSavePrompt: (templateId: String, newPrompt: String) -> Unit = { _, _ -> },
@@ -358,6 +360,34 @@ fun SettingsDialog(
                                     fontSize = 11.sp,
                                     color = Color(0xFF15803D),
                                     fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            if (!latestReportJson.isNullOrBlank()) {
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    text = "📊 Dữ liệu JSON gần nhất do LLM trả về:",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF0F172A)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                val formattedJson = try {
+                                    JSONObject(latestReportJson).toString(2)
+                                } catch (_: Exception) {
+                                    latestReportJson
+                                }
+                                OutlinedTextField(
+                                    value = formattedJson,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    minLines = 6,
+                                    maxLines = 12,
+                                    textStyle = androidx.compose.ui.text.TextStyle(
+                                        fontSize = 10.sp,
+                                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                                    )
                                 )
                             }
                         }

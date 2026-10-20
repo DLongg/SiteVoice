@@ -547,6 +547,17 @@ class MainViewModel(
         _isDeveloperMode.value = enabled
     }
 
+    fun updateDailyReportContent(newContentJson: String) {
+        val current = dailyReport.value ?: return
+        viewModelScope.launch {
+            val updated = current.copy(
+                contentJson = newContentJson.trim(),
+                updatedAt = System.currentTimeMillis()
+            )
+            dailyReportRepository.saveReport(updated)
+        }
+    }
+
     fun updateActiveTemplatePrompt(templateId: String, newPrompt: String) {
         viewModelScope.launch {
             templateRepository.updateTemplatePrompt(templateId, newPrompt)
