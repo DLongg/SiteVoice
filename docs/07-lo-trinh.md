@@ -15,9 +15,9 @@
 - [ ] 5. Gán nhãn mục bằng LLM, đổi nhãn bằng tay
 
 ## Giai đoạn 2: Ra tài liệu
-- [ ] 6. Màn hình duyệt cuối ngày + nhập thời tiết, nhân lực
+- [ ] 6. Chuẩn bị cuối ngày: sửa ghi chú + nhập thời tiết, nhân lực; không có lượt duyệt riêng
 - [ ] 7. Tổng hợp LLM theo Mẫu + kiểm tra ký tự + rút gọn
-- [ ] 8. Xem trước + xuất Google Doc từ mẫu
+- [ ] 8. Xem trước + một lượt duyệt cuối cùng + xuất Google Doc từ mẫu (quyết định 0006)
 
 ## Giai đoạn 3: Chạy không cần mạng
 - [ ] 9. Hàng đợi WorkManager cho STT, phân loại, xuất

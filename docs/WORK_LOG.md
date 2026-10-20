@@ -50,3 +50,28 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: Gọi thử nghiệm công cụ MCP `search_repositories` và `list_commits` thành công; chạy lệnh `git status`, `git remote -v`, `git fetch origin` và `git branch -vv` xác nhận trạng thái nhánh `main` khớp với `origin/main`. Không chạy build/test ứng dụng vì chưa có mã nguồn Android.
 - Vấn đề và xử lý: Lỗi cú pháp JSON ban đầu trong file cấu hình MCP do dán đè token vào key `GITHUB_PERSONAL_ACCESS_TOKEN` → đã sửa lại format chuẩn; lỗi `dubious ownership` trong Git do SID người dùng cũ trên ổ E: → đã thêm `safe.directory` để cho phép truy cập.
 - Còn lại: Đã commit và push 32 files (tài liệu, prompt, template, skill) lên nhánh `main` của `DLongg/SiteVoice` (commit `2a9a756`). Sẵn sàng cho các task tiếp theo theo lộ trình.
+
+## 2026-10-20 — Làm rõ yêu cầu lưu tài liệu, backup và duyệt — Đang chờ chốt phương án
+
+- Yêu cầu người dùng: tổ chức lưu Google Docs để thuận tiện lấy tài liệu từ ngày đến ngày về sau, không yêu cầu triển khai in; giữ bản trên điện thoại, máy tính và Google Docs để phục hồi khi Google Docs gặp vấn đề; có dọn dữ liệu theo khoảng ngày; cuối ngày thông báo duyệt, chưa duyệt vẫn giữ. Người dùng đang cân nhắc mốc 02:00 hôm sau hoặc giữ nhiều ngày chờ duyệt rồi mới xử lý tiếp.
+- Đối chiếu: thiết kế hiện tại xuất mỗi ngày một bản sao Doc mẫu, lưu link trong DailyReport; luồng có duyệt ghi chú trước tổng hợp và duyệt bản xem trước trước xuất. Chưa có thiết kế backup/dọn dữ liệu/nhắc duyệt. Đồng bộ nhiều thiết bị hiện ngoài phạm vi phiên bản đầu.
+- Chưa quyết định thay người dùng: đã hỏi Doc theo ngày hay tháng/cách gom khoảng ngày; backup máy tính thủ công hay tự động; giữ chờ duyệt qua nhiều ngày và ý nghĩa mốc 02:00. Cần làm rõ tiếp phạm vi dữ liệu backup và xóa (kể cả âm thanh gốc) trước khi thiết kế chi tiết.
+- Cập nhật: `docs/SUMMARY.md`, `docs/WORK_LOG.md` để lưu bàn giao; chưa sửa đặc tả hay quyết định đã chấp nhận, chưa triển khai chức năng.
+- Kiểm tra: Git sạch trước thay đổi; đọc các tài liệu yêu cầu, kiến trúc, dữ liệu, xuất Google Doc và quyết định 0003. Không chạy build/test vì chỉ ghi nhận thảo luận và chưa có project Gradle.
+- Còn lại: chờ người dùng chốt các câu hỏi; sau đó cập nhật tài liệu gốc tương ứng và xác định phạm vi lộ trình. Không coi phương án đề xuất là yêu cầu đã chấp nhận.
+
+## 2026-10-20 — Chốt một lượt duyệt và thu gọn phạm vi backup — Đã cập nhật thiết kế, còn câu hỏi mở
+
+- Người dùng chốt: chỉ một lượt duyệt; backup chỉ cần nội dung đã duyệt, còn ngày gần hiện tại chưa duyệt giữ đầy đủ dữ liệu.
+- Thiết kế: bỏ chốt Note.APPROVED trước tổng hợp; tạo bản nháp từ ghi chú không bị loại, người dùng duyệt bản xem trước cuối cùng rồi lưu nội dung trên điện thoại và xếp hàng xuất. Retry cùng nội dung không yêu cầu duyệt lại; nội dung thay đổi phải trở về bản nháp. Tạo quyết định chấp nhận `docs/quyet-dinh/0006-mot-luot-duyet.md`.
+- Backup: ghi nhận hai phạm vi trong `docs/02-yeu-cau.md`; không suy ra quyền tự xóa âm thanh gốc trên điện thoại. Đã hỏi giữ đầy đủ mọi ngày chưa duyệt đến khi duyệt hay giới hạn số ngày; chưa chọn thay người dùng. Cơ chế backup máy tính, định dạng backup và phạm vi dọn dữ liệu vẫn chưa chốt.
+- File cập nhật: `docs/01-tong-quan.md`, `02-yeu-cau.md`, `03-kien-truc.md`, `04-du-lieu.md`, `05-llm.md`, `06-google-doc-mau.md`, `07-lo-trinh.md`, `ke-hoach-thuc-hien.md`, `SUMMARY.md`, `WORK_LOG.md` và `templates/nhat-ky-cong-truong/prompt.md`. Giữ nguyên mọi checkbox/trạng thái task chưa làm; chưa triển khai ứng dụng.
+- Kiểm tra: đối chiếu các chỗ dùng Note.APPROVED và prompt yêu cầu ghi chú đã duyệt, kiểm tra diff và liên kết nội bộ tài liệu sửa. Không chạy build/test Android vì chỉ sửa tài liệu/prompt và chưa có project Gradle; chưa kiểm chứng trên thiết bị.
+- Còn lại: chốt chính sách giữ dữ liệu chưa duyệt; tiếp tục làm rõ cách lưu/gom Google Docs, backup máy tính, dọn theo khoảng ngày và mốc 02:00. Không coi các phần này là thiết kế đã hoàn tất.
+
+## 2026-10-20 — Chốt backup văn bản và giữ dữ liệu chưa duyệt đến khi duyệt xong — Hoàn thành cập nhật tài liệu
+
+- Người dùng chốt: ngày chưa duyệt giữ đầy đủ đến khi duyệt xong, không giới hạn số ngày; backup chỉ cần văn bản chuyển từ giọng nói và thông tin liên quan, không kèm âm thanh. Đã hỏi lại phạm vi và được xác nhận: điện thoại vẫn giữ âm thanh gốc để nghe lại, chỉ bỏ âm thanh khỏi backup.
+- Cập nhật nguồn yêu cầu `docs/02-yeu-cau.md` và đồng bộ `docs/03-kien-truc.md`, `docs/04-du-lieu.md`, `docs/SUMMARY.md`. Ngày đã duyệt backup nội dung hoàn chỉnh; ngày chưa duyệt backup văn bản/chỉnh sửa, ngày, nhãn, dữ liệu cuối ngày và bản nháp/trạng thái hiện có. Không suy ra tự xóa âm thanh khi duyệt xong. Ghi rõ phục hồi backup văn bản không khôi phục âm thanh và ghi âm chưa STT không được coi là đã backup văn bản.
+- Kiểm tra: đối chiếu phần sửa với xác nhận người dùng, kiểm tra diff, liên kết yêu cầu và giới hạn SUMMARY. Không chạy build/test ứng dụng vì chỉ sửa tài liệu và chưa có project Gradle; chưa triển khai hoặc thử phục hồi backup.
+- Còn lại: cách lưu/gom Google Docs theo khoảng ngày, cơ chế đưa backup sang máy tính, định dạng gói backup, phạm vi dọn dữ liệu và hành vi lúc 02:00 vẫn chưa chốt. Luồng một lượt duyệt giữ theo quyết định 0006.

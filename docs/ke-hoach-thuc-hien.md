@@ -332,13 +332,13 @@
 | **Kết quả** | Nhập liệu, lưu vào Room, mở lại thấy dữ liệu cũ |
 | **Trạng thái** | ⬜ Chưa làm |
 
-#### 2.1.3 Danh sách ghi chú cần duyệt
+#### 2.1.3 Danh sách ghi chú để chuẩn bị tổng hợp
 | | |
 |---|---|
-| **Mô tả** | Phần dưới màn hình duyệt: danh sách ghi chú (LABELED), gom theo nhãn. Cho sửa text, đổi nhãn, loại bỏ. Nút "Duyệt tất cả" → status = APPROVED. |
+| **Mô tả** | Danh sách ghi chú (LABELED), gom theo nhãn. Cho sửa text, đổi nhãn, loại bỏ trước tổng hợp; không có nút duyệt ghi chú riêng và không chuyển Note sang APPROVED. Chỉ duyệt bản xem trước cuối cùng theo quyết định 0006. |
 | **Người làm** | |
 | **Đầu vào** | 1.4.4 + 1.5.4 |
-| **Kết quả** | Duyệt xong, ghi chú chuyển APPROVED |
+| **Kết quả** | Lưu được chỉnh sửa; ghi chú không bị loại dùng để tạo bản nháp mà không cần duyệt trước |
 | **Trạng thái** | ⬜ Chưa làm |
 
 #### 2.1.4 Navigation giữa các màn hình
@@ -406,10 +406,10 @@
 #### 2.3.1 Màn hình xem trước
 | | |
 |---|---|
-| **Mô tả** | Hiển thị nội dung DailyReport: thời tiết, nhân lực, từng mục tổng hợp. Ghi chú "chưa phân loại" hiện riêng (không đưa vào Doc). Nút "Sửa" quay lại duyệt, nút "Xuất Google Doc". |
+| **Mô tả** | Hiển thị nội dung DailyReport: thời tiết, nhân lực, từng mục tổng hợp. Ghi chú "chưa phân loại" hiện riêng (không đưa vào Doc). Cho quay lại sửa dữ liệu và tạo lại bản nháp. Một hành động duyệt cuối cùng lưu nội dung DailyReport.APPROVED trên điện thoại rồi xếp hàng xuất Google Doc; không yêu cầu duyệt ghi chú riêng hay duyệt lại khi retry cùng nội dung. |
 | **Người làm** | |
 | **Đầu vào** | 2.2.3 |
-| **Kết quả** | Xem được bản xem trước đầy đủ |
+| **Kết quả** | Xem được bản xem trước đầy đủ; một lượt duyệt lưu đúng nội dung trước khi xuất, không xuất bản nháp chưa duyệt |
 | **Trạng thái** | ⬜ Chưa làm |
 
 #### 2.3.2 Google Sign-In

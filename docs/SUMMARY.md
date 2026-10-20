@@ -4,9 +4,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Tổng quan và trạng thái đã xác minh
 
-- Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → duyệt cuối ngày → LLM tổng hợp theo Mẫu → Google Doc tối đa 2 trang.
+- Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
 - Hiện ở bước chuẩn bị: `app/` chỉ có README; chưa có mã nguồn Android, Gradle wrapper/cấu hình build hay test. Chưa có chức năng ứng dụng nào được triển khai trong thư mục hiện tại.
-- Đã có tài liệu yêu cầu/thiết kế, 5 quyết định chấp nhận trong `quyet-dinh/`, prompt phân loại/rút gọn và bộ `schema.json`/`prompt.md`/`doc-mau.md` cho nhật ký công trường. Chưa có bằng chứng kiểm chứng luồng thực tế.
+- Đã có tài liệu yêu cầu/thiết kế, 6 quyết định chấp nhận trong `quyet-dinh/`, prompt phân loại/rút gọn và bộ `schema.json`/`prompt.md`/`doc-mau.md` cho nhật ký công trường. Chưa có bằng chứng kiểm chứng luồng thực tế.
 - Báo cáo tuần và nhật ký cá nhân mới có README ý tưởng. Đã kết nối Git với repository GitHub `DLongg/SiteVoice` (nhánh `main`).
 
 ## Kiến trúc và công nghệ dự kiến
@@ -21,6 +21,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 - [Lộ trình](07-lo-trinh.md) đang đánh dấu giai đoạn 0: thử luồng thủ công. Các task trong [kế hoạch chi tiết](ke-hoach-thuc-hien.md) đều đang ghi chưa làm; chưa có bằng chứng thử thực địa, thiết lập môi trường hay task lập trình đang dở.
 - Task quản lý context đã thiết lập AGENTS/SUMMARY/WORK_LOG và đồng bộ các điểm dẫn cũ; chi tiết và kiểm tra ở WORK_LOG. Không thay đổi source/dependencies. Không còn bước triển khai context đang dở.
 - Đã ghi nhận công việc tương lai mục H trong [danh sách mở rộng](08-cong-viec-tuong-lai.md): tự tạo Doc mẫu từ file Word người dùng cung cấp hoặc công cụ hỗ trợ gán trường/placeholder. Chưa triển khai, chưa chọn công cụ; không đổi ưu tiên giai đoạn 0.
+- Đang làm rõ yêu cầu ngày 2026-10-20 về lưu/backup/duyệt: tổ chức Google Docs để thuận tiện lấy tài liệu theo khoảng ngày (không triển khai in); có bản trên điện thoại, máy tính và Google Docs; dọn dữ liệu theo khoảng ngày; thông báo duyệt cuối ngày, chưa duyệt vẫn giữ dữ liệu.
+- Đã chốt: [0006](quyet-dinh/0006-mot-luot-duyet.md) chỉ một lượt duyệt ở bản xem trước cuối cùng; không duyệt Note riêng. Backup ngày đã duyệt giữ nội dung hoàn chỉnh; ngày chưa duyệt giữ văn bản và thông tin liên quan đến khi duyệt xong, không giới hạn số ngày. Backup không kèm âm thanh; điện thoại vẫn giữ đầy đủ dữ liệu chưa duyệt và âm thanh gốc để nghe lại, không tự xóa khi duyệt xong. Nguồn ở [yêu cầu](02-yeu-cau.md#lưu-dữ-liệu-và-backup); đã cập nhật tài liệu, chưa triển khai.
+- Chưa chốt: Doc theo ngày/tháng/cách gom khoảng ngày; backup máy tính thủ công/tự động, định dạng backup và phạm vi dọn dữ liệu; hành vi lúc 02:00. Chờ trả lời trước khi sửa phần phụ thuộc; không hỏi lại thời hạn giữ ngày chưa duyệt hay việc giữ âm thanh trên điện thoại đã chốt.
 
 ## Tồn đọng cần lưu ý
 

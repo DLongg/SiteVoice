@@ -4,7 +4,7 @@
 Cán bộ công trường phải viết Nhật ký thi công hằng ngày theo form cố định, giới hạn 2 trang. Ngoài hiện trường tay bẩn, ồn, vội nên không gõ được; cuối ngày nhớ lại thì thiếu sót.
 
 ## Giải pháp
-Một nút ghi âm duy nhất. Cuối ngày duyệt các ghi chú, AI tổng hợp vào form, xuất ra Google Doc.
+Một nút ghi âm duy nhất. Cuối ngày có thể sửa ghi chú và nhập thông tin bổ sung; AI tổng hợp vào form, người dùng duyệt bản xem trước một lần rồi xuất Google Doc.
 
 ## Người dùng
 - Chính: cán bộ kỹ thuật / chỉ huy công trường (một người, một điện thoại Android).
@@ -14,9 +14,9 @@ Một nút ghi âm duy nhất. Cuối ngày duyệt các ghi chú, AI tổng h�
 1. Ngoài công trường: nhấn giữ nút ghi, nói, thả ra. App lưu file âm thanh gốc ngay.
 2. Có mạng: chuyển văn bản bằng API. Không có mạng: whisper.cpp trên máy hoặc chờ có mạng.
 3. App gán nhãn mục cho ghi chú (thẻ nhỏ), người dùng có thể đổi sau.
-4. Cuối ngày: màn hình duyệt → sửa chữ, sửa nhãn, bỏ ghi chú không dùng → điền thời tiết, nhân lực.
+4. Cuối ngày: sửa chữ, sửa nhãn, bỏ ghi chú không dùng nếu cần → điền thời tiết, nhân lực. Đây là bước chỉnh dữ liệu, không phải lượt duyệt riêng.
 5. Bấm "Tổng hợp": LLM điền form, app kiểm tra giới hạn ký tự, hiện bản xem trước.
-6. Duyệt xong → xuất Google Doc từ mẫu.
+6. Duyệt bản xem trước một lần → lưu nội dung đã duyệt trên điện thoại → xuất Google Doc từ mẫu qua hàng đợi mạng. Chưa duyệt thì giữ bản nháp.
 
 ## Phạm vi phiên bản đầu
 Có: ghi âm, STT qua API, danh sách ghi chú, duyệt cuối ngày, tổng hợp LLM, xuất Google Doc.

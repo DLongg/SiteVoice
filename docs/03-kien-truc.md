@@ -18,9 +18,9 @@
 Nhấn giữ → audio/ lưu file → Note: RECORDED
    → SttWorker → stt/ → Note: TRANSCRIBED
    → ClassifyWorker → llm/ → Note: LABELED
-Cuối ngày: ui/ duyệt → Note: APPROVED
-   → llm/ tổng hợp theo Mẫu → kiểm tra ký tự → DailyReport: DRAFT
-   → ui/ xem trước → DailyReport: APPROVED
+Cuối ngày: ui/ sửa ghi chú nếu cần, nhập DailyInput (không duyệt riêng)
+   → llm/ tổng hợp ghi chú không bị loại theo Mẫu → kiểm tra ký tự → DailyReport: DRAFT
+   → ui/ xem trước → người dùng duyệt một lần → DailyReport: APPROVED (lưu nội dung trên điện thoại)
    → ExportWorker → export/ → DailyReport: EXPORTED (lưu link Doc)
 ```
 
@@ -29,6 +29,8 @@ Cuối ngày: ui/ duyệt → Note: APPROVED
 - STT và LLM nằm sau interface để đổi nhà cung cấp mà không sửa UI.
 - Mẫu nạp từ file cấu hình; code không biết "nhật ký công trường" là gì.
 - Bước cần mạng xếp hàng, có mạng tự chạy (ràng buộc `NetworkType.CONNECTED`).
+- Chỉ duyệt bản xem trước cuối cùng; không có chốt duyệt Note trước tổng hợp. Lỗi xuất/chờ mạng không làm mất nội dung đã duyệt và không yêu cầu duyệt lại cùng nội dung. Xem [quyết định 0006](quyet-dinh/0006-mot-luot-duyet.md).
+- Backup giữ nội dung hoàn chỉnh của ngày đã duyệt; ngày chưa duyệt giữ văn bản và thông tin liên quan đến khi duyệt xong, không giới hạn số ngày. Backup không kèm âm thanh, điện thoại vẫn giữ âm thanh gốc để nghe lại. Phạm vi theo [yêu cầu lưu và backup](02-yeu-cau.md#lưu-dữ-liệu-và-backup), chưa có cơ chế backup được triển khai.
 
 ## Thiết kế giao diện (UI Design)
 - Mọi màn hình Compose trong module `ui/` (Ghi âm, Danh sách, Duyệt cuối ngày, Xem trước, Cài đặt) bắt buộc tuân thủ nguyên tắc thiết kế từ skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), áp dụng quy tắc dành cho App Screens:

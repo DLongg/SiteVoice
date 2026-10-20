@@ -11,6 +11,7 @@
 - temperature thấp (0 đến 0.3).
 - Prompt luôn kèm từ điển thuật ngữ (`docs/09-thuat-ngu.md`).
 - Gửi kèm nhãn do người dùng đã sửa (nhãn `user` ưu tiên hơn `auto`).
+- Tổng hợp bản nháp từ ghi chú trong ngày không bị loại; không yêu cầu duyệt ghi chú trước. Người dùng chỉ duyệt bản xem trước cuối cùng. Mọi tổng hợp/rút gọn làm thay đổi nội dung phải hoàn tất trước lượt duyệt đó.
 
 ## Chống bịa
 - Chỉ dùng thông tin có trong ghi chú.
@@ -32,7 +33,7 @@ Nguồn sự thật là `templates/nhat-ky-cong-truong/schema.json`; bảng này
 1. Nhận JSON → đếm ký tự từng trường.
 2. Trường vượt → gọi `rut-gon-muc` cho riêng trường đó (tối đa 2 vòng).
 3. Còn vượt → báo người dùng chọn bỏ bớt ý.
-4. (Tùy chọn) Sau khi xuất, xuất PDF đếm trang; > 2 trang thì giảm ngân sách và làm lại.
+4. (Tùy chọn) Sau khi xuất, xuất PDF đếm trang; > 2 trang thì báo cần điều chỉnh ngân sách. Nếu làm lại khiến nội dung thay đổi, kết quả mới là bản nháp cần duyệt; không tự sửa bản đã duyệt.
 
 ## Chi phí
 Ghi chú cả ngày chỉ vài nghìn token; dùng model rẻ cho phân loại, model tốt hơn cho tổng hợp nếu cần.
