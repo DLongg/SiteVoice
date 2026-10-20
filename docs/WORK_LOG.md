@@ -494,3 +494,15 @@ A templates/schema-chung.md
 - File sửa: `app/src/main/java/com/sitevoice/app/ui/daily/DailyReportPreviewScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`.
 - Kiểm tra: 52/52 Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt thành công lên thiết bị thật `33c4f658` và khởi chạy sẵn sàng.
 - Còn lại: Người dùng trải nghiệm tính năng xem và chỉnh sửa trực tiếp JSON trả về từ LLM.
+
+## 2026-10-21 — Tự kiểm thử thực tế và chụp ảnh màn hình toàn bộ luồng trên thiết bị thật — Hoàn thành
+
+- Kết quả: Hoàn thành tự kiểm thử toàn bộ luồng trực tiếp trên điện thoại thật Xiaomi 1080x2412 (id `33c4f658`) qua adb và chụp ảnh màn hình:
+  + Tab Ghi âm: Giao diện tối giản, hiển thị đúng mẫu kích hoạt ("Bản sao tự động"), trạng thái API Key hợp lệ.
+  + Tab Ghi chú hôm nay: Ghi chú mới nhất hiển thị trên đầu (20:10 -> 18:03 -> 18:02), phân loại chuẩn xác giữa "Thi công" và "Chưa phân loại".
+  + Tab Nhật ký cuối ngày: Dữ liệu thời tiết và nhân lực tự động kế thừa từ ngày hôm trước, nút xem bản dự thảo sẵn sàng.
+  + Màn hình Xem trước: Hiển thị đầy đủ thông tin hiện trường, mục thi công 4/15 dòng chia đúng nhóm 3.1 & 3.2, cảnh báo ghi chú chưa phân loại tách riêng không đưa vào Doc, card Developer Mode JSON hiển thị hoàn hảo.
+  + Phê duyệt & Xuất Google Doc: Bấm "✓ Phê duyệt" chuyển trạng thái sang "Xuất sang Google Doc", gọi Google Drive API v3 và Docs API v1 batchUpdate thành công. Tài liệu thực tế được tạo trên Drive cá nhân: `https://docs.google.com/document/d/15O-RU2rYtkwYkdhonsfjSNrJiNqv1s7beA66JJfwRPw/edit`.
+  + Tinh chỉnh: Bổ sung shorthand aliases (`s_n`, `c_n`, `t_bt`, `ng_ch`, `ng_cn`, `thi_cong_trong_ngay`...) vào `PlaceholderMapper.kt` và chuyển `matchCase = false` trong `GoogleDocsExporter.kt`.
+- File sửa: `app/src/main/java/com/sitevoice/app/export/PlaceholderMapper.kt`, `app/src/main/java/com/sitevoice/app/export/GoogleDocsExporter.kt`.
+- Kiểm tra: 52/52 Unit tests pass 100%, build APK và cài đặt trực tiếp lên điện thoại thật thành công, xác minh toàn bộ ảnh chụp màn hình thực tế.
