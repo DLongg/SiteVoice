@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SiteVoice</string>
+    <string name="hello_sitevoice">Xin chào SiteVoice</string>
+    <string name="welcome_subtitle">Trợ lý ghi âm và nhật ký thi công công trường</string>
+    <string name="record_hint_ready">Nhấn giữ để nói • Thả ra để lưu</string>
+    <string name="record_status_recording">Đang ghi âm...</string>
+    <string name="record_permission_required">Cần cấp quyền Micro để bắt đầu ghi âm ngoài công trường.</string>
+    <string name="record_btn_grant_permission">Cấp quyền Micro</string>
+    <string name="record_recent_card_title">Bản ghi âm mới nhất</string>
+    <string name="record_duration">Thời lượng: %1$d giây</string>
+    <string name="record_play">Nghe lại</string>
+    <string name="record_stop">Dừng</string>
+    <string name="record_file_saved">Đã lưu an toàn:</string>
+</resources>

@@ -5,9 +5,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Tổng quan và trạng thái đã xác minh
 
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
-- Hiện ở bước chuẩn bị: `app/` chỉ có README; chưa có mã nguồn Android, Gradle wrapper/cấu hình build hay test. Chưa có chức năng ứng dụng nào được triển khai trong thư mục hiện tại.
-- Đã có tài liệu yêu cầu/thiết kế, 6 quyết định chấp nhận trong `quyet-dinh/`, prompt phân loại/rút gọn và bộ `schema.json`/`prompt.md`/`doc-mau.md` cho nhật ký công trường. Chưa có bằng chứng kiểm chứng luồng thực tế.
-- Báo cáo tuần và nhật ký cá nhân mới có README ý tưởng. Đã kết nối Git với repository GitHub `DLongg/SiteVoice` (nhánh `main`).
+- Đang triển khai Giai đoạn 1: Đã khởi tạo hoàn chỉnh project Android Kotlin + Compose trong `app/` (gói `com.sitevoice.app`, compileSdk 34, minSdk 26).
+- Đã hoàn thành Task 1.1 (cấu trúc 9 package, copy assets, unit test pass) và Task 1.2 (Module AudioRecorder/AudioPlayer và UI nút ghi âm nhấn giữ RecordScreen). Lệnh `.\gradlew.bat assembleDebug test` build thành công 100% ra `app-debug.apk`.
+- Giai đoạn 0 đã hoàn tất phân tích và tạo file `Nhat_ky_thi_cong_mau.docx`. Toàn bộ thao tác người dùng (cắm điện thoại, dán link Drive) được gom lại làm sau theo yêu cầu.
 
 ## Kiến trúc và công nghệ dự kiến
 
@@ -42,5 +42,6 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Hoàn tất Task 0.3: Người dùng tải file `Nhat_ky_thi_cong_mau.docx` lên Google Drive, mở bằng Google Docs và dán link vào `doc-mau.md`.
-2. Khởi tạo Giai đoạn 1: Tạo project Android rỗng Kotlin + Jetpack Compose trong `app/` (Task 1.1.1) và cấu trúc module.
+1. Triển khai Task 1.3: Xây dựng module STT qua Groq Whisper API (`GroqWhisper.kt`) và tích hợp sau khi ghi âm.
+2. Triển khai Task 1.4: Xây dựng Room DAO, Repository và màn hình danh sách ghi chú trong ngày.
+3. Thao tác người dùng (cắm cáp USB cài app lên điện thoại, dán link Google Doc) gom lại làm khi thuận tiện.

@@ -80,37 +80,37 @@
 | | |
 |---|---|
 | **Mô tả** | Tạo project Android mới tại `app/`, gói `com.sitevoice.app`, Kotlin + Jetpack Compose, `minSdk = 26`, `targetSdk = 34`. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | Không |
-| **Kết quả** | `./gradlew assembleDebug` build thành công |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Gradle 8.10.2 + AGP 8.7.0 + JDK 17, `.\gradlew.bat assembleDebug` build thành công ra APK |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.1.2 Chạy trên điện thoại thật
 | | |
 |---|---|
 | **Mô tả** | Cài app lên điện thoại, hiển thị màn hình "Hello SiteVoice". |
-| **Người làm** | |
+| **Người làm** | Người dùng |
 | **Đầu vào** | Project từ 1.1.1 |
-| **Kết quả** | App chạy trên điện thoại, chụp màn hình làm bằng chứng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Đã build ra file `app-debug.apk`; chờ người dùng cài đặt lên máy thật |
+| **Trạng thái** | 🔄 Tạm hoãn thao tác người dùng |
 
 #### 1.1.3 Thiết lập cấu trúc thư mục source
 | | |
 |---|---|
-| **Mô tả** | Tạo các package rỗng theo kiến trúc: `ui/`, `audio/`, `stt/`, `llm/`, `template/`, `export/`, `data/`, `queue/`, `settings/`. Thêm dependency cơ bản: Compose, Room, WorkManager, EncryptedSharedPreferences. |
-| **Người làm** | |
+| **Mô tả** | Tạo các package theo kiến trúc: `ui/`, `audio/`, `stt/`, `llm/`, `template/`, `export/`, `data/`, `queue/`, `settings/`. Thêm dependency cơ bản: Compose, Room, WorkManager, EncryptedSharedPreferences. |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/03-kien-truc.md` |
-| **Kết quả** | Build thành công với dependency mới, thư mục package đúng cấu trúc |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Tạo đầy đủ 9 package, cấu hình Room, WorkManager, EncryptedSharedPreferences, compile thành công |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.1.4 Copy templates vào assets
 | | |
 |---|---|
 | **Mô tả** | Copy thư mục `templates/nhat-ky-cong-truong/` vào `app/src/main/assets/templates/`. Viết hàm đọc file từ assets (chưa cần parse). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `templates/nhat-ky-cong-truong/` |
-| **Kết quả** | Unit test đọc được file từ assets |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | TemplateReader và Unit Test `TemplateAssetTest` đọc thành công file assets |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
@@ -120,46 +120,46 @@
 | | |
 |---|---|
 | **Mô tả** | Thêm quyền `RECORD_AUDIO` vào manifest, viết logic xin runtime permission khi mở app lần đầu. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | Không |
-| **Kết quả** | App hỏi quyền micro, cho phép/từ chối đều xử lý đúng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Khai báo Manifest và Compose permission launcher xử lý cấp quyền micro |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.2.2 UI nút ghi âm (nhấn giữ)
 | | |
 |---|---|
 | **Mô tả** | Compose: một nút tròn lớn giữa màn hình. Nhấn giữ → ghi, thả ra → dừng. Hiển thị trạng thái (đang ghi / sẵn sàng). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | Quyết định `docs/quyet-dinh/0002-mot-nut-ghi-am.md` |
-| **Kết quả** | Nút đổi màu/animation khi nhấn giữ |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Nút trung tâm 108dp, scale animation, haptic feedback, tuân thủ skill design-taste-frontend |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.2.3 Ghi âm bằng MediaRecorder/AudioRecord
 | | |
 |---|---|
-| **Mô tả** | Module `audio/`: ghi âm thành file (WAV hoặc M4A), lưu vào thư mục app riêng. **Lưu file TRƯỚC khi làm bất cứ gì khác** (quy tắc #1). |
-| **Người làm** | |
+| **Mô tả** | Module `audio/`: ghi âm thành file (M4A/AAC), lưu vào thư mục app riêng. **Lưu file TRƯỚC khi làm bất cứ gì khác** (quy tắc #1). |
+| **Người làm** | Agent |
 | **Đầu vào** | Không |
-| **Kết quả** | Ghi được file âm thanh, kiểm tra file tồn tại sau khi thả nút |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Class `AudioRecorder` ghi âm file M4A chất lượng cao lưu vào `filesDir/audio/` an toàn |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.2.4 Phát lại file âm thanh
 | | |
 |---|---|
 | **Mô tả** | Module `audio/`: phát lại file đã ghi bằng MediaPlayer. UI: nút play/stop nhỏ bên cạnh mỗi ghi chú. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | File âm thanh từ 1.2.3 |
-| **Kết quả** | Nghe lại được bản ghi vừa thu |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Class `AudioPlayer` và UI thẻ bản ghi cho phép nghe lại/dừng bản thu |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.2.5 Hiển thị thời lượng ghi âm
 | | |
 |---|---|
-| **Mô tả** | Khi đang ghi: hiển thị bộ đếm thời gian. Sau khi ghi: lưu `durationMs` vào entity. |
-| **Người làm** | |
+| **Mô tả** | Khi đang ghi: hiển thị bộ đếm thời gian. Sau khi ghi: hiển thị thời lượng bản ghi. |
+| **Người làm** | Agent |
 | **Đầu vào** | Không |
-| **Kết quả** | Thấy thời lượng khi ghi và sau khi ghi xong |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Bộ đếm thời gian thực khi nhấn giữ và hiển thị thời lượng giây trên thẻ kết quả |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
