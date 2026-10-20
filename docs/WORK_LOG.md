@@ -117,6 +117,15 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/build.gradle.kts` (thêm ksp plugin, room-compiler, lifecycle-viewmodel-compose), `gradle/libs.versions.toml`, `app/src/main/res/values/strings.xml`, `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `docs/ke-hoach-thuc-hien.md` (Task 1.4.1 - 1.4.6 hoàn thành), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: `NoteRepositoryTest.kt`, `GroqWhisperTest.kt`, `TemplateAssetTest.kt` chạy pass 100%; `.\gradlew.bat test` và `.\gradlew.bat assembleDebug` chạy thành công không lỗi (BUILD SUCCESSFUL 70/70 tasks); sinh file APK `app/build/outputs/apk/debug/app-debug.apk` (11.5 MB).
 - Vấn đề và xử lý: Room 2.6.1 trên Kotlin 2.0.21 cần KSP `2.0.21-1.0.27` để code generation chính xác; tuân thủ nghiêm ngặt quyết định 0001 và 0006 (giữ nguyên file âm thanh gốc khi soft delete).
-- Còn lại: Task 1.5 (Gán nhãn mục bằng LLM qua ClassifyWorker).
+- Còn lại: Đã hoàn thành Task 1.4. Tiếp tục Task 1.5.
+
+## 2026-10-20 — Triển khai Giai đoạn 1: Gán nhãn mục bằng LLM & Đổi nhãn thủ công (Task 1.5) — Hoàn thành
+
+- Kết quả: Hoàn thành toàn diện Task 1.5, khép lại Giai đoạn 1 (Lõi ứng dụng chạy được). Xây dựng interface `LlmClient` và `GroqLlmClient` (sử dụng model `llama-3.1-8b-instant` với JSON format, tận dụng Groq API key bảo mật sẵn có); module `NoteClassifier` xây prompt phân loại chuẩn hóa theo từ điển thuật ngữ công trường và 7 mục schema; tự động kích hoạt phân loại LLM ngay sau khi STT hoàn tất (chuyển trạng thái từ TRANSCRIBED sang LABELED); hỗ trợ người dùng bấm trực tiếp vào chip nhãn trên `NotesListScreen` để mở DropdownMenu đổi nhãn thủ công (gán `labelSource = user` và cập nhật Room).
+- Tạo: `app/src/main/java/com/sitevoice/app/llm/LlmClient.kt`, `app/src/main/java/com/sitevoice/app/llm/GroqLlmClient.kt`, `app/src/main/java/com/sitevoice/app/llm/NoteClassifier.kt`, `app/src/test/java/com/sitevoice/app/NoteClassifierTest.kt`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/notes/NotesListScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `docs/ke-hoach-thuc-hien.md` (đánh dấu hoàn thành Task 1.5.1 - 1.5.5), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Toàn bộ 13 unit tests (`NoteClassifierTest`, `NoteRepositoryTest`, `GroqWhisperTest`, `TemplateAssetTest`) chạy pass 100%; lệnh `.\gradlew.bat test assembleDebug` chạy thành công 70/70 tasks không lỗi (BUILD SUCCESSFUL); sinh file APK `app/build/outputs/apk/debug/app-debug.apk`.
+- Vấn đề và xử lý: Chuẩn hóa parser JSON bằng Regex độc lập để tránh lỗi mock stub của `org.json.JSONObject` trên môi trường JVM unit test.
+- Còn lại: Hoàn thành toàn bộ Giai đoạn 1. Sẵn sàng bước sang Giai đoạn 2 (Ra tài liệu: Entity/DAO cho DailyInput, Màn hình nhập dữ liệu cuối ngày, LLM tổng hợp báo cáo và duyệt bản xem trước một lần duy nhất theo quyết định 0006).
 
 

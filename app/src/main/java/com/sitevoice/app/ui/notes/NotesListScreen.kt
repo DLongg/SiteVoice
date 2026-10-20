@@ -2,6 +2,7 @@ package com.sitevoice.app.ui.notes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,15 +43,33 @@ import androidx.compose.ui.unit.sp
 import com.sitevoice.app.R
 import com.sitevoice.app.audio.AudioPlayer
 import com.sitevoice.app.data.NoteEntity
+import com.sitevoice.app.llm.NoteClassifier
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+data class CategoryOption(
+    val key: String,
+    val title: String,
+    val icon: String
+)
+
+val CATEGORY_OPTIONS = listOf(
+    CategoryOption(NoteClassifier.LABEL_THI_CONG, "Thi công", "🏗️"),
+    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, "Nghiệm thu", "📐"),
+    CategoryOption(NoteClassifier.LABEL_AN_TOAN, "An toàn & Vệ sinh", "🦺"),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, "Ý kiến Chủ đầu tư", "🏛️"),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, "Ý kiến TVGS", "📋"),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, "Ý kiến Nhà thầu", "🏢"),
+    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, "Chưa phân loại", "❓")
+)
 
 @Composable
 fun NotesListScreen(
     notes: List<NoteEntity>,
     audioPlayer: AudioPlayer,
     onUpdateText: (Long, String) -> Unit,
+    onUpdateLabel: (Long, String) -> Unit,
     onDeleteNote: (Long) -> Unit,
     onRetryStt: (NoteEntity) -> Unit,
     modifier: Modifier = Modifier
@@ -159,7 +180,8 @@ fun NotesListScreen(
                             },
                             onEditClick = { editingNote = note },
                             onDeleteClick = { deletingNoteId = note.id },
-                            onRetryStt = { onRetryStt(note) }
+                            onRetryStt = { onRetryStt(note) },
+                            onSelectLabel = { newLabel -> onUpdateLabel(note.id, newLabel) }
                         )
                     }
                 }
@@ -199,11 +221,14 @@ fun NoteItemCard(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onRetryStt: () -> Unit,
+    onSelectLabel: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val timeStr = remember(note.createdAt) { timeFormat.format(Date(note.createdAt)) }
     val durationSec = note.durationMs / 1000
+
+    var showLabelMenu by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -212,7 +237,7 @@ fun NoteItemCard(
         border = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            // Header item: Giờ ghi + Label Badge
+            // Header item: Giờ ghi + Label Badge (Bấm vào để đổi nhãn)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -225,39 +250,59 @@ fun NoteItemCard(
                     color = Color(0xFF475569)
                 )
 
-                // Nhãn mục
-                val labelText = when (note.label) {
-                    null, "", "unclassified", "chua_phan_loai" -> stringResource(id = R.string.notes_unclassified)
-                    "thi_cong" -> "Thi công"
-                    "nghiem_thu" -> "Nghiệm thu"
-                    "an_toan" -> "An toàn"
-                    "vat_tu" -> "Vật tư"
-                    else -> note.label
-                }
+                // Nhãn mục có thể bấm để đổi
+                val currentCategory = CATEGORY_OPTIONS.find { it.key == note.label }
+                    ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), "❓")
 
-                val labelBg = if (note.label.isNullOrBlank() || note.label == "unclassified" || note.label == "chua_phan_loai") {
-                    Color(0xFFF1F5F9)
-                } else {
-                    Color(0xFFEFF6FF)
-                }
+                val isUnclassified = note.label.isNullOrBlank() ||
+                        note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
+                        note.label == "unclassified"
 
-                val labelColor = if (note.label.isNullOrBlank() || note.label == "unclassified" || note.label == "chua_phan_loai") {
-                    Color(0xFF64748B)
-                } else {
-                    Color(0xFF1D4ED8)
-                }
+                val labelBg = if (isUnclassified) Color(0xFFF1F5F9) else Color(0xFFEFF6FF)
+                val labelColor = if (isUnclassified) Color(0xFF64748B) else Color(0xFF1D4ED8)
 
-                Box(
-                    modifier = Modifier
-                        .background(labelBg, RoundedCornerShape(4.dp))
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = labelText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = labelColor
-                    )
+                Box {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .background(labelBg, RoundedCornerShape(6.dp))
+                            .clickable { showLabelMenu = true }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "${currentCategory.icon} ${currentCategory.title}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = labelColor
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "▾",
+                            fontSize = 10.sp,
+                            color = labelColor
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showLabelMenu,
+                        onDismissRequest = { showLabelMenu = false }
+                    ) {
+                        CATEGORY_OPTIONS.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "${option.icon} ${option.title}",
+                                        fontSize = 13.sp,
+                                        fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                },
+                                onClick = {
+                                    onSelectLabel(option.key)
+                                    showLabelMenu = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
 

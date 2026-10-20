@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.sitevoice.app.audio.AudioPlayer
 import com.sitevoice.app.data.NoteEntity
 import com.sitevoice.app.data.NoteRepository
+import com.sitevoice.app.llm.GroqLlmClient
+import com.sitevoice.app.llm.NoteClassifier
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.stt.GroqWhisper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +32,8 @@ sealed class CurrentSttStatus {
 class MainViewModel(
     private val repository: NoteRepository,
     private val securePreferences: SecurePreferences,
-    private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey })
+    private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
+    private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }))
 ) : ViewModel() {
 
     val audioPlayer = AudioPlayer()
@@ -108,6 +111,8 @@ class MainViewModel(
                     error = null
                 )
             )
+            // Tự động phân loại ghi chú bằng LLM sau khi STT xong
+            triggerClassification(noteId, text)
         } else {
             val errorMsg = result.exceptionOrNull()?.message ?: "Lỗi chuyển đổi giọng nói"
             _currentSttStatus.value = CurrentSttStatus.Error(errorMsg)
@@ -119,9 +124,42 @@ class MainViewModel(
         }
     }
 
+    private fun triggerClassification(noteId: Long, text: String) {
+        viewModelScope.launch {
+            val classifyResult = classifier.classify(noteId, text)
+            val currentNote = repository.getNoteById(noteId) ?: return@launch
+
+            if (classifyResult.isSuccess) {
+                val label = classifyResult.getOrThrow().label
+                repository.updateNote(
+                    currentNote.copy(
+                        label = label,
+                        labelSource = "auto",
+                        status = "LABELED"
+                    )
+                )
+            } else {
+                // Fallback nếu LLM phân loại lỗi: gán nhãn chua_phan_loai
+                repository.updateNote(
+                    currentNote.copy(
+                        label = NoteClassifier.LABEL_CHUA_PHAN_LOAI,
+                        labelSource = "auto",
+                        status = "LABELED"
+                    )
+                )
+            }
+        }
+    }
+
     fun updateNoteText(noteId: Long, newText: String) {
         viewModelScope.launch {
             repository.updateText(noteId, newText)
+        }
+    }
+
+    fun updateNoteLabel(noteId: Long, newLabel: String, labelSource: String = "user") {
+        viewModelScope.launch {
+            repository.updateLabel(noteId, newLabel, labelSource)
         }
     }
 

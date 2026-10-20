@@ -123,6 +123,7 @@ fun MainScreen(
                     notes = activeNotes,
                     audioPlayer = viewModel.audioPlayer,
                     onUpdateText = { id, text -> viewModel.updateNoteText(id, text) },
+                    onUpdateLabel = { id, label -> viewModel.updateNoteLabel(id, label, "user") },
                     onDeleteNote = { id -> viewModel.deleteNote(id) },
                     onRetryStt = { note -> viewModel.retryStt(note) }
                 )

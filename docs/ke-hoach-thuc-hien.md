@@ -266,47 +266,47 @@
 #### 1.5.1 Interface LlmClient
 | | |
 |---|---|
-| **Mô tả** | Module `llm/`: interface `LlmClient` với `suspend fun chat(messages: List<Message>): Result<String>`. |
-| **Người làm** | |
+| **Mô tả** | Module `llm/`: interface `LlmClient` với `suspend fun chat(messages: List<LlmMessage>): Result<String>`. |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/05-llm.md` |
-| **Kết quả** | Interface + data class |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Interface `LlmClient` và data class `LlmMessage` hoàn chỉnh |
+| **Trạng thái** | ✅ Hoàn thành |
 
-#### 1.5.2 Cài đặt 1 LLM provider (Gemini Flash hoặc GPT-4o-mini)
+#### 1.5.2 Cài đặt 1 LLM provider (Groq Llama 3.1 8B Instant)
 | | |
 |---|---|
-| **Mô tả** | Class implement `LlmClient` cho 1 provider. Thêm trường nhập API key vào màn hình cài đặt. |
-| **Người làm** | |
-| **Đầu vào** | API docs của provider |
-| **Kết quả** | Gọi API, nhận response JSON |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Mô tả** | Class implement `LlmClient` cho provider Groq (llama-3.1-8b-instant). Dùng chung API key Groq an toàn. |
+| **Người làm** | Agent |
+| **Đầu vào** | API docs Groq |
+| **Kết quả** | `GroqLlmClient` gọi API Chat Completions với JSON object format |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.5.3 Logic phân loại ghi chú
 | | |
 |---|---|
-| **Mô tả** | Hàm `classifyNote(note, glossary)`: xây prompt từ `prompts/phan-loai-ghi-chu.md`, gọi LLM, parse JSON kết quả, cập nhật `label` + `labelSource = auto`. |
-| **Người làm** | |
+| **Mô tả** | Hàm `classify(id, text)`: xây prompt từ `prompts/phan-loai-ghi-chu.md`, gọi LLM, parse JSON kết quả, chuẩn hóa nhãn mục. |
+| **Người làm** | Agent |
 | **Đầu vào** | `prompts/phan-loai-ghi-chu.md`, 1.5.2 |
-| **Kết quả** | Unit test parse JSON kết quả phân loại |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `NoteClassifier`, unit test pass 100% tại `NoteClassifierTest.kt` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.5.4 Tự động phân loại sau STT
 | | |
 |---|---|
 | **Mô tả** | Sau STT xong → gọi phân loại → Note: TRANSCRIBED → LABELED. Hiển thị chip nhãn trên mỗi ghi chú. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.3.4 + 1.5.3 |
-| **Kết quả** | Ghi chú tự có nhãn sau vài giây |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Tự động kích hoạt trong `MainViewModel`, cập nhật label và status LABELED trong Room |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.5.5 Đổi nhãn bằng tay
 | | |
 |---|---|
 | **Mô tả** | Bấm vào chip nhãn → dropdown chọn mục mới → cập nhật `label`, `labelSource = user`. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.5.4, danh sách mục từ `schema.json` |
-| **Kết quả** | Đổi nhãn, đóng mở app vẫn đúng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | DropdownMenu 7 mục trên `NoteItemCard`, lưu `labelSource = user` vào Room |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 

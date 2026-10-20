@@ -5,8 +5,8 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Tổng quan và trạng thái đã xác minh
 
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
-- Đang triển khai Giai đoạn 1: Đã khởi tạo hoàn chỉnh project Android Kotlin + Compose trong `app/` (gói `com.sitevoice.app`, compileSdk 34, minSdk 26).
-- Đã hoàn thành Task 1.1, 1.2, 1.3, 1.4 (Room Database, Repository, MainViewModel, NotesListScreen, Edit & Delete Note). Lệnh `.\gradlew.bat assembleDebug test` build thành công 100% (70 tasks pass, APK 11.5 MB).
+- Đã hoàn thành toàn bộ Giai đoạn 1 (Lõi ứng dụng chạy được: Task 1.1 - 1.5): Ghi âm nhấn giữ, STT Groq Whisper, Room Database bền vững, danh sách ghi chú hôm nay, sửa/xóa soft delete, phân loại tự động bằng Groq LLM và đổi nhãn thủ công.
+- Lệnh `.\gradlew.bat test assembleDebug` build thành công 100% (70 tasks pass, 13/13 unit tests pass, sinh file APK 11.5 MB). Sẵn sàng cho Giai đoạn 2 (Ra tài liệu).
 - Giai đoạn 0 đã hoàn tất phân tích và tạo file `Nhat_ky_thi_cong_mau.docx`. Toàn bộ thao tác người dùng (cắm điện thoại, dán link Drive) được gom lại làm sau theo yêu cầu.
 
 ## Kiến trúc và công nghệ dự kiến
@@ -42,6 +42,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Task 1.5: Gán nhãn mục bằng LLM (Interface LlmClient, provider, prompt phân loại, gán nhãn tự động).
-2. Triển khai Giai đoạn 2: Màn hình cuối ngày và tổng hợp báo cáo.
-3. Thao tác người dùng (cắm cáp USB cài app lên điện thoại, dán link Google Doc) gom lại làm khi thuận tiện.
+1. Triển khai Giai đoạn 2 — Task 2.1: Entity & DAO cho DailyInput và Màn hình nhập dữ liệu cố định cuối ngày (thời tiết, nhân lực, thiết bị).
+2. Triển khai Giai đoạn 2 — Task 2.2: LLM tổng hợp báo cáo theo Mẫu nhật ký công trường và kiểm soát ngân sách dòng/ký tự.
+3. Triển khai Giai đoạn 2 — Task 2.3: Màn hình xem trước và duyệt báo cáo 1 lần duy nhất (quyết định 0006).
+4. Thao tác người dùng (cắm cáp USB cài app lên điện thoại, dán link Google Doc) gom lại làm khi thuận tiện.
