@@ -283,7 +283,7 @@ fun SettingsDialog(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Lựa chọn phiên bản model (Tiny / Base / Small)
+                        // Lựa chọn phiên bản model (Tiny / Base / Small / Turbo-Q5)
                         Text(
                             text = stringResource(id = R.string.settings_offline_model_label),
                             fontSize = 11.sp,
@@ -293,37 +293,90 @@ fun SettingsDialog(
 
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            WhisperModelManager.AVAILABLE_MODELS.forEach { model ->
-                                val isSelected = model.id == selectedModelId
-                                val bg = if (isSelected) Color(0xFFE0F2FE) else Color.White
-                                val border = if (isSelected) Color(0xFF0284C7) else Color(0xFFCBD5E1)
-                                val textCol = if (isSelected) Color(0xFF0369A1) else Color(0xFF475569)
+                        // Lưới 2 hàng x 2 cột hiển thị gọn gàng, rõ ràng
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            // Hàng 1: Tiny & Base
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                WhisperModelManager.AVAILABLE_MODELS.take(2).forEach { model ->
+                                    val isSelected = model.id == selectedModelId
+                                    val bg = if (isSelected) Color(0xFFE0F2FE) else Color.White
+                                    val border = if (isSelected) Color(0xFF0284C7) else Color(0xFFCBD5E1)
+                                    val textCol = if (isSelected) Color(0xFF0369A1) else Color(0xFF475569)
 
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .background(bg, RoundedCornerShape(6.dp))
-                                        .border(1.dp, border, RoundedCornerShape(6.dp))
-                                        .clickable { selectedModelId = model.id }
-                                        .padding(vertical = 8.dp, horizontal = 4.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = model.id.uppercase(),
-                                            fontSize = 12.sp,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                            color = textCol
-                                        )
-                                        Text(
-                                            text = "~${model.approximateSizeBytes / (1024 * 1024)}MB",
-                                            fontSize = 10.sp,
-                                            color = if (isSelected) Color(0xFF0284C7) else Color(0xFF94A3B8)
-                                        )
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .background(bg, RoundedCornerShape(6.dp))
+                                            .border(1.dp, border, RoundedCornerShape(6.dp))
+                                            .clickable { selectedModelId = model.id }
+                                            .padding(vertical = 8.dp, horizontal = 4.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Text(
+                                                text = model.id.uppercase(),
+                                                fontSize = 12.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                                color = textCol
+                                            )
+                                            Text(
+                                                text = "~${model.approximateSizeBytes / (1024 * 1024)}MB",
+                                                fontSize = 10.sp,
+                                                color = if (isSelected) Color(0xFF0284C7) else Color(0xFF94A3B8)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Hàng 2: Small & Turbo-Q5
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                WhisperModelManager.AVAILABLE_MODELS.drop(2).forEach { model ->
+                                    val isSelected = model.id == selectedModelId
+                                    val bg = if (isSelected) Color(0xFFE0F2FE) else Color.White
+                                    val border = if (isSelected) Color(0xFF0284C7) else Color(0xFFCBD5E1)
+                                    val textCol = if (isSelected) Color(0xFF0369A1) else Color(0xFF475569)
+
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .background(bg, RoundedCornerShape(6.dp))
+                                            .border(1.dp, border, RoundedCornerShape(6.dp))
+                                            .clickable { selectedModelId = model.id }
+                                            .padding(vertical = 8.dp, horizontal = 4.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = model.id.uppercase(),
+                                                    fontSize = 12.sp,
+                                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                                    color = textCol
+                                                )
+                                                if (model.isRecommended) {
+                                                    Spacer(modifier = Modifier.width(3.dp))
+                                                    Text(
+                                                        text = "★",
+                                                        fontSize = 11.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = Color(0xFFD97706)
+                                                    )
+                                                }
+                                            }
+                                            Text(
+                                                text = if (model.isRecommended) "~${model.approximateSizeBytes / (1024 * 1024)}MB (Tốt nhất)"
+                                                else "~${model.approximateSizeBytes / (1024 * 1024)}MB",
+                                                fontSize = 10.sp,
+                                                color = if (isSelected) Color(0xFF0284C7) else Color(0xFF94A3B8)
+                                            )
+                                        }
                                     }
                                 }
                             }

@@ -38,7 +38,7 @@ object WhisperModelManager {
             fileName = "ggml-base.bin",
             downloadUrl = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin",
             approximateSizeBytes = 142 * 1024 * 1024L, // ~142 MB
-            isRecommended = true
+            isRecommended = false
         ),
         WhisperModelInfo(
             id = "small",
@@ -47,11 +47,21 @@ object WhisperModelManager {
             downloadUrl = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin",
             approximateSizeBytes = 466 * 1024 * 1024L, // ~466 MB
             isRecommended = false
+        ),
+        WhisperModelInfo(
+            id = "turbo-q5",
+            name = "Whisper Large-v3-Turbo (Q5)",
+            fileName = "ggml-large-v3-turbo-q5_0.bin",
+            downloadUrl = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin",
+            approximateSizeBytes = 574041195L, // ~547 MB (Chất lượng tiếng Việt cao nhất)
+            isRecommended = true
         )
     )
 
     fun getModelInfo(modelId: String): WhisperModelInfo {
-        return AVAILABLE_MODELS.find { it.id == modelId } ?: AVAILABLE_MODELS[1] // Mặc định base
+        return AVAILABLE_MODELS.find { it.id == modelId }
+            ?: AVAILABLE_MODELS.find { it.isRecommended }
+            ?: AVAILABLE_MODELS[1]
     }
 
     fun getModelsDir(context: Context): File {
