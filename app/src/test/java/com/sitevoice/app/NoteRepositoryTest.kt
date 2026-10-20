@@ -49,6 +49,11 @@ class FakeNoteDao : NoteDao {
         return notes.find { it.id == id }
     }
 
+    override suspend fun getPreviousNoteSync(date: String, createdAt: Long): NoteEntity? {
+        return notes.filter { it.date == date && it.createdAt < createdAt && it.status != "DISCARDED" }
+            .maxByOrNull { it.createdAt }
+    }
+
     override fun getActiveNotesByDate(date: String): Flow<List<NoteEntity>> {
         return notesFlow.map { list ->
             list.filter { it.date == date && it.status != "DISCARDED" }

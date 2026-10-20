@@ -22,6 +22,9 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
     suspend fun getNoteById(id: Long): NoteEntity?
 
+    @Query("SELECT * FROM notes WHERE date = :date AND createdAt < :createdAt AND status != 'DISCARDED' ORDER BY createdAt DESC LIMIT 1")
+    suspend fun getPreviousNoteSync(date: String, createdAt: Long): NoteEntity?
+
     @Query("SELECT * FROM notes WHERE date = :date AND status != 'DISCARDED' ORDER BY createdAt DESC")
     fun getActiveNotesByDate(date: String): Flow<List<NoteEntity>>
 

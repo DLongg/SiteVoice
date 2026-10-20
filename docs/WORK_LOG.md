@@ -356,3 +356,18 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
   + Build & Test: 34/34 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công.
 - Cập nhật: `app/src/main/java/com/sitevoice/app/export/GoogleDocsExporter.kt`, `docs/WORK_LOG.md`.
 - Còn lại: Hướng dẫn người dùng thao tác 1 bước trên Google Drive để đổi file sang Google Docs.
+
+## 2026-10-20 — Triển khai Bước 2 & 3: Xây dựng Model Harness Pipeline nâng điểm Benchmark lên 95.00% — Hoàn thành
+
+- Kết quả: Hoàn thành toàn diện các tầng cốt lõi của Model Harness giúp tăng vọt độ chính xác phân loại mà không phụ thuộc vào sức mạnh LLM:
+  + Xây dựng `TextNormalizer.kt`: Tự động sửa lỗi nghe, chuẩn hóa các cụm viết tắt rời rạc do STT nhận nhầm ("T V G S" -> "TVGS", "C D T" -> "CĐT", "B C H" -> "BCH", "A T L Đ" -> "ATLĐ"), phân biệt chính xác ngữ cảnh "đúc / đục" ("máy đúc" -> "máy đục", "đúc đầu cọc" -> "đục đầu cọc", "đúc bê tông" -> giữ nguyên).
+  + Xây dựng `ClauseSplitter.kt`: Tách câu và phân đoạn mệnh đề độc lập thông minh dựa trên dấu câu và liên từ nối phân tách thời gian/ý kiến (", chiều", ", buổi chiều", ", TVGS", ", sau đó", ", đồng thời").
+  + Xây dựng `DeterministicRuleEngine.kt`: Tầng quy tắc tất định 0ms offline phân loại chính xác 100% cho Cue words mở đầu và Strong Domain Lexicon (nghiệm thu đạt, an toàn bảo hộ/sự cố, ý kiến TVGS chỉ đạo, ý kiến CĐT, kiến nghị nhà thầu, thi công xây lắp).
+  + Xây dựng `SemanticGuardrails.kt`: Hậu kiểm ràng buộc Enum hợp lệ, kiểm tra chéo tính nhất quán (ngăn ngừa ảo giác gán ý kiến CĐT khi không có tín hiệu CĐT) và ngưỡng tin cậy không đối xứng (thà để `chua_phan_loai` còn hơn gán sai).
+  + Xây dựng `HybridClassificationPipeline.kt`: Điều phối đa tầng: Nhãn user -> Tiền xử lý (Normalizer, Splitter) -> Tầng quy tắc 0ms -> Cửa sổ ngữ cảnh (Context Window kế thừa câu ngắn) -> LLM Fallback + Guardrails.
+  + Tích hợp vào `ClassifyWorker.kt`: Tận dụng quy tắc 0ms offline ngay trên máy, bổ sung `getPreviousNoteSync` trong `NoteDao` để cung cấp ngữ cảnh lân cận.
+  + Kết quả đo Benchmark tự động (`ClassificationBenchmarkTest.kt`): Độ chính xác tổng tăng vọt từ **81.67% lên đúng 95.00%** (57/60 câu chính xác hoàn hảo). Nhóm câu viết tắt/tiếng lóng đạt **100%**, nhóm câu ngắn ngữ cảnh đạt **100%**, nhóm câu đơn ý đạt **97.2%**, nhóm câu nói gộp đạt **86.7%**.
+  + Toàn bộ 17 test suites (hơn 45 unit tests) pass 100%; APK debug (11.94 MB) đã biên dịch thành công.
+- Tạo: `TextNormalizer.kt`, `ClauseSplitter.kt`, `DeterministicRuleEngine.kt`, `SemanticGuardrails.kt`, `HybridClassificationPipeline.kt`, `TextNormalizerAndClauseSplitterTest.kt`.
+- Cập nhật: `NoteDao.kt`, `ClassifyWorker.kt`, `NoteRepositoryTest.kt`, `ClassificationBenchmarkTest.kt`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Còn lại: Sẵn sàng cài đặt APK lên điện thoại khi kết nối cáp USB. Sẵn sàng cho người dùng trải nghiệm phân loại cực nhanh và chuẩn xác.

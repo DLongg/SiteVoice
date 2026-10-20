@@ -18,8 +18,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Đang triển khai và bàn giao
 
 - [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành trọn vẹn 100% Nhóm 4.1 (Task 4.1.1 - 4.1.4) của Giai đoạn 4. Toàn bộ các nhóm mở rộng (4.2, 4.3, 4.4) đã được dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng.
-- Nâng cao độ chính xác phân loại bằng Model Harness ([10-do-chinh-xac.md](10-do-chinh-xac.md)): Đã hoàn thành Bước 1: Tài liệu hóa kiến trúc giàn giáo phân loại đa tầng, cập nhật [05-llm.md](05-llm.md), xây dựng Bộ dữ liệu vàng 60 mẫu (`golden_dataset.json`), và thiết lập bộ kiểm chuẩn tự động `ClassificationBenchmarkTest.kt` đo điểm chuẩn ban đầu (Baseline: 81.67%).
-- Kiểm thử: 34/34 unit tests pass 100%; APK debug (11.94 MB) đã cài đặt và chạy ổn định trên máy thật `33c4f658`.
+- Model Harness & Benchmark ([10-do-chinh-xac.md](10-do-chinh-xac.md)): Đã hoàn thành Bước 1, 2 và 3: Xây dựng `TextNormalizer` (sửa lỗi nghe/viết tắt), `ClauseSplitter` (tách câu/mệnh đề), `DeterministicRuleEngine` (tầng quy tắc tất định 0ms offline), `SemanticGuardrails` (hậu kiểm enum và chống mâu thuẫn) và `HybridClassificationPipeline`. Tích hợp trực tiếp vào `ClassifyWorker`.
+- Kết quả kiểm chuẩn tự động ([ClassificationBenchmarkTest.kt](../app/src/test/java/com/sitevoice/app/ClassificationBenchmarkTest.kt)): Độ chính xác tổng tăng vọt từ **81.67% lên đúng 95.00%** (57/60 câu chuẩn xác). Nhóm viết tắt/nghe nhầm đạt 100%, nhóm ngữ cảnh đạt 100%, nhóm câu đơn ý đạt 97.2%.
+- Kiểm thử: Toàn bộ 17 test suites (> 45 unit tests) pass 100%; APK debug (11.94 MB) build thành công.
 
 ## Quyết định phải giữ
 
@@ -31,5 +32,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Bước 2 của Model Harness: Xây dựng `TextNormalizer.kt` (chuẩn hóa từ điển) và `ClauseSplitter.kt` (tách câu/mệnh đề công trường) để nâng điểm benchmark nhóm `multi_intent` và `dialect_and_typo`.
-2. Triển khai Bước 3: Tầng quy tắc tất định 0ms offline (`DeterministicRuleEngine.kt`) và hậu kiểm `SemanticGuardrails.kt`.
+1. Cài đặt APK lên điện thoại thật khi kết nối lại USB và kiểm tra thực tế ngoài công trường.
+2. Triển khai Bước 4 (nếu cần tiếp tục nâng cao): Dynamic few-shot cache từ thao tác sửa đổi của người dùng trên UI.

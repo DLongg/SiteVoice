@@ -14,6 +14,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.llm.GroqLlmClient
+import com.sitevoice.app.llm.HybridClassificationPipeline
 import com.sitevoice.app.llm.NoteClassifier
 import com.sitevoice.app.settings.SecurePreferences
 import java.util.concurrent.TimeUnit
@@ -78,51 +79,33 @@ class ClassifyWorker(
 
         val securePreferences = SecurePreferences(applicationContext)
         val apiKey = securePreferences.groqApiKey
-        if (apiKey.isNullOrBlank()) {
-            Log.w(TAG, "Chưa cài đặt Groq API Key")
-            // Fallback nhãn chưa phân loại
-            noteDao.update(
-                note.copy(
-                    label = NoteClassifier.LABEL_CHUA_PHAN_LOAI,
-                    labelSource = "auto",
-                    status = "LABELED"
-                )
-            )
-            return Result.success()
-        }
 
-        val classifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { apiKey }))
-        Log.i(TAG, "Bắt đầu phân loại note $noteId: $text (attempt: $runAttemptCount)")
-
-        val classifyResult = classifier.classify(noteId, text)
-        if (classifyResult.isSuccess) {
-            val label = classifyResult.getOrThrow().label
-            Log.i(TAG, "Phân loại thành công note $noteId -> label: $label")
-            noteDao.update(
-                note.copy(
-                    label = label,
-                    labelSource = "auto",
-                    status = "LABELED"
-                )
-            )
-            return Result.success()
+        val classifier = if (!apiKey.isNullOrBlank()) {
+            NoteClassifier(GroqLlmClient(apiKeyProvider = { apiKey }))
         } else {
-            val err = classifyResult.exceptionOrNull()?.message
-            Log.e(TAG, "Phân loại thất bại note $noteId: $err")
-
-            if (runAttemptCount < 2) {
-                return Result.retry()
-            } else {
-                // Fallback nếu thử lại vẫn không thành công
-                noteDao.update(
-                    note.copy(
-                        label = NoteClassifier.LABEL_CHUA_PHAN_LOAI,
-                        labelSource = "auto",
-                        status = "LABELED"
-                    )
-                )
-                return Result.success()
-            }
+            null
         }
+
+        val pipeline = HybridClassificationPipeline(classifier)
+        val previousNote = noteDao.getPreviousNoteSync(note.date, note.createdAt)
+
+        Log.i(TAG, "Bắt đầu phân loại note $noteId qua Hybrid Pipeline: $text")
+
+        val result = pipeline.classify(
+            id = noteId,
+            rawText = text,
+            userLabel = if (note.labelSource == "user") note.label else null,
+            previousNoteLabel = previousNote?.label
+        )
+
+        val updatedNote = note.copy(
+            label = result.label,
+            labelSource = if (note.labelSource == "user") "user" else "auto",
+            status = "LABELED"
+        )
+        noteDao.update(updatedNote)
+        Log.i(TAG, "Phân loại thành công note $noteId -> label: ${result.label} (confidence: ${result.confidence})")
+
+        return Result.success()
     }
 }
