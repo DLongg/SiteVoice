@@ -466,3 +466,19 @@ A templates/schema-chung.md
 - File sửa: `app/src/main/java/com/sitevoice/app/formsetup/FormSetupService.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`.
 - Kiểm tra: Toàn bộ Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt thành công qua adb lên thiết bị thật `33c4f658` và khởi chạy sẵn sàng.
 - Còn lại: Người dùng trải nghiệm tính năng mở xem & gõ sửa trực tiếp trên điện thoại.
+
+
+## 2026-10-20 — Cập nhật Mẫu chuẩn công trường 2026 & Tích hợp Chế độ Developer Mode sửa Prompt — Hoàn thành
+
+- Kết quả: Đáp ứng đầy đủ yêu cầu người dùng:
+  + Cập nhật Mẫu mặc định của công trường (`nhat-ky-cong-truong`) sang biểu mẫu mới theo đúng bố cục người dùng cung cấp:
+    * Tự động đếm dòng và khống chế ký tự chuẩn xác: Ngày tháng (`ngay`, `thang`), 6 ô tích thời tiết (`s_n`, `s_m`, `c_n`, `c_m`, `t_bt`, `t_m`), tổng quan thời tiết (`tong_quan_thoi_tiet` ≤ 3 dòng), ban chỉ huy (`ng_ch`), công nhân (`ng_cn`), máy móc (`may_moc` ≤ 5 dòng), công việc thi công (`thi_cong_trong_ngay` ≤ 17 dòng), nghiệm thu (`nghiem_thu_trong_ngay` ≤ 7 dòng), an toàn (`an_toan_vs` ≤ 4 dòng), ý kiến các đơn vị (`yk_cdt`, `yk_tvgs`, `yk_nha_thau`).
+    * Trình bày Mục 3 (Công việc thi công) tự động phân nhóm tổ/hạng mục (3.1 Điện, 3.2 Nước, 3.3 Kết cấu...) kèm các gạch đầu dòng thụt lề, khống chế tổng ≤ 17 dòng và ≤ 75 ký tự/dòng.
+  + Tích hợp Chế độ Nhà phát triển (Developer Mode) trong Cài đặt (`SettingsDialog.kt`):
+    * Công tắc Switch bật/tắt Developer Mode (lưu vào `SecurePreferences`).
+    * Khi bật: Hiển thị hộp soạn thảo System Prompt của Mẫu đang hoạt động, cho phép xem và trực tiếp gõ sửa câu lệnh chỉ thị AI.
+    * Nút "💾 Lưu Prompt" lưu đè cấu hình vào Room và nút "🔄 Khôi phục gốc" để hoàn tác khi cần.
+  + Cập nhật `FALLBACK_SCHEMA_CONG_TRUONG`, `FALLBACK_PROMPT_CONG_TRUONG` và cơ chế tự động nâng cấp mẫu tích hợp sẵn trong `TemplateRepository.kt`.
+- File sửa: `app/src/main/assets/templates/nhat-ky-cong-truong/schema.json`, `app/src/main/assets/templates/nhat-ky-cong-truong/prompt.md`, `templates/nhat-ky-cong-truong/schema.json`, `templates/nhat-ky-cong-truong/prompt.md`, `app/src/main/java/com/sitevoice/app/template/TemplateRepository.kt`, `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`.
+- Kiểm tra: 52/52 Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt trực tiếp qua adb lên điện thoại thật `33c4f658` và khởi chạy thành công.
+- Còn lại: Người dùng trải nghiệm Mẫu mới và bật Developer Mode để chỉnh sửa Prompt trực tiếp trong ứng dụng.

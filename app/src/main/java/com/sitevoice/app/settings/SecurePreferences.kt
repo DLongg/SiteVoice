@@ -20,6 +20,8 @@ class SecurePreferences(context: Context) {
         const val KEY_GOOGLE_ACCOUNT_EMAIL = "google_account_email"
         const val KEY_GOOGLE_ACCESS_TOKEN = "google_access_token"
 
+        const val KEY_DEVELOPER_MODE = "developer_mode_enabled"
+
         fun extractDocId(input: String): String {
             val trimmed = input.trim()
             if (trimmed.isBlank()) return DEFAULT_DOC_TEMPLATE_ID
@@ -60,6 +62,10 @@ class SecurePreferences(context: Context) {
     var googleAccessToken: String?
         get() = sharedPreferences.getString(KEY_GOOGLE_ACCESS_TOKEN, null)
         set(value) = sharedPreferences.edit().putString(KEY_GOOGLE_ACCESS_TOKEN, value).apply()
+
+    var isDeveloperModeEnabled: Boolean
+        get() = sharedPreferences.getBoolean(KEY_DEVELOPER_MODE, false)
+        set(value) = sharedPreferences.edit().putBoolean(KEY_DEVELOPER_MODE, value).apply()
 
     fun getString(key: String, defaultValue: String? = null): String? {
         return sharedPreferences.getString(key, defaultValue)

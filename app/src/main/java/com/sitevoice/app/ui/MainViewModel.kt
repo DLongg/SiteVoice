@@ -143,6 +143,9 @@ class MainViewModel(
     private val _formSetupError = MutableStateFlow<String?>(null)
     val formSetupError: StateFlow<String?> = _formSetupError.asStateFlow()
 
+    private val _isDeveloperMode = MutableStateFlow(securePreferences.isDeveloperModeEnabled)
+    val isDeveloperMode: StateFlow<Boolean> = _isDeveloperMode.asStateFlow()
+
     init {
         // Đồng bộ trạng thái STT của bản ghi mới nhất từ Room database (hỗ trợ WorkManager chạy ngầm)
         viewModelScope.launch {
@@ -536,6 +539,23 @@ class MainViewModel(
             } else {
                 _formSetupError.value = result.exceptionOrNull()?.message ?: "Lỗi chèn placeholder"
             }
+        }
+    }
+
+    fun setDeveloperMode(enabled: Boolean) {
+        securePreferences.isDeveloperModeEnabled = enabled
+        _isDeveloperMode.value = enabled
+    }
+
+    fun updateActiveTemplatePrompt(templateId: String, newPrompt: String) {
+        viewModelScope.launch {
+            templateRepository.updateTemplatePrompt(templateId, newPrompt)
+        }
+    }
+
+    fun resetActiveTemplatePrompt(templateId: String) {
+        viewModelScope.launch {
+            templateRepository.resetTemplatePrompt(templateId)
         }
     }
 

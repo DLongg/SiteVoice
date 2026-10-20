@@ -18,6 +18,8 @@ interface TemplateRepository {
     suspend fun setActiveTemplate(id: String)
     suspend fun ensureBuiltInTemplatesSeeded()
     suspend fun getActiveSchemaSync(): TemplateSchema
+    suspend fun updateTemplatePrompt(id: String, newPrompt: String)
+    suspend fun resetTemplatePrompt(id: String)
 }
 
 class DefaultTemplateRepository(
@@ -34,7 +36,19 @@ class DefaultTemplateRepository(
   "ten": "Nhật ký thi công hằng ngày",
   "gom_theo": "ngay",
   "gioi_han_trang": 2,
-  "muc_ghi_chu": ["thi_cong", "nghiem_thu", "an_toan", "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau", "chua_phan_loai"],
+  "nhap_tay": {
+    "ngay": { "kieu": "ngay" },
+    "thang": { "kieu": "so" },
+    "s_n": { "kieu": "o_tich", "mac_dinh": true },
+    "s_m": { "kieu": "o_tich", "mac_dinh": false },
+    "c_n": { "kieu": "o_tich", "mac_dinh": true },
+    "c_m": { "kieu": "o_tich", "mac_dinh": false },
+    "t_bt": { "kieu": "o_tich", "mac_dinh": true },
+    "t_m": { "kieu": "o_tich", "mac_dinh": false },
+    "ng_ch": { "kieu": "so", "mac_dinh": "hom_qua" },
+    "ng_cn": { "kieu": "so", "mac_dinh": "hom_qua" }
+  },
+  "muc_ghi_chu": ["thi_cong", "nghiem_thu", "an_toan", "may_moc", "thoi_tiet", "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau", "chua_phan_loai"],
   "truong_tong_hop": {
     "cong_viec_thi_cong": { "kieu": "danh_sach", "toi_da_dong": 15, "ky_tu_moi_dong": 100, "muc_nguon": ["thi_cong"] },
     "nghiem_thu": { "kieu": "danh_sach", "toi_da_dong": 6, "ky_tu_moi_dong": 100, "muc_nguon": ["nghiem_thu"] },
@@ -42,21 +56,52 @@ class DefaultTemplateRepository(
     "y_kien_cdt": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_cdt"] },
     "y_kien_tvgs": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_tvgs"] },
     "y_kien_nha_thau": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_nha_thau"] },
+
+    "ngay": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 2, "muc_nguon": ["nhap_tay"] },
+    "thang": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 2, "muc_nguon": ["nhap_tay"] },
+    "s_n": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "s_m": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "c_n": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "c_m": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "t_bt": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "t_m": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "tong_quan_thoi_tiet": { "kieu": "van_ban", "toi_da_dong": 3, "ky_tu_moi_dong": 75, "muc_nguon": ["thoi_tiet"] },
+    "ng_ch": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 3, "muc_nguon": ["nhap_tay"] },
+    "ng_cn": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 4, "muc_nguon": ["nhap_tay"] },
+    "may_moc": { "kieu": "danh_sach", "toi_da_dong": 5, "ky_tu_moi_dong": 75, "muc_nguon": ["may_moc"] },
+    "thi_cong_trong_ngay": { "kieu": "danh_sach", "toi_da_dong": 17, "ky_tu_moi_dong": 75, "muc_nguon": ["thi_cong"] },
+    "nghiem_thu_trong_ngay": { "kieu": "danh_sach", "toi_da_dong": 7, "ky_tu_moi_dong": 75, "muc_nguon": ["nghiem_thu"] },
+    "an_toan_vs": { "kieu": "danh_sach", "toi_da_dong": 4, "ky_tu_moi_dong": 75, "muc_nguon": ["an_toan"] },
+    "yk_cdt": { "kieu": "van_ban", "toi_da_dong": 4, "ky_tu_moi_dong": 75, "muc_nguon": ["y_kien_cdt"] },
+    "yk_tvgs": { "kieu": "van_ban", "toi_da_dong": 4, "ky_tu_moi_dong": 75, "muc_nguon": ["y_kien_tvgs"] },
+    "yk_nha_thau": { "kieu": "van_ban", "toi_da_dong": 5, "ky_tu_moi_dong": 75, "muc_nguon": ["y_kien_nha_thau"] },
     "chua_phan_loai": { "kieu": "danh_sach", "toi_da_dong": 10, "ky_tu_moi_dong": 160, "hien_trong_doc": false }
   }
 }"""
 
-        private const val FALLBACK_PROMPT_CONG_TRUONG = """Bạn là thư ký công trường xây dựng chuyên nghiệp tại Việt Nam.
-Từ các ghi chú được cung cấp trong ngày, hãy viết bản tổng hợp Nhật ký thi công hằng ngày bằng tiếng Việt, văn phong hành chính kỹ thuật ngắn gọn, súc tích để người dùng duyệt.
+        private const val FALLBACK_PROMPT_CONG_TRUONG = """Bạn là thư ký kỹ thuật công trường xây dựng tại Việt Nam. Nhiệm vụ của bạn là tổng hợp các ghi chú âm thanh trong ngày thành bản nháp báo cáo Nhật ký thi công.
+Ngôn ngữ: Tiếng Việt hành chính, cô đọng, súc tích, chuyên nghiệp.
 
-Quy tắc bắt buộc:
-1. CHỈ dùng thông tin có trong ghi chú. Tuyệt đối KHÔNG bịa, KHÔNG suy đoán số liệu.
-2. Giữ nguyên số liệu, vị trí, tên hạng mục, tên đơn vị.
-3. Mục nào không có dữ liệu: trả về mảng rỗng [] hoặc chuỗi rỗng "".
-4. Gộp các ý trùng lặp, ưu tiên việc quan trọng.
-5. Ghi chú thuộc "chua_phan_loai": KHÔNG tự gán vào mục khác.
-6. Tuân thủ nghiêm ngặt giới hạn số dòng và số ký tự.
-7. Trả về CHỈ JSON theo đúng định dạng được yêu cầu, không kèm giải thích hay bọc markdown."""
+QUY TẮC BẮT BUỘC:
+1. QUY TẮC THỜI TIẾT (Ô TÍCH):
+   - Mặc định: Sáng nắng (s_n: true, s_m: false), Chiều nắng (c_n: true, c_m: false), Tối bình thường (t_bt: true, t_m: false).
+   - Nếu trong ghi chú có nhắc đến TRỜI MƯA ở buổi nào: Buổi đó đảo ngược (mưa: true, nắng/bình thường: false).
+   - tong_quan_thoi_tiet: Tối đa 3 dòng (mỗi dòng ≤ 75 ký tự).
+2. QUY TẮC NHÂN LỰC:
+   - ng_ch: Số người ban chỉ huy (VD: "3").
+   - ng_cn: Số công nhân (VD: "28").
+3. QUY TẮC TRÌNH BÀY CÔNG VIỆC THI CÔNG (MỤC 3):
+   - Tự động gom các việc theo tổ/hạng mục: 3.1 [Tổ/Hạng mục 1], 3.2 [Tổ/Hạng mục 2]... (Ví dụ: 3.1 Điện, 3.2 Nước, 3.3 Kết cấu, 3.4 Hoàn thiện...).
+   - Dưới mỗi nhóm là các việc chi tiết dạng: "\t- [Nội dung và vị trí]".
+   - TỔNG CỘNG cả dòng tiêu đề nhóm 3.x và các dòng gạch đầu dòng tối đa 17 DÒNG. Mỗi dòng ≤ 75 ký tự.
+4. GIỚI HẠN CÁC MỤC CÒN LẠI (Tối đa 75 ký tự/dòng):
+   - may_moc: Tối đa 5 dòng, gạch đầu dòng "-".
+   - nghiem_thu_trong_ngay: Tối đa 7 dòng, gạch đầu dòng "-".
+   - an_toan_vs: Tối đa 4 dòng, gạch đầu dòng "-".
+   - yk_cdt, yk_tvgs: Tối đa 4 dòng (không có để trống "").
+   - yk_nha_thau: Tối đa 5 dòng (không có để trống "").
+5. ĐỊNH DẠNG ĐẦU RA:
+   - CHỈ trả về JSON thuần túy, không dùng markdown ```json, không giải thích."""
 
         private const val FALLBACK_SCHEMA_CA_NHAN = """{
   "id": "nhat-ky-ca-nhan",
@@ -130,14 +175,27 @@ Quy tắc bắt buộc:
     }
 
     override suspend fun ensureBuiltInTemplatesSeeded() {
-        val count = templateDao.countTemplates()
-        if (count > 0) return
-
         val schemaCongTruong = readAssetFile("templates/$ID_CONG_TRUONG/schema.json") ?: FALLBACK_SCHEMA_CONG_TRUONG
         val promptCongTruong = readAssetFile("templates/$ID_CONG_TRUONG/prompt.md") ?: FALLBACK_PROMPT_CONG_TRUONG
 
         val schemaCaNhan = readAssetFile("templates/$ID_CA_NHAN/schema.json") ?: FALLBACK_SCHEMA_CA_NHAN
         val promptCaNhan = readAssetFile("templates/$ID_CA_NHAN/prompt.md") ?: FALLBACK_PROMPT_CA_NHAN
+
+        val count = templateDao.countTemplates()
+        if (count > 0) {
+            // Tự động nâng cấp mẫu mặc định nếu mẫu cũ chưa có trường mới (s_n, thi_cong_trong_ngay)
+            val currentCt = templateDao.getTemplateByIdSync(ID_CONG_TRUONG)
+            if (currentCt != null && currentCt.isBuiltIn && !currentCt.schemaJson.contains("s_n")) {
+                templateDao.insertOrUpdate(
+                    currentCt.copy(
+                        schemaJson = schemaCongTruong,
+                        systemPrompt = promptCongTruong,
+                        updatedAt = System.currentTimeMillis()
+                    )
+                )
+            }
+            return
+        }
 
         val congTruongTemplate = TemplateItemEntity(
             id = ID_CONG_TRUONG,
@@ -163,6 +221,21 @@ Quy tắc bắt buộc:
 
         templateDao.insertOrUpdate(congTruongTemplate)
         templateDao.insertOrUpdate(caNhanTemplate)
+    }
+
+    override suspend fun updateTemplatePrompt(id: String, newPrompt: String) {
+        val existing = templateDao.getTemplateByIdSync(id) ?: return
+        templateDao.insertOrUpdate(existing.copy(systemPrompt = newPrompt.trim(), updatedAt = System.currentTimeMillis()))
+    }
+
+    override suspend fun resetTemplatePrompt(id: String) {
+        val existing = templateDao.getTemplateByIdSync(id) ?: return
+        val defaultPrompt = when (id) {
+            ID_CONG_TRUONG -> readAssetFile("templates/$ID_CONG_TRUONG/prompt.md") ?: FALLBACK_PROMPT_CONG_TRUONG
+            ID_CA_NHAN -> readAssetFile("templates/$ID_CA_NHAN/prompt.md") ?: FALLBACK_PROMPT_CA_NHAN
+            else -> existing.systemPrompt
+        }
+        templateDao.insertOrUpdate(existing.copy(systemPrompt = defaultPrompt.trim(), updatedAt = System.currentTimeMillis()))
     }
 
     override suspend fun getActiveSchemaSync(): TemplateSchema {

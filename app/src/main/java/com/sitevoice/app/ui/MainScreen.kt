@@ -76,6 +76,7 @@ fun MainScreen(
     val formSetupAnalysis by viewModel.formSetupAnalysis.collectAsState()
     val isFormSettingUp by viewModel.isFormSettingUp.collectAsState()
     val formSetupError by viewModel.formSetupError.collectAsState()
+    val isDeveloperMode by viewModel.isDeveloperMode.collectAsState()
 
     // Activity Result Launcher xử lý cấp quyền bổ sung của Google (UserRecoverableAuthException)
     val consentLauncher = rememberLauncherForActivityResult(
@@ -288,6 +289,15 @@ fun MainScreen(
                 currentGoogleWebClientId = securePreferences.googleWebClientId,
                 currentGoogleAccountEmail = securePreferences.googleAccountEmail,
                 activeTemplateName = activeTemplate?.name,
+                activeTemplate = activeTemplate,
+                isDeveloperMode = isDeveloperMode,
+                onToggleDeveloperMode = { viewModel.setDeveloperMode(it) },
+                onSavePrompt = { templateId, newPrompt ->
+                    viewModel.updateActiveTemplatePrompt(templateId, newPrompt)
+                },
+                onResetPrompt = { templateId ->
+                    viewModel.resetActiveTemplatePrompt(templateId)
+                },
                 onOpenTemplateLibrary = { showTemplateLibrary = true },
                 onAutoSetupFormClick = { docUrlOrId ->
                     showFormSetupDialog = true

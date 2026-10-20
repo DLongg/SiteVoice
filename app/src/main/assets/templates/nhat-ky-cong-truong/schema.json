@@ -5,18 +5,18 @@
   "gioi_han_trang": 2,
   "nhap_tay": {
     "ngay": { "kieu": "ngay" },
-    "thoi_tiet_sang": { "kieu": "chon", "lua_chon": ["nang", "mua"] },
-    "thoi_tiet_chieu": { "kieu": "chon", "lua_chon": ["nang", "mua"] },
-    "thoi_tiet_toi": { "kieu": "chon", "lua_chon": ["binh_thuong", "mua"] },
-    "nhan_luc_ban_chi_huy": { "kieu": "so", "mac_dinh": "hom_qua" },
-    "nhan_luc_cong_nhan": { "kieu": "so", "mac_dinh": "hom_qua" },
-    "may_moc": {
-      "kieu": "chuoi",
-      "mac_dinh": "Máy đục, máy cắt rãnh, máy khoan bê tông, máy mài góc, máy laser"
-    }
+    "thang": { "kieu": "so" },
+    "s_n": { "kieu": "o_tich", "mac_dinh": true },
+    "s_m": { "kieu": "o_tich", "mac_dinh": false },
+    "c_n": { "kieu": "o_tich", "mac_dinh": true },
+    "c_m": { "kieu": "o_tich", "mac_dinh": false },
+    "t_bt": { "kieu": "o_tich", "mac_dinh": true },
+    "t_m": { "kieu": "o_tich", "mac_dinh": false },
+    "ng_ch": { "kieu": "so", "mac_dinh": "hom_qua" },
+    "ng_cn": { "kieu": "so", "mac_dinh": "hom_qua" }
   },
   "muc_ghi_chu": [
-    "thi_cong", "nghiem_thu", "an_toan",
+    "thi_cong", "nghiem_thu", "an_toan", "may_moc", "thoi_tiet",
     "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau", "chua_phan_loai"
   ],
   "truong_tong_hop": {
@@ -26,6 +26,25 @@
     "y_kien_cdt": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_cdt"] },
     "y_kien_tvgs": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_tvgs"] },
     "y_kien_nha_thau": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_nha_thau"] },
+
+    "ngay": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 2, "muc_nguon": ["nhap_tay"] },
+    "thang": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 2, "muc_nguon": ["nhap_tay"] },
+    "s_n": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "s_m": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "c_n": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "c_m": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "t_bt": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "t_m": { "kieu": "o_tich", "toi_da_dong": 1, "ky_tu_moi_dong": 1, "muc_nguon": ["thoi_tiet"] },
+    "tong_quan_thoi_tiet": { "kieu": "van_ban", "toi_da_dong": 3, "ky_tu_moi_dong": 75, "muc_nguon": ["thoi_tiet"] },
+    "ng_ch": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 3, "muc_nguon": ["nhap_tay"] },
+    "ng_cn": { "kieu": "so", "toi_da_dong": 1, "ky_tu_moi_dong": 4, "muc_nguon": ["nhap_tay"] },
+    "may_moc": { "kieu": "danh_sach", "toi_da_dong": 5, "ky_tu_moi_dong": 75, "muc_nguon": ["may_moc"] },
+    "thi_cong_trong_ngay": { "kieu": "danh_sach", "toi_da_dong": 17, "ky_tu_moi_dong": 75, "muc_nguon": ["thi_cong"] },
+    "nghiem_thu_trong_ngay": { "kieu": "danh_sach", "toi_da_dong": 7, "ky_tu_moi_dong": 75, "muc_nguon": ["nghiem_thu"] },
+    "an_toan_vs": { "kieu": "danh_sach", "toi_da_dong": 4, "ky_tu_moi_dong": 75, "muc_nguon": ["an_toan"] },
+    "yk_cdt": { "kieu": "van_ban", "toi_da_dong": 4, "ky_tu_moi_dong": 75, "muc_nguon": ["y_kien_cdt"] },
+    "yk_tvgs": { "kieu": "van_ban", "toi_da_dong": 4, "ky_tu_moi_dong": 75, "muc_nguon": ["y_kien_tvgs"] },
+    "yk_nha_thau": { "kieu": "van_ban", "toi_da_dong": 5, "ky_tu_moi_dong": 75, "muc_nguon": ["y_kien_nha_thau"] },
     "chua_phan_loai": { "kieu": "danh_sach", "toi_da_dong": 10, "ky_tu_moi_dong": 160, "hien_trong_doc": false }
   }
 }

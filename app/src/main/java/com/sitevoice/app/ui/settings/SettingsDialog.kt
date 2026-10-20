@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.sitevoice.app.R
+import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.settings.SecurePreferences
 
 @Composable
@@ -44,6 +47,11 @@ fun SettingsDialog(
     currentGoogleWebClientId: String? = null,
     currentGoogleAccountEmail: String? = null,
     activeTemplateName: String? = null,
+    activeTemplate: TemplateItemEntity? = null,
+    isDeveloperMode: Boolean = false,
+    onToggleDeveloperMode: (Boolean) -> Unit = {},
+    onSavePrompt: (templateId: String, newPrompt: String) -> Unit = { _, _ -> },
+    onResetPrompt: (templateId: String) -> Unit = {},
     onOpenTemplateLibrary: () -> Unit = {},
     onAutoSetupFormClick: (docUrlOrId: String) -> Unit = {},
     onSaveSettings: (apiKey: String, docTemplateId: String, webClientId: String) -> Unit,
@@ -54,6 +62,12 @@ fun SettingsDialog(
     var inputKey by remember { mutableStateOf(currentApiKey ?: "") }
     var inputDocId by remember { mutableStateOf(currentDocTemplateId) }
     var inputWebClientId by remember { mutableStateOf(currentGoogleWebClientId ?: "") }
+
+    var devModeEnabled by remember(isDeveloperMode) { mutableStateOf(isDeveloperMode) }
+    var customPrompt by remember(activeTemplate?.systemPrompt) {
+        mutableStateOf(activeTemplate?.systemPrompt.orEmpty())
+    }
+    var promptSavedMessage by remember { mutableStateOf<String?>(null) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -242,6 +256,111 @@ fun SettingsDialog(
                             color = Color(0xFF1E293B)
                         )
                         Text(text = "Đổi / Căn chỉnh →", fontSize = 12.sp, color = Color(0xFF2563EB))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Phần 5: Chế độ Nhà phát triển (Developer Mode)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFF8FAFC), RoundedCornerShape(8.dp))
+                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
+                        .padding(12.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "5. Chế độ Nhà phát triển (Developer Mode)",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF1E293B)
+                                )
+                                Text(
+                                    text = "Xem & chỉnh sửa trực tiếp System Prompt của AI",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                            Switch(
+                                checked = devModeEnabled,
+                                onCheckedChange = {
+                                    devModeEnabled = it
+                                    onToggleDeveloperMode(it)
+                                }
+                            )
+                        }
+
+                        if (devModeEnabled && activeTemplate != null) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "🛠️ System Prompt hiện tại (${activeTemplate.name}):",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            OutlinedTextField(
+                                value = customPrompt,
+                                onValueChange = {
+                                    customPrompt = it
+                                    promptSavedMessage = null
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 7,
+                                maxLines = 14,
+                                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    onClick = {
+                                        onSavePrompt(activeTemplate.id, customPrompt)
+                                        promptSavedMessage = "Đã lưu prompt thành công!"
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                    shape = RoundedCornerShape(6.dp),
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                ) {
+                                    Text("💾 Lưu Prompt", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        onResetPrompt(activeTemplate.id)
+                                        promptSavedMessage = "Đã khôi phục prompt gốc!"
+                                    },
+                                    shape = RoundedCornerShape(6.dp),
+                                    modifier = Modifier.weight(1f),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                ) {
+                                    Text("🔄 Khôi phục gốc", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF475569))
+                                }
+                            }
+
+                            promptSavedMessage?.let { msg ->
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "✓ $msg",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF15803D),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
                     }
                 }
 
