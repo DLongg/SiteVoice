@@ -35,3 +35,16 @@ date (PK), weatherMorning, weatherAfternoon, weatherEvening, commandStaffCount, 
 - Điện thoại vẫn giữ âm thanh gốc để nghe lại; không tự xóa khi duyệt xong. Backup văn bản không khôi phục được file âm thanh; không coi audioPath của máy cũ là âm thanh có thể nghe trên máy phục hồi.
 - Mọi thay đổi schema Room phải có migration.
 - Không lưu API key trong Room.
+
+## FormTemplate (Mẫu do app sinh)
+| Cột | Ghi chú |
+|---|---|
+| id (PK) | trùng id Mẫu |
+| name | tên hiển thị |
+| sourceType | gdoc / docx |
+| workingDocId | id Google Doc bản sao làm việc |
+| sourceHash | mã băm nội dung form gốc, để phát hiện form đổi |
+| schemaJson | schema đầy đủ theo templates/schema-chung.md (gồm cho_dien[]) |
+| status | SETUP_DRAFT, READY, NEEDS_RESETUP |
+| createdAt | |
+DailyReport.templateId trỏ tới FormTemplate.id hoặc Mẫu đóng gói sẵn.

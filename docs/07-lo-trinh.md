@@ -6,6 +6,7 @@
 - [x] Thử luồng thủ công vài ngày: ghi âm → dán vào chatbot với prompt → chép vào Doc mẫu
 - [x] Chốt prompt, ngân sách ký tự, Google Doc mẫu
 - [x] Cài Android Studio, bật gỡ lỗi USB, kết nối thiết bị thật
+- [ ] Chuẩn bị bài kiểm tra chuẩn: form nhật ký gốc (có chấm/ô tích) dạng Google Doc và DOCX
 
 ## Giai đoạn 1: Lõi chạy được
 - [x] 1. Dự án Android rỗng chạy trên điện thoại
@@ -18,6 +19,7 @@
 - [x] 6. Chuẩn bị cuối ngày: sửa ghi chú + nhập thời tiết, nhân lực (kế thừa ngày trước); không có lượt duyệt riêng
 - [x] 7. Tổng hợp LLM theo Mẫu + kiểm tra ký tự + rút gọn
 - [x] 8. Xem trước & duyệt 1 lần duy nhất + xuất Google Doc từ mẫu (quyết định 0006)
+- [ ] 8b. Thiết lập form tự động (Google Doc + DOCX): nạp form, nhận diện, duyệt, đo sức chứa, sinh Mẫu (docs/10)
 
 ## Giai đoạn 3: Chạy không cần mạng
 - [x] 9. Hàng đợi WorkManager cho STT, phân loại, xuất (Task 3.1)
@@ -31,3 +33,5 @@
 
 ## Trạng thái hiện tại
 ✅ Hoàn thành 100% toàn bộ các giai đoạn phát triển cam kết (Giai đoạn 0, 1, 2, 3 và Nhóm 4.1 của Giai đoạn 4). Ứng dụng đã sẵn sàng cho người dùng kiểm thử và nghiệm thu thực tế ngoài công trường.
+
+Làm 8 (đường cố định, Mẫu mặc định) TRƯỚC 8b; 8b dùng Mẫu mặc định làm bài kiểm tra chuẩn.

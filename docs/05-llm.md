@@ -1,9 +1,10 @@
 # 05. LLM
 
-## Ba tác vụ
+## Bốn tác vụ
 1. Phân loại ghi chú (`prompts/phan-loai-ghi-chu.md`): chạy ngay sau STT, model nhẹ/rẻ.
 2. Tổng hợp theo Mẫu (`templates/<mau>/prompt.md`): chạy cuối ngày.
 3. Rút gọn một mục (`prompts/rut-gon-muc.md`): khi vượt ngân sách ký tự.
+4. Nhận diện chỗ điền trong form (prompts/nhan-dien-cho-dien.md): chạy một lần khi thiết lập form, model tốt hơn, temperature 0.
 
 ## Quy tắc gọi
 - Yêu cầu LLM trả về CHỈ JSON theo schema; app bỏ fence ```json trước khi parse.
@@ -20,6 +21,8 @@
 - Ghi chú không rõ mục → `chua_phan_loai` để người dùng xử lý.
 
 ## Ngân sách ký tự (nhật ký công trường, chỉnh sau khi in thử)
+Với Mẫu tự sinh, giới hạn do đo sức chứa quyết định (docs/10); bảng dưới chỉ áp dụng cho Mẫu mặc định.
+
 | Mục | Giới hạn |
 |---|---|
 | 3. Công việc thi công | 8 dòng, mỗi dòng ≤ 110 ký tự (≈ 900 tổng) |
@@ -33,7 +36,7 @@ Nguồn sự thật là `templates/nhat-ky-cong-truong/schema.json`; bảng này
 1. Nhận JSON → đếm ký tự từng trường.
 2. Trường vượt → gọi `rut-gon-muc` cho riêng trường đó (tối đa 2 vòng).
 3. Còn vượt → báo người dùng chọn bỏ bớt ý.
-4. (Tùy chọn) Sau khi xuất, xuất PDF đếm trang; > 2 trang thì báo cần điều chỉnh ngân sách. Nếu làm lại khiến nội dung thay đổi, kết quả mới là bản nháp cần duyệt; không tự sửa bản đã duyệt.
+4. Xuất PDF, đếm trang; vượt giới hạn trang thì giảm giới hạn mục chiếm nhiều chỗ nhất và làm lại (dùng chung cơ chế đo sức chứa ở docs/10).
 
 ## Chi phí
 Ghi chú cả ngày chỉ vài nghìn token; dùng model rẻ cho phân loại, model tốt hơn cho tổng hợp nếu cần.

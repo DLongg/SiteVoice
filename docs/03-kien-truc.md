@@ -7,7 +7,8 @@
 | audio/ | Ghi âm, lưu file, phát lại |
 | stt/ | Interface `SpeechToText`; cài đặt: `GroqWhisper` (Quyết định 0007) |
 | llm/ | Interface `LlmClient`; phân loại, tổng hợp, rút gọn; đếm ký tự |
-| template/ | Đọc Mẫu từ `templates/` (đóng gói vào assets), kiểm tra schema |
+| template/ | Nạp Mẫu (đóng gói sẵn hoặc do app sinh), kiểm tra schema (templates/schema-chung.md) |
+| formsetup/ | Thiết lập form: đọc cấu trúc Doc, tìm ứng viên chỗ điền, gọi LLM đặt tên, đo sức chứa, ghi placeholder, sinh Mẫu |
 | export/ | Google Sign-In, Drive (copy mẫu), Docs (replaceAllText) |
 | data/ | Room: entity, DAO, repository |
 | queue/ | WorkManager: hàng đợi STT, phân loại, xuất |
@@ -22,6 +23,15 @@ Cuối ngày: ui/ sửa ghi chú nếu cần, nhập DailyInput (không duyệt 
    → llm/ tổng hợp ghi chú không bị loại theo Mẫu → kiểm tra ký tự → DailyReport: DRAFT
    → ui/ xem trước → người dùng duyệt một lần → DailyReport: APPROVED (lưu nội dung trên điện thoại)
    → ExportWorker → export/ → DailyReport: EXPORTED (lưu link Doc)
+```
+
+## Luồng thiết lập form
+```
+Nạp form (Picker / chọn DOCX)  [DOCX: import thành Google Doc]  bản sao làm việc
+    formsetup/ đọc cấu trúc  tìm ứng viên (code)  LLM đặt tên/loại/nguồn
+    đo sức chứa (điền thử  xuất PDF  đếm trang  chỉnh giới hạn)
+    màn hình duyệt  Doc thử  xác nhận
+    ghi placeholder (theo chỉ số giảm dần)  lưu Mẫu (schema + cho_dien[] + form_nguon)
 ```
 
 ## Nguyên tắc
