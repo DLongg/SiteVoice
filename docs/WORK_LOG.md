@@ -294,3 +294,13 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/src/main/java/com/sitevoice/app/template/DailyReportContent.kt`, `app/src/main/java/com/sitevoice/app/llm/ReportSynthesizer.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyInputScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyReportPreviewScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/test/java/com/sitevoice/app/ReportSynthesizerTest.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: Bộ unit test `ReportSynthesizerTest` được bổ sung kiểm thử tổng hợp Nhật ký cá nhân; toàn bộ 30/30 unit tests chạy pass 100%; `.\gradlew.bat assembleDebug` build APK thành công.
 - Còn lại: Sẵn sàng triển khai Task 4.1.4: Xuất Google Doc theo Mẫu tùy biến.
+
+## 2026-10-20 — Đảo thứ tự ghi chú mới nhất lên đầu & Cập nhật Scope Google Drive — Hoàn thành
+
+- Kết quả: Theo yêu cầu của người dùng ("Trong danh sách ghi chú hôm nay nên để những report mới nhất lên trên đầu"):
+  + Cập nhật `NoteDao.kt`: Thay đổi câu lệnh SQL trong `getActiveNotesByDate` và `getAllNotesByDate` sang `ORDER BY createdAt DESC` để các ghi chú/report vừa tạo luôn hiển thị ở vị trí trên cùng của danh sách ghi chú hôm nay, giúp người dùng dễ dàng theo dõi ngay kết quả vừa nói.
+  + Cập nhật `GoogleAuthManager.kt` và `06-google-doc-mau.md`: Nâng cấp scope Google Drive sang `https://www.googleapis.com/auth/drive` cho phép ứng dụng đọc và sao chép các tệp Google Doc mẫu có sẵn trong Drive của người dùng (thay vì bị giới hạn chỉ đọc tệp do ứng dụng tự tạo như `drive.file`).
+  + Build & Cài đặt: Biên dịch thành công APK debug (11.94 MB) và cài đặt (`adb install -r`) trực tiếp lên điện thoại thật `33c4f658`, khởi chạy thành công.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/data/NoteDao.kt`, `app/src/main/java/com/sitevoice/app/export/GoogleAuthManager.kt`, `docs/06-google-doc-mau.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: 30/30 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công; `adb install -r` trả về `Success` trên thiết bị `33c4f658`.
+- Còn lại: Người dùng kiểm tra trực tiếp danh sách ghi chú trên điện thoại thật và sẵn sàng triển khai Task 4.1.4 (Xuất Doc động theo Mẫu).
