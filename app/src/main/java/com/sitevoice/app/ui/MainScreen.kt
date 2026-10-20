@@ -326,6 +326,9 @@ fun MainScreen(
                         Toast.makeText(context, "Đã tạo Mẫu '${createdTemplate.name}' và chèn placeholder thành công!", Toast.LENGTH_LONG).show()
                     }
                 },
+                onRescan = {
+                    viewModel.rescanFormSetup(context)
+                },
                 onDismiss = {
                     showFormSetupDialog = false
                     viewModel.dismissFormSetup()

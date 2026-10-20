@@ -454,3 +454,15 @@ A templates/schema-chung.md
 - File sửa: `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`.
 - Kiểm tra: Toàn bộ Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt trực tiếp qua USB adb (`adb install -r app-debug.apk`) lên thiết bị thật `33c4f658` và khởi chạy thành công.
 - Còn lại: Người dùng trải nghiệm và xác nhận thao tác trực tiếp trên điện thoại.
+
+
+## 2026-10-20 — Tích hợp mở xem & gõ sửa bản sao trên Google Docs kèm nút Quét lại — Hoàn thành
+
+- Kết quả: Hiện thực hóa theo phương án người dùng đã chốt:
+  + Nâng cấp `FormSetupDialog.kt`: Bổ sung Card Bản sao an toàn trên Google Drive hiển thị tên file bản sao làm việc, kèm nút bấm nổi bật **"📄 Mở & gõ sửa trên Docs ↗"** (gọi Intent `ACTION_VIEW` mở trực tiếp ứng dụng Google Docs hoặc trình duyệt web trên điện thoại để người dùng đọc và chỉnh sửa file).
+  + Bổ sung nút **"🔄 Quét lại"**: Sau khi người dùng gõ sửa thêm bớt text hoặc tiêu đề trên Google Docs, bấm Quét lại để app tự động đọc cấu trúc cập nhật mới nhất từ Docs API và quét lại toàn bộ chỗ điền mà không cần tạo lại bản sao mới.
+  + Bổ sung hàm `rescanWorkingDoc` trong `FormSetupService.kt` và `rescanFormSetup` trong `MainViewModel.kt`.
+  + Tích hợp callback `onRescan` trong `MainScreen.kt`.
+- File sửa: `app/src/main/java/com/sitevoice/app/formsetup/FormSetupService.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`.
+- Kiểm tra: Toàn bộ Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt thành công qua adb lên thiết bị thật `33c4f658` và khởi chạy sẵn sàng.
+- Còn lại: Người dùng trải nghiệm tính năng mở xem & gõ sửa trực tiếp trên điện thoại.

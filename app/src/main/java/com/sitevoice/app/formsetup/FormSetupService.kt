@@ -100,6 +100,47 @@ class FormSetupService(
     }
 
     /**
+     * Quét lại bản sao làm việc sau khi người dùng mở ra xem và gõ sửa trên Google Docs.
+     */
+    suspend fun rescanWorkingDoc(
+        workingDocId: String,
+        workingTitle: String,
+        accessToken: String
+    ): Result<FormSetupAnalysis> = withContext(Dispatchers.IO) {
+        try {
+            val getDocRequest = Request.Builder()
+                .url("$DOCS_API_BASE/documents/$workingDocId")
+                .header("Authorization", "Bearer $accessToken")
+                .get()
+                .build()
+
+            val getDocResponse = httpClient.newCall(getDocRequest).execute()
+            val getDocBody = getDocResponse.body?.string().orEmpty()
+            if (!getDocResponse.isSuccessful) {
+                return@withContext Result.failure(
+                    IOException("Lỗi đọc cấu trúc tài liệu (${getDocResponse.code}): $getDocBody")
+                )
+            }
+            val docJson = JSONObject(getDocBody)
+
+            val rawCandidates = FormCandidateScanner.scanDocument(docJson)
+            val describer = FormLlmDescriber(llmClient)
+            val describedCandidates = describer.describeCandidates(rawCandidates)
+
+            Result.success(
+                FormSetupAnalysis(
+                    workingDocId = workingDocId,
+                    workingDocUrl = "https://docs.google.com/document/d/$workingDocId/edit",
+                    originalDocTitle = workingTitle,
+                    candidates = describedCandidates
+                )
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * Bước 7:
      * - Ghi các placeholder {{MA}} vào bản sao Google Doc bằng batchUpdate
      * - Tạo đối tượng TemplateItemEntity sẵn sàng lưu vào Room

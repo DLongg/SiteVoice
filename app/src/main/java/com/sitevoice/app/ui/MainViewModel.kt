@@ -462,6 +462,41 @@ class MainViewModel(
         }
     }
 
+    fun rescanFormSetup(context: Context) {
+        val analysis = _formSetupAnalysis.value ?: return
+        val account = GoogleAuthManager.getLastSignedInAccount(context)
+        if (account == null || account.account == null) {
+            _formSetupError.value = "Chưa đăng nhập tài khoản Google."
+            return
+        }
+
+        viewModelScope.launch {
+            _isFormSettingUp.value = true
+            _formSetupError.value = null
+
+            val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
+            if (tokenResult.isFailure) {
+                _formSetupError.value = "Không thể lấy quyền truy cập Google"
+                _isFormSettingUp.value = false
+                return@launch
+            }
+
+            val token = tokenResult.getOrThrow()
+            val result = formSetupService.rescanWorkingDoc(
+                workingDocId = analysis.workingDocId,
+                workingTitle = analysis.originalDocTitle,
+                accessToken = token
+            )
+
+            _isFormSettingUp.value = false
+            if (result.isSuccess) {
+                _formSetupAnalysis.value = result.getOrThrow()
+            } else {
+                _formSetupError.value = result.exceptionOrNull()?.message ?: "Lỗi quét lại biểu mẫu"
+            }
+        }
+    }
+
     fun confirmFormSetup(
         context: Context,
         templateName: String,

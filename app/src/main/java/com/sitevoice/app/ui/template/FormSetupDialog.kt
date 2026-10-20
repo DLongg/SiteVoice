@@ -1,5 +1,7 @@
 package com.sitevoice.app.ui.template
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,8 +61,10 @@ fun FormSetupDialog(
     isLoading: Boolean,
     errorMessage: String?,
     onConfirmSetup: (templateName: String, approvedCandidates: List<FormCandidate>) -> Unit,
+    onRescan: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     var templateName by remember(analysis) {
         mutableStateOf(analysis?.originalDocTitle?.replace("[SiteVoice Mẫu] ", "") ?: "Mẫu tự động")
     }
@@ -182,6 +187,87 @@ fun FormSetupDialog(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp)
                     )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Khối Bản sao an toàn & Mở Google Docs gõ sửa
+                    Card(
+                        shape = RoundedCornerShape(10.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Bản sao an toàn trên Google Drive:",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+                                    Text(
+                                        text = analysis.originalDocTitle,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF0F172A),
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    onClick = {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(analysis.workingDocUrl))
+                                        context.startActivity(intent)
+                                    },
+                                    modifier = Modifier.weight(1.3f),
+                                    shape = RoundedCornerShape(6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E40AF)),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = "📄 Mở & gõ sửa trên Docs ↗",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
+                                }
+
+                                OutlinedButton(
+                                    onClick = onRescan,
+                                    enabled = !isLoading,
+                                    modifier = Modifier.weight(0.7f),
+                                    shape = RoundedCornerShape(6.dp),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = "🔄 Quét lại",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF1E293B)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "💡 File gốc giữ nguyên. Bạn có thể mở bản sao để gõ sửa tùy ý trên Google Docs rồi bấm 'Quét lại' để cập nhật.",
+                                fontSize = 10.sp,
+                                color = Color(0xFF64748B)
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
