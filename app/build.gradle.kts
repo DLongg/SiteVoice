@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.okhttp)
 
     testImplementation(libs.junit)
     debugImplementation(libs.androidx.ui.tooling)

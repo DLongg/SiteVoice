@@ -100,3 +100,13 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: Lệnh `.\\gradlew.bat assembleDebug` build thành công không lỗi; lệnh `.\\gradlew.bat test` chạy pass 100% test suites; kiểm tra file APK tồn tại tại `app/build/outputs/apk/debug/app-debug.apk`.
 - Vấn đề và xử lý: Java 25 đi kèm Android Studio gây xung đột với Kotlin DSL parser (`IllegalArgumentException: 25.0.3`) → tải và cấu hình Adoptium OpenJDK 17 LTS làm `org.gradle.java.home` chuẩn cho Gradle daemon; lỗi mock stub của `org.json.JSONObject` trong JVM unit test → cập nhật test kiểm tra nội dung text thuần để chạy độc lập không phụ thuộc Android runtime.
 - Còn lại: Task 1.3 (Module STT qua Groq Whisper API) và Task 1.4 (Room Database & Màn hình danh sách ghi chú). Các thao tác người dùng (cắm cáp USB cài app lên điện thoại, dán link Google Doc) gom lại làm sau theo yêu cầu.
+
+## 2026-10-20 — Triển khai Giai đoạn 1: Module Groq Whisper STT & Cài đặt API Key — Hoàn thành
+
+- Kết quả: Triển khai hoàn chỉnh Task 1.3. Xây dựng module `GroqWhisper.kt` gọi API Groq Whisper multipart audio upload (`whisper-large-v3-turbo`) truyền prompt từ điển thuật ngữ công trường; `SecurePreferences.kt` mã hóa API key bằng `EncryptedSharedPreferences` (AES256-GCM); UI `SettingsDialog.kt` cho phép người dùng cấu hình Groq API key an toàn; tích hợp luồng tự động nhận diện STT ngay sau khi người dùng nhả nút ghi âm trên `RecordScreen.kt` kèm giao diện trạng thái (chờ tải, thẻ văn bản kết quả, nút thử lại STT).
+- Tạo: `app/src/main/java/com/sitevoice/app/stt/GroqWhisper.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/test/java/com/sitevoice/app/GroqWhisperTest.kt`.
+- Cập nhật: `app/build.gradle.kts` (thêm OkHttp 4.12.0), `gradle/libs.versions.toml`, `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `docs/ke-hoach-thuc-hien.md` (đánh dấu hoàn thành Task 1.3.1 - 1.3.4), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Unit test `GroqWhisperTest.kt` và `TemplateAssetTest.kt` chạy pass 100%; `.\gradlew.bat test` và `.\gradlew.bat assembleDebug` chạy thành công không lỗi (BUILD SUCCESSFUL).
+- Vấn đề và xử lý: Cần đảm bảo file ghi âm gốc được giữ an toàn trước khi gọi STT theo quyết định 0001; API key được bảo vệ trong EncryptedSharedPreferences không lưu vào Room; UI tuân thủ skill `design-taste-frontend` App Screens.
+- Còn lại: Task 1.4 (Xây dựng Room Database và Màn hình danh sách ghi chú trong ngày).
+

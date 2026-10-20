@@ -169,37 +169,37 @@
 | | |
 |---|---|
 | **Mô tả** | Module `stt/`: tạo interface `SpeechToText` với hàm `suspend fun transcribe(audioFile: File): Result<String>`. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/quyet-dinh/0001-stt-lai-online-offline.md` |
-| **Kết quả** | Interface + data class kết quả |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Interface `SpeechToText` chuẩn hóa trong `com.sitevoice.app.stt` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.3.2 Cài đặt GroqWhisper
 | | |
 |---|---|
 | **Mô tả** | Class `GroqWhisper` implements `SpeechToText`. Gọi Groq Whisper API (multipart upload file âm thanh). Dùng `initial_prompt` kèm từ điển thuật ngữ. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | API docs của Groq, `docs/09-thuat-ngu.md` |
-| **Kết quả** | Gửi file âm thanh → nhận văn bản tiếng Việt |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Class `GroqWhisper` kết nối model `whisper-large-v3-turbo`, truyền từ điển thuật ngữ, unit test pass |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.3.3 Màn hình cài đặt API key (cơ bản)
 | | |
 |---|---|
 | **Mô tả** | Module `settings/`: màn hình nhập API key Groq, lưu bằng EncryptedSharedPreferences. Không ghi log key. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | Quy tắc #7 |
-| **Kết quả** | Nhập key, lưu mã hóa, đọc lại được |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `SettingsDialog` và `SecurePreferences` lưu trữ AES256 mã hóa an toàn trên máy |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 1.3.4 Gọi STT sau khi ghi âm
 | | |
 |---|---|
 | **Mô tả** | Sau khi ghi xong → tự động gọi STT → hiển thị văn bản dưới nút ghi âm. Trạng thái Note: RECORDED → TRANSCRIBED. Xử lý lỗi (hiện thông báo, cho thử lại). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.2.3 + 1.3.2 |
-| **Kết quả** | Ghi xong → vài giây sau thấy văn bản |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `RecordScreen` tự động gọi STT, hiển thị loading xoay, thẻ kết quả văn bản nhận diện và nút thử lại |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 

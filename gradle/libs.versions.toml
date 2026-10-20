@@ -8,9 +8,11 @@ composeBom = "2024.10.00"
 room = "2.6.1"
 workManager = "2.9.1"
 securityCrypto = "1.1.0-alpha06"
+okhttp = "4.12.0"
 junit = "4.13.2"
 
 [libraries]
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
