@@ -6,13 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [NoteEntity::class, DailyInputEntity::class],
-    version = 2,
+    entities = [NoteEntity::class, DailyInputEntity::class, DailyReportEntity::class],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun dailyInputDao(): DailyInputDao
+    abstract fun dailyReportDao(): DailyReportDao
 
     companion object {
         @Volatile
