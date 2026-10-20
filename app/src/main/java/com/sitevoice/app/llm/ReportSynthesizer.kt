@@ -44,7 +44,7 @@ Quy tắc bắt buộc:
     }
 
     suspend fun synthesizeReport(date: String, notes: List<NoteEntity>): Result<String> {
-        val activeNotes = notes.filter { it.status != "DISCARDED" }
+        val activeNotes = notes.filter { it.status != "DISCARDED" }.sortedBy { it.createdAt }
 
         // 1. Gom danh sách nguyên văn tất cả các ghi chú trong ngày
         val allNotesList = StringBuilder()

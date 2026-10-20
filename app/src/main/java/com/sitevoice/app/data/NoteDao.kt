@@ -22,10 +22,10 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
     suspend fun getNoteById(id: Long): NoteEntity?
 
-    @Query("SELECT * FROM notes WHERE date = :date AND status != 'DISCARDED' ORDER BY createdAt ASC")
+    @Query("SELECT * FROM notes WHERE date = :date AND status != 'DISCARDED' ORDER BY createdAt DESC")
     fun getActiveNotesByDate(date: String): Flow<List<NoteEntity>>
 
-    @Query("SELECT * FROM notes WHERE date = :date ORDER BY createdAt ASC")
+    @Query("SELECT * FROM notes WHERE date = :date ORDER BY createdAt DESC")
     fun getAllNotesByDate(date: String): Flow<List<NoteEntity>>
 
     @Query("UPDATE notes SET status = 'DISCARDED' WHERE id = :id")

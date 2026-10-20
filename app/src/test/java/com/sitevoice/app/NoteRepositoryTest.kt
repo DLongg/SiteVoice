@@ -52,14 +52,14 @@ class FakeNoteDao : NoteDao {
     override fun getActiveNotesByDate(date: String): Flow<List<NoteEntity>> {
         return notesFlow.map { list ->
             list.filter { it.date == date && it.status != "DISCARDED" }
-                .sortedBy { it.createdAt }
+                .sortedByDescending { it.createdAt }
         }
     }
 
     override fun getAllNotesByDate(date: String): Flow<List<NoteEntity>> {
         return notesFlow.map { list ->
             list.filter { it.date == date }
-                .sortedBy { it.createdAt }
+                .sortedByDescending { it.createdAt }
         }
     }
 
