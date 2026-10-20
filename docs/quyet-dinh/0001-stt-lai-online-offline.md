@@ -1,6 +1,6 @@
 # 0001. Chuyển giọng nói: kết hợp online và offline
 
-Trạng thái: chấp nhận
+Trạng thái: bị thay thế một phần bởi [0007](0007-bo-stt-offline-cho-mang.md) (bỏ whisper.cpp offline on-device, chuyển hoàn toàn sang cơ chế lưu âm thanh gốc và chờ mạng gọi API online).
 
 ## Bối cảnh
 Cần chuyển giọng nói tiếng Việt thành văn bản, ngân sách thấp, công trường có lúc mất mạng, môi trường ồn.
