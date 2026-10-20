@@ -17,7 +17,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% toàn bộ Giai đoạn 0, Giai đoạn 1, Giai đoạn 2 và Giai đoạn 3.
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3. Đã lập kế hoạch chi tiết cho Giai đoạn 4: Mở rộng gồm 12 task (Task 4.1.1 đến 4.4.2 trong [ke-hoach-thuc-hien.md](ke-hoach-thuc-hien.md)).
 - Chuyển hướng kiến trúc STT: Quyết định 0007 thay thế một phần Quyết định 0001; loại bỏ hoàn toàn whisper.cpp on-device, giải phóng thư mục `files/models/` trên điện thoại, lưu tệp âm thanh gốc `.m4a` chờ kết nối mạng để tự động chuyển văn bản và phân loại.
 
 ## Quyết định phải giữ
@@ -30,6 +30,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Thử nghiệm trên máy thật `33c4f658`: bật Chế độ máy bay (offline), ghi âm một ghi chú -> kiểm tra file âm thanh lưu an toàn, phát lại tốt, hiển thị trạng thái `⏳ Chờ mạng`.
-2. Tắt Chế độ máy bay (kết nối lại mạng) -> WorkManager tự động kích hoạt gọi Groq Whisper STT và Groq LLM phân loại.
-3. Chuẩn bị kế hoạch cho Giai đoạn 4: Mở rộng (xem `08-cong-viec-tuong-lai.md`).
+1. Lựa chọn nhóm task bắt đầu trong Giai đoạn 4: Nhóm 4.1 (Mẫu thứ hai & Đa mẫu Báo cáo tuần) hoặc Nhóm 4.2 (Ảnh hiện trường kèm ghi chú).
+2. Thử nghiệm trên máy thật `33c4f658`: bật Chế độ máy bay (offline), ghi âm một ghi chú -> kiểm tra file âm thanh lưu an toàn, phát lại tốt, hiển thị trạng thái `⏳ Chờ mạng` và kích hoạt tự động khi bật mạng lại.

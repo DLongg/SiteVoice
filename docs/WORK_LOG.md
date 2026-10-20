@@ -234,3 +234,14 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
   + Thiết bị thật: Đã xóa thư mục `files/models/` trên điện thoại `33c4f658` (giải phóng hơn 600MB bộ nhớ máy cho người dùng), cài đặt bản APK 11.94 MB thành công và khởi chạy mượt mà.
 - Kiểm tra: Toàn bộ 25/25 unit tests chạy pass 100%; `.\gradlew.bat assembleDebug` build thành công; ứng dụng chạy ổn định trên thiết bị thật.
 - Còn lại: Người dùng trải nghiệm ghi âm khi tắt mạng (hiển thị ⏳ Chờ mạng, file âm thanh nghe lại tốt) và bật mạng để tự động xử lý. Sẵn sàng cho Giai đoạn 4: Mở rộng.
+
+## 2026-10-20 — Lập kế hoạch chi tiết Giai đoạn 4 (Mở rộng) — Hoàn thành
+
+- Kết quả: Phân rã và thiết lập kế hoạch chi tiết cho Giai đoạn 4 (Mở rộng) theo định hướng từ `08-cong-viec-tuong-lai.md` gồm 12 task cụ thể chia thành 4 nhóm nghiệp vụ:
+  + Nhóm 4.1: Mẫu thứ hai & Kiến trúc Đa mẫu (Báo cáo tuần công trường, selector mẫu, tổng hợp dải ngày, xuất Doc tuần) [Task 4.1.1 - 4.1.4].
+  + Nhóm 4.2: Ảnh hiện trường kèm ghi chú (Chụp/chọn ảnh, lưu tệp cục bộ an toàn, thumbnail & caption trên UI, chèn ảnh vào Google Doc qua Docs API) [Task 4.2.1 - 4.2.3].
+  + Nhóm 4.3: Trích xuất việc cần làm (To-do / Action Items) & Chia sẻ nhanh (LLM trích xuất to-do/tồn đọng, tab quản lý to-do Room, 1 chạm chia sẻ sang Zalo) [Task 4.3.1 - 4.3.3].
+  + Nhóm 4.4: Tìm kiếm & Bộ lọc ghi chú (DAO query full-text/LIKE, SearchBar và Filter Chips trực quan chuẩn design-taste-frontend) [Task 4.4.1 - 4.4.2].
+- Cập nhật: `docs/ke-hoach-thuc-hien.md` (bổ sung 12 task từ 4.1.1 đến 4.4.2, nâng tổng số task từ 42 lên 54), `docs/07-lo-trinh.md` (cập nhật 4 đầu việc Giai đoạn 4), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Đối chiếu mã task, mô tả, người làm, đầu vào, kết quả và trạng thái với cấu trúc chuẩn của dự án; kiểm tra liên kết giữa các tài liệu.
+- Còn lại: Chờ người dùng xác nhận bắt đầu triển khai nhóm task ưu tiên trong Giai đoạn 4.

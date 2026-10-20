@@ -532,6 +532,132 @@
 
 ---
 
+## Giai đoạn 4 – Mở rộng
+
+### 4.1 Mẫu thứ hai & Đa mẫu (Báo cáo tuần)
+
+#### 4.1.1 Bộ mẫu Báo cáo tuần công trường
+| | |
+|---|---|
+| **Mô tả** | Thiết lập thư mục mẫu `templates/bao-cao-tuan/` gồm `schema.json`, `prompt.md`, `doc-mau.md` và mẫu Google Doc chuẩn. Định nghĩa các placeholder: tiến độ tuần, nhân lực trung bình, thời tiết/ngày mưa, tồn đọng và kế hoạch tuần tới. |
+| **Người làm** | Agent |
+| **Đầu vào** | `docs/quyet-dinh/0005-kien-truc-theo-mau.md`, `docs/08-cong-viec-tuong-lai.md` |
+| **Kết quả** | Bộ file mẫu `templates/bao-cao-tuan/` đầy đủ schema kiểm soát ký tự và prompt LLM |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.1.2 Module Đa mẫu & Giao diện chọn Mẫu
+| | |
+|---|---|
+| **Mô tả** | Nâng cấp module `template/` để nạp danh sách mẫu khả dụng từ assets/storage; thêm thành phần Compose `TemplateSelector` cho phép người dùng chọn Mẫu báo cáo (Nhật ký ngày / Báo cáo tuần) khi tổng hợp. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.1.1, `docs/03-kien-truc.md` |
+| **Kết quả** | `TemplateRepository` hỗ trợ nhiều mẫu, UI chọn mẫu tinh gọn tuân thủ skill design-taste-frontend |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.1.3 Tổng hợp Báo cáo tuần từ chuỗi Nhật ký ngày
+| | |
+|---|---|
+| **Mô tả** | Module `llm/`: tổng hợp từ các báo cáo ngày đã duyệt trong tuần (hoặc danh sách ghi chú tuần), rút gọn số liệu ngày mưa, tổng công nhân, hạng mục thi công kéo dài, đối chiếu ngân sách ký tự của Mẫu tuần. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.1.1, 4.1.2 |
+| **Kết quả** | Hàm tổng hợp báo cáo tuần trong `ReportSummarizer`, kiểm soát ngân sách dòng tuần |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.1.4 Xuất Google Doc Báo cáo tuần
+| | |
+|---|---|
+| **Mô tả** | Sao chép Doc mẫu Báo cáo tuần và thay thế placeholder qua Drive API & Docs API v1 `batchUpdate`. Hỗ trợ duyệt 1 lần trước khi xuất. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.1.1, 4.1.3 |
+| **Kết quả** | Tích hợp xuất Báo cáo tuần qua `ExportWorker`, lưu trữ link Doc tuần |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+---
+
+### 4.2 Ảnh hiện trường kèm ghi chú (Photo & Caption)
+
+#### 4.2.1 Chụp & đính kèm ảnh vào ghi chú
+| | |
+|---|---|
+| **Mô tả** | Thêm trường `photoUri` vào `NoteEntity` (Room migration). Tích hợp launcher chụp ảnh/chọn ảnh, lưu tệp ảnh gốc an toàn vào thư mục riêng của app `filesDir/photos/`. |
+| **Người làm** | Agent |
+| **Đầu vào** | `docs/04-du-lieu.md` |
+| **Kết quả** | Chụp/chọn ảnh lưu cục bộ an toàn, cập nhật entity Room kèm migration test |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.2.2 Chú thích và hiển thị ảnh trên UI
+| | |
+|---|---|
+| **Mô tả** | Thêm thumbnail ảnh trong thẻ ghi chú, cho phép phóng to xem trước ảnh (dialog/modal) và sửa ghi chú/chú thích ảnh. Áp dụng chuẩn visual design-taste-frontend. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.2.1 |
+| **Kết quả** | UI thẻ ghi chú có thumbnail ảnh tinh gọn, phản hồi trực quan, xem chi tiết ảnh |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.2.3 Tải ảnh lên Google Drive & chèn vào Google Doc
+| | |
+|---|---|
+| **Mô tả** | Khi xuất báo cáo, tải ảnh hiện trường lên thư mục Google Drive tương ứng và dùng Docs API chèn ảnh (`insertInlineImage`) vào khu vực placeholder hình ảnh hiện trường. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.2.1, 2.3.5 |
+| **Kết quả** | Google Doc có ảnh hiện trường và chú thích minh họa sắc nét theo vị trí quy định |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+---
+
+### 4.3 Trích xuất việc cần làm (To-do / Action Items) & Chia sẻ nhanh
+
+#### 4.3.1 Prompt LLM trích xuất To-do & Vấn đề tồn đọng
+| | |
+|---|---|
+| **Mô tả** | Tạo prompt LLM trích xuất các công việc phát sinh cần xử lý (To-do), phân định rõ việc tồn đọng, người nhận việc/đơn vị liên quan từ các bản ghi âm trong ngày. |
+| **Người làm** | Agent |
+| **Đầu vào** | `prompts/`, ghi chú trong ngày |
+| **Kết quả** | `TodoExtractor.kt` phân tích danh sách note và trả về cấu trúc to-do rõ ràng |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.3.2 Quản lý Việc cần làm (To-do Entity & UI)
+| | |
+|---|---|
+| **Mô tả** | Tạo `TodoEntity` và `TodoDao` trong Room DB. Màn hình hoặc Tab "Việc cần làm" hiển thị danh sách to-do với checkbox đánh dấu hoàn thành, cho phép thêm việc thủ công. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.3.1 |
+| **Kết quả** | Màn hình To-do trực quan, lưu trữ Room bền vững |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.3.3 Chia sẻ nhanh qua Zalo/Email
+| | |
+|---|---|
+| **Mô tả** | Tính năng 1 chạm: sao chép nhanh tóm tắt công việc / tồn đọng định dạng đẹp hoặc mở Android Share Sheet để gửi ngay cho sếp/đội thợ qua Zalo, Telegram, Email. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.3.2 |
+| **Kết quả** | Nút Chia sẻ / Copy nhanh trên giao diện, hỗ trợ Android Send Intent |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+---
+
+### 4.4 Tìm kiếm & Bộ lọc ghi chú (Search & Filter)
+
+#### 4.4.1 Truy vấn tìm kiếm trong Room
+| | |
+|---|---|
+| **Mô tả** | Cập nhật `NoteDao` bổ sung hàm tìm kiếm theo từ khóa văn bản (FTS hoặc SQL LIKE), lọc theo dải ngày tạo, lọc theo nhãn danh mục (TIEN_DO, VAT_TU, CONG_NHAN, SU_CO,...). |
+| **Người làm** | Agent |
+| **Đầu vào** | `com.sitevoice.app.data.dao.NoteDao` |
+| **Kết quả** | DAO queries tìm kiếm & lọc mượt mà kèm unit test |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+#### 4.4.2 UI Tìm kiếm và Filter Chips
+| | |
+|---|---|
+| **Mô tả** | Thêm SearchBar và hàng Filter Chips (Ngày, Danh mục) vào màn hình danh sách ghi chú. Tìm kiếm tức thì theo từ khóa nhập vào, giao diện không giật lag. |
+| **Người làm** | Agent |
+| **Đầu vào** | 4.4.1 |
+| **Kết quả** | UI thanh tìm kiếm và lọc danh mục chuẩn App Screens của design-taste-frontend |
+| **Trạng thái** | 🔲 Chưa bắt đầu |
+
+---
+
 ## Tổng hợp số lượng task
 
 | Giai đoạn | Số task |
@@ -540,7 +666,8 @@
 | 1 – Lõi chạy được | 18 |
 | 2 – Ra tài liệu | 13 |
 | 3 – Không cần mạng | 7 |
-| **Tổng** | **42** |
+| 4 – Mở rộng | 12 |
+| **Tổng** | **54** |
 
 ---
 

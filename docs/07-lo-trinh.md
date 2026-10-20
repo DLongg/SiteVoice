@@ -23,5 +23,8 @@
 - [x] 9. Hàng đợi WorkManager cho STT, phân loại, xuất (Task 3.1)
 - [x] 10. whisper.cpp offline (model tiny/base/small) (Task 3.2)
 
-## Giai đoạn 4: Mở rộng
-👉 Xem `08-cong-viec-tuong-lai.md`.
+## Giai đoạn 4: Mở rộng (đang lập kế hoạch)
+- [ ] 11. Mẫu thứ hai & Đa mẫu: Báo cáo tuần công trường (`templates/bao-cao-tuan/`, tổng hợp nhiều ngày, xuất Doc tuần) (Task 4.1)
+- [ ] 12. Ảnh hiện trường: Chụp/đính kèm ảnh vào ghi chú, hiển thị thumbnail, chèn ảnh vào Google Doc (Task 4.2)
+- [ ] 13. Từ ghi chú sang hành động: LLM trích xuất việc cần làm (To-do), quản lý việc, chia sẻ nhanh qua Zalo (Task 4.3)
+- [ ] 14. Tìm kiếm & Lọc: Truy vấn từ khóa full-text, lọc theo ngày và danh mục ghi chú (Task 4.4)
