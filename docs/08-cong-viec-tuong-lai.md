@@ -9,8 +9,9 @@ Chỉ làm sau khi phiên bản hiện tại (Lõi ứng dụng + Đa mẫu + H�
 - E. Tìm kiếm và bộ lọc nâng cao (Search & Filter): tìm kiếm toàn văn theo từ khóa, thanh SearchBar và Filter Chips lọc theo dải ngày, nhãn danh mục (dời từ Nhóm 4.4).
 - F. Dùng chung nhiều người: nhiều người ghi, một người duyệt và xuất.
 - G. Mở rộng ngành khác: y tế, bán hàng thị trường, kiểm tra chất lượng, nông nghiệp, bảo trì thiết bị.
-- H. Hỗ trợ tạo Doc mẫu dễ dàng: người dùng chỉ cần cung cấp file Word (`.doc`/`.docx`) đang dùng; hệ thống phân tích bố cục, nhận diện phần cố định/phần cần điền và tự tạo bản Doc mẫu có placeholder.
-  - Mục tiêu: giữ bố cục, bảng biểu và khu vực chữ ký của tài liệu gốc; cho xem trước, chỉnh lại các trường nhận diện và xác nhận trước khi dùng mẫu.
-  - Kết quả mong muốn: Google Doc mẫu có placeholder và cấu hình ánh xạ trường tương ứng với bộ Mẫu (`schema.json`, `prompt.md`, `doc-mau.md`), dùng được với luồng xuất bằng bản sao hiện có trong thiết kế. Giữ nguyên file người dùng cung cấp.
+- H. Mở rộng thiết lập form: nhận PDF/ảnh form (OCR + dựng lại Doc), nhiều Mẫu cùng lúc, xuất ngược DOCX, tự học từ các lần người dùng sửa vị trí điền.
+- I. Phương án dự phòng: app tự dựng tài liệu từ định nghĩa Mẫu bằng code (không phụ thuộc Doc người dùng) nếu việc sửa Doc gây lỗi.
+
+Phần thiết lập form cơ bản trước đây ở mục H đã chuyển sang [10-thiet-lap-form.md](10-thiet-lap-form.md) và bước 8b của [lộ trình](07-lo-trinh.md): đầu vào Google Doc hoặc DOCX, giữ bố cục/bảng/chữ ký, làm việc trên bản sao, duyệt và thử Doc trước khi xác nhận. Chưa hỗ trợ file `.doc`.
 
 Thứ tự ưu tiên khi triển khai tiếp: Ảnh hiện trường → To-do/tồn đọng & chia sẻ Zalo → Tìm kiếm/Bộ lọc → Báo cáo tuần/tháng → Nhiều người dùng.

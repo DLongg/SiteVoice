@@ -32,6 +32,6 @@
 - [—] 14. Tìm kiếm & Lọc (Task 4.4): Dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng
 
 ## Trạng thái hiện tại
-✅ Hoàn thành 100% toàn bộ các giai đoạn phát triển cam kết (Giai đoạn 0, 1, 2, 3 và Nhóm 4.1 của Giai đoạn 4). Ứng dụng đã sẵn sàng cho người dùng kiểm thử và nghiệm thu thực tế ngoài công trường.
+✅ Phạm vi trước Yêu cầu thay đổi 01 đã được ghi nhận hoàn thành (Giai đoạn 0, 1, 2, 3 và Nhóm 4.1 của Giai đoạn 4), chờ người dùng kiểm thử và nghiệm thu thực tế ngoài công trường. Phạm vi mới gồm bài kiểm tra chuẩn và bước 8b còn chưa triển khai; cập nhật tài liệu không đồng nghĩa chức năng thiết lập form đã chạy.
 
 Làm 8 (đường cố định, Mẫu mặc định) TRƯỚC 8b; 8b dùng Mẫu mặc định làm bài kiểm tra chuẩn.

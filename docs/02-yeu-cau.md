@@ -12,6 +12,8 @@
 - F9. Xuất Google Doc từ Doc mẫu (copy + thay placeholder).
 - F10. Cài đặt: nhà cung cấp LLM, API key, tài khoản Google, máy móc mặc định, từ điển thuật ngữ.
 - F11. Backup theo trạng thái: ngày đã duyệt giữ nội dung hoàn chỉnh đã duyệt; ngày chưa duyệt giữ văn bản chuyển từ giọng nói và thông tin liên quan để tiếp tục xử lý, đến khi duyệt xong, không giới hạn số ngày. Backup không kèm âm thanh; điện thoại vẫn giữ âm thanh gốc để nghe lại. Cách đưa backup sang máy tính và định dạng backup chưa chốt.
+- F12. Thiết lập form một lần: nạp Google Doc hoặc DOCX từ máy, app tự nhận diện chỗ điền, tự đặt placeholder, tự sinh Mẫu và giới hạn; người dùng duyệt (xem docs/10).
+- F13. Đo sức chứa tự động để vừa số trang của form (xuất PDF, đếm trang).
 
 ## Lưu dữ liệu và backup
 - Nội dung đã duyệt phải có bản trên điện thoại; yêu cầu có thêm bản trên máy tính và Google Docs đã được ghi nhận, cơ chế chuyển bản sang máy tính chưa chốt.

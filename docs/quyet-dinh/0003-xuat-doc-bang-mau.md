@@ -11,4 +11,4 @@ Tạo .docx trên máy (Apache POI) rồi upload: định dạng phức tạp h�
 ## Hệ quả
 Cần Google Sign-In và hàng đợi khi mất mạng. Danh sách placeholder là hợp đồng giữa Doc mẫu và Mẫu (`templates/<mau>/doc-mau.md`).
 
-Cập nhật: placeholder không còn do người dùng tự đặt, xem 0006. Phần xuất (copy + replaceAllText) vẫn giữ nguyên.
+Cập nhật: placeholder không còn do người dùng tự đặt, xem [0006-tu-dat-placeholder](0006-tu-dat-placeholder.md). Phần xuất (copy + replaceAllText) vẫn giữ nguyên.
