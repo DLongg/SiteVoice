@@ -31,6 +31,7 @@
 - Chỉ chạy lệnh build/test khi cấu hình thực sự tồn tại. Sau khi có Gradle wrapper, dùng wrapper của dự án (`.\gradlew.bat assembleDebug`, `.\gradlew.bat test`, `.\gradlew.bat lint` trên Windows; `./gradlew` tương ứng trên hệ khác), tại thư mục chứa wrapper.
 - Kiểm tra đúng phần thay đổi: logic thuần (đếm ký tự, phân loại từ khóa, ghép placeholder) cần test phù hợp khi triển khai; bước ứng dụng cần xác minh trên điện thoại thật theo lộ trình. Task tài liệu kiểm tra nội dung, liên kết, tính nhất quán; không cần tạo test ứng dụng.
 - Báo rõ kiểm tra đã chạy, kết quả và phần chưa chạy cùng lý do. Không ghi build/test/thiết bị là đạt nếu chưa thực hiện.
+- Luôn commit và push liên tục: Mọi thay đổi dù là nhỏ nhất (tạo file, sửa hàm, sửa tài liệu, fix bug), bắt buộc phải commit thật chi tiết từng phần với thông điệp rõ ràng và push ngay lên Git remote (origin/main). Tuyệt đối không gom nhiều thay đổi rời rạc vào một commit lớn; lịch sử Git phải phản ánh minh bạch từng bước phát triển.
 
 ## Kết thúc task và duy trì bộ nhớ
 
