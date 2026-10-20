@@ -124,13 +124,21 @@ class MainViewModel(
         }
     }
 
+    fun reclassifyNote(note: NoteEntity) {
+        val text = note.text
+        if (text.isNullOrBlank()) return
+        triggerClassification(note.id, text)
+    }
+
     private fun triggerClassification(noteId: Long, text: String) {
         viewModelScope.launch {
+            android.util.Log.i("SiteVoiceVM", "Bắt đầu phân loại note $noteId: $text")
             val classifyResult = classifier.classify(noteId, text)
             val currentNote = repository.getNoteById(noteId) ?: return@launch
 
             if (classifyResult.isSuccess) {
                 val label = classifyResult.getOrThrow().label
+                android.util.Log.i("SiteVoiceVM", "Phân loại thành công note $noteId -> label: $label")
                 repository.updateNote(
                     currentNote.copy(
                         label = label,
@@ -139,6 +147,8 @@ class MainViewModel(
                     )
                 )
             } else {
+                val err = classifyResult.exceptionOrNull()?.message
+                android.util.Log.e("SiteVoiceVM", "Phân loại thất bại note $noteId: $err")
                 // Fallback nếu LLM phân loại lỗi: gán nhãn chua_phan_loai
                 repository.updateNote(
                     currentNote.copy(
@@ -154,6 +164,7 @@ class MainViewModel(
     fun updateNoteText(noteId: Long, newText: String) {
         viewModelScope.launch {
             repository.updateText(noteId, newText)
+            triggerClassification(noteId, newText)
         }
     }
 

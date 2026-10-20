@@ -1,5 +1,6 @@
 package com.sitevoice.app.llm
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 class GroqLlmClient(
     private val apiKeyProvider: () -> String?,
-    private val model: String = "llama-3.1-8b-instant",
+    private val preferredModel: String = "qwen/qwen3.8-27b",
     private val client: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
@@ -22,8 +23,16 @@ class GroqLlmClient(
 ) : LlmClient {
 
     companion object {
+        private const val TAG = "SiteVoiceLLM"
         private const val GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+
+        val FALLBACK_MODELS = listOf(
+            "qwen/qwen3.8-27b",
+            "openai/gpt-oss-20b",
+            "openai/gpt-oss-120b",
+            "allam-2-7b"
+        )
     }
 
     override suspend fun chat(
@@ -36,68 +45,88 @@ class GroqLlmClient(
             return@withContext Result.failure(IllegalStateException("Chưa cấu hình API Key Groq"))
         }
 
-        try {
-            val rootJson = JSONObject().apply {
-                put("model", model)
-                put("temperature", temperature.toDouble())
+        // Danh sách các model để thử, ưu tiên preferredModel
+        val modelsToTry = linkedSetOf(preferredModel).apply { addAll(FALLBACK_MODELS) }.toList()
 
-                if (responseJson) {
-                    put("response_format", JSONObject().apply {
-                        put("type", "json_object")
-                    })
-                }
+        var lastError: Exception? = null
 
-                val messagesArray = JSONArray()
-                for (msg in messages) {
-                    val msgObj = JSONObject().apply {
-                        put("role", msg.role)
-                        put("content", msg.content)
+        for (modelName in modelsToTry) {
+            try {
+                Log.d(TAG, "Đang gọi Groq LLM với model: $modelName")
+                val rootJson = JSONObject().apply {
+                    put("model", modelName)
+                    put("temperature", temperature.toDouble())
+
+                    if (responseJson) {
+                        put("response_format", JSONObject().apply {
+                            put("type", "json_object")
+                        })
                     }
-                    messagesArray.put(msgObj)
+
+                    val messagesArray = JSONArray()
+                    for (msg in messages) {
+                        val msgObj = JSONObject().apply {
+                            put("role", msg.role)
+                            put("content", msg.content)
+                        }
+                        messagesArray.put(msgObj)
+                    }
+                    put("messages", messagesArray)
                 }
-                put("messages", messagesArray)
-            }
 
-            val requestBody = rootJson.toString().toRequestBody(JSON_MEDIA_TYPE)
+                val requestBody = rootJson.toString().toRequestBody(JSON_MEDIA_TYPE)
 
-            val request = Request.Builder()
-                .url(GROQ_CHAT_URL)
-                .addHeader("Authorization", "Bearer $apiKey")
-                .addHeader("Content-Type", "application/json")
-                .post(requestBody)
-                .build()
+                val request = Request.Builder()
+                    .url(GROQ_CHAT_URL)
+                    .addHeader("Authorization", "Bearer $apiKey")
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("User-Agent", "SiteVoice/1.0")
+                    .post(requestBody)
+                    .build()
 
-            val response = client.newCall(request).execute()
-            val responseBody = response.body?.string()
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
 
-            if (!response.isSuccessful) {
-                val errorMsg = try {
-                    val errJson = JSONObject(responseBody ?: "")
-                    errJson.optJSONObject("error")?.optString("message")
-                        ?: "Mã lỗi HTTP: ${response.code}"
-                } catch (e: Exception) {
-                    "Mã lỗi HTTP: ${response.code}"
+                if (!response.isSuccessful) {
+                    val errorMsg = try {
+                        val errJson = JSONObject(responseBody ?: "")
+                        errJson.optJSONObject("error")?.optString("message")
+                            ?: "Mã lỗi HTTP: ${response.code}"
+                    } catch (e: Exception) {
+                        "Mã lỗi HTTP: ${response.code}"
+                    }
+                    Log.w(TAG, "Model $modelName thất bại: $errorMsg (code: ${response.code})")
+
+                    // Nếu là 404 (model not found), thử tiếp model khác
+                    if (response.code == 404) {
+                        lastError = IOException("Model $modelName không tồn tại: $errorMsg")
+                        continue
+                    }
+                    return@withContext Result.failure(IOException("Lỗi Groq LLM API: $errorMsg"))
                 }
-                return@withContext Result.failure(IOException("Lỗi Groq LLM API: $errorMsg"))
+
+                if (responseBody.isNullOrBlank()) {
+                    return@withContext Result.failure(IOException("Phản hồi từ Groq LLM API trống"))
+                }
+
+                val resJson = JSONObject(responseBody)
+                val choices = resJson.optJSONArray("choices")
+                if (choices == null || choices.length() == 0) {
+                    return@withContext Result.failure(IOException("Không tìm thấy kết quả trong phản hồi"))
+                }
+
+                val firstChoice = choices.getJSONObject(0)
+                val messageObj = firstChoice.optJSONObject("message")
+                val content = messageObj?.optString("content")?.trim().orEmpty()
+
+                Log.i(TAG, "Groq LLM thành công với model $modelName. Output: $content")
+                return@withContext Result.success(content)
+            } catch (e: Exception) {
+                Log.e(TAG, "Lỗi khi gọi model $modelName: ${e.message}", e)
+                lastError = e
             }
-
-            if (responseBody.isNullOrBlank()) {
-                return@withContext Result.failure(IOException("Phản hồi từ Groq LLM API trống"))
-            }
-
-            val resJson = JSONObject(responseBody)
-            val choices = resJson.optJSONArray("choices")
-            if (choices == null || choices.length() == 0) {
-                return@withContext Result.failure(IOException("Không tìm thấy kết quả trong phản hồi"))
-            }
-
-            val firstChoice = choices.getJSONObject(0)
-            val messageObj = firstChoice.optJSONObject("message")
-            val content = messageObj?.optString("content")?.trim().orEmpty()
-
-            Result.success(content)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
+
+        Result.failure(lastError ?: IOException("Không thể kết nối đến bất kỳ model Groq nào"))
     }
 }
