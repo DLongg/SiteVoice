@@ -47,7 +47,9 @@ object GoogleAuthManager {
     fun signOut(context: Context, onComplete: () -> Unit) {
         val client = GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN)
         client.signOut().addOnCompleteListener {
-            onComplete()
+            client.revokeAccess().addOnCompleteListener {
+                onComplete()
+            }
         }
     }
 }

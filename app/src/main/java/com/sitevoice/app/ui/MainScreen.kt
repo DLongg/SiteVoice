@@ -1,5 +1,6 @@
 package com.sitevoice.app.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -19,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -68,6 +70,29 @@ fun MainScreen(
     val synthesisError by viewModel.synthesisError.collectAsState()
     val isExporting by viewModel.isExporting.collectAsState()
     val exportError by viewModel.exportError.collectAsState()
+    val authConsentIntent by viewModel.authConsentIntent.collectAsState()
+
+    // Activity Result Launcher xử lý cấp quyền bổ sung của Google (UserRecoverableAuthException)
+    val consentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.clearAuthConsentIntent()
+        if (result.resultCode == Activity.RESULT_OK) {
+            Toast.makeText(context, "Đã cấp quyền! Đang hoàn tất xuất Google Doc...", Toast.LENGTH_SHORT).show()
+            viewModel.exportDailyReport(context) { docUrl ->
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(docUrl))
+                context.startActivity(browserIntent)
+            }
+        } else {
+            Toast.makeText(context, "Cần cấp quyền để xuất Google Doc", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    LaunchedEffect(authConsentIntent) {
+        authConsentIntent?.let { intent ->
+            consentLauncher.launch(intent)
+        }
+    }
 
     // Activity Result Launcher cho Google Sign-In
     val googleSignInLauncher = rememberLauncherForActivityResult(

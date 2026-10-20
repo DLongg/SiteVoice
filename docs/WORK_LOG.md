@@ -305,6 +305,17 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: 30/30 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công; `adb install -r` trả về `Success` trên thiết bị `33c4f658`.
 - Còn lại: Người dùng kiểm tra trực tiếp danh sách ghi chú trên điện thoại thật và sẵn sàng triển khai Task 4.1.4 (Xuất Doc động theo Mẫu).
 
+## 2026-10-20 — Xử lý UserRecoverableAuthException (NeedRemoteConsent) khi xuất Google Doc — Hoàn thành
+
+- Kết quả: Khắc phục triệt để lỗi "Không thể lấy quyền truy cập Google (NeedRemoteConsent)" khi người dùng bấm xuất Google Doc:
+  + Nâng cấp `MainViewModel.kt`: Bổ sung StateFlow `authConsentIntent` và bắt ngoại lệ `UserRecoverableAuthException`. Khi Google Play Services yêu cầu người dùng phê duyệt quyền Drive mới, hệ thống tự động trích xuất `intent` ủy quyền thay vì báo lỗi.
+  + Cập nhật `MainScreen.kt`: Thêm `consentLauncher` và `LaunchedEffect(authConsentIntent)`. Khi có yêu cầu cấp quyền từ Google, màn hình sẽ tự động bật hộp thoại phân quyền chính thức của Google để người dùng 1 chạm bấm "Cho phép", sau đó tự động tiếp tục tiến trình xuất Google Doc ngay lập tức.
+  + Cập nhật `GoogleAuthManager.kt`: Bổ sung `client.revokeAccess()` trong `signOut` giúp dọn dẹp sạch sẽ token cũ khi người dùng bấm Đăng xuất.
+  + Build & Cài đặt: 30/30 unit tests pass 100%, biên dịch thành công APK và cài đặt (`adb install -r`) lên điện thoại thật `33c4f658`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/export/GoogleAuthManager.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: `.\gradlew.bat testDebugUnitTest assembleDebug` thành công 100%; `adb install -r` trả về `Success`.
+- Còn lại: Người dùng bấm "Xuất Google Doc" trên điện thoại để trải nghiệm hộp thoại cấp quyền tự động.
+
 ## 2026-10-20 — Triển khai Task 4.1.4: Nâng cấp Xuất Google Doc theo Mẫu tùy biến — Hoàn thành
 
 - Kết quả: Hoàn thành 100% Task 4.1.4, chính thức khép lại trọn vẹn Nhóm 4.1 (Thư viện Mẫu & Bộ tạo Mẫu):

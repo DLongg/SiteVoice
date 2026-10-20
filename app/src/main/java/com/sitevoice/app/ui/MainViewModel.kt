@@ -1,9 +1,11 @@
 package com.sitevoice.app.ui
 
 import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.UserRecoverableAuthException
 import com.sitevoice.app.audio.AudioPlayer
 import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.data.DailyInputEntity
@@ -110,6 +112,13 @@ class MainViewModel(
 
     private val _exportError = MutableStateFlow<String?>(null)
     val exportError: StateFlow<String?> = _exportError.asStateFlow()
+
+    private val _authConsentIntent = MutableStateFlow<Intent?>(null)
+    val authConsentIntent: StateFlow<Intent?> = _authConsentIntent.asStateFlow()
+
+    fun clearAuthConsentIntent() {
+        _authConsentIntent.value = null
+    }
 
     private val _currentSttStatus = MutableStateFlow<CurrentSttStatus>(CurrentSttStatus.Idle)
     val currentSttStatus: StateFlow<CurrentSttStatus> = _currentSttStatus.asStateFlow()
@@ -317,7 +326,13 @@ class MainViewModel(
                 }
                 val tokenResult = GoogleAuthManager.fetchAccessToken(context, acc)
                 if (tokenResult.isFailure) {
-                    _exportError.value = "Không thể lấy quyền truy cập Google: ${tokenResult.exceptionOrNull()?.message}"
+                    val ex = tokenResult.exceptionOrNull()
+                    if (ex is UserRecoverableAuthException) {
+                        _isExporting.value = false
+                        _authConsentIntent.value = ex.intent
+                        return@launch
+                    }
+                    _exportError.value = "Không thể lấy quyền truy cập Google: ${ex?.message}"
                     return@launch
                 }
                 val token = tokenResult.getOrThrow()
