@@ -61,6 +61,8 @@ class AudioRecorder(private val context: Context) {
 
     /**
      * Dừng ghi và trả về thời lượng ghi âm (milliseconds).
+     * Khi dừng thành công, file âm thanh đã trở thành bản ghi chính thức,
+     * gán currentOutputFile = null để tránh bị xóa nhầm khi cancelRecording.
      */
     fun stopRecording(): Result<Long> {
         val recorder = mediaRecorder ?: return Result.failure(IllegalStateException("Recorder chưa được bật"))
@@ -68,6 +70,7 @@ class AudioRecorder(private val context: Context) {
             val durationMs = System.currentTimeMillis() - startTimeMs
             recorder.stop()
             releaseRecorder()
+            currentOutputFile = null // File ghi thành công, không cho phép xóa
             Result.success(durationMs)
         } catch (e: Exception) {
             Log.e("AudioRecorder", "Lỗi khi dừng MediaRecorder", e)
@@ -76,13 +79,24 @@ class AudioRecorder(private val context: Context) {
         }
     }
 
+    /**
+     * Hủy bản ghi âm đang thực hiện dở (ví dụ người dùng trượt tay hủy).
+     * Chỉ xóa file nếu đang thực sự trong quá trình ghi (mediaRecorder != null).
+     */
     fun cancelRecording() {
+        val wasRecording = mediaRecorder != null
         try {
             mediaRecorder?.stop()
         } catch (_: Exception) {}
         releaseRecorder()
-        currentOutputFile?.let {
-            if (it.exists()) it.delete()
+
+        if (wasRecording) {
+            currentOutputFile?.let {
+                if (it.exists()) {
+                    it.delete()
+                    Log.i("AudioRecorder", "Đã xóa file ghi âm bị hủy: ${it.name}")
+                }
+            }
         }
         currentOutputFile = null
     }
