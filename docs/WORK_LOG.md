@@ -387,3 +387,38 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Blocker đã hỏi người dùng: thiếu CLAUDE; F11 backup đã tồn tại (đề xuất giữ và thêm F12/F13); mục H đã có mô tả hỗ trợ Word (đề xuất chuyển sang tham chiếu docs/10 rồi thêm H/I mới); giới hạn phạm vi xung đột checklist toàn repo. Chưa nhận câu trả lời, chưa sửa phần phụ thuộc. Hai quyết định mới giữ đúng tên yêu cầu dù trùng số với quyết định một lượt duyệt/STT cũ; giữ nguyên hai quyết định cũ.
 - Đã commit/push từng nhóm lên `origin/main`: `c8b08a5` (5 đặc tả mới), `99b8e02` (kiến trúc/dữ liệu/LLM/xuất/lộ trình), `1e1f8ae` (Mẫu công trường), `0238c94` (ràng buộc đầu vào/câu hỏi mở).
 - Còn lại: nhận quyết định người dùng; hoàn tất `CLAUDE.md`, hai F mới và `docs/08-cong-viec-tuong-lai.md`; chốt ngoại lệ checklist, kiểm tra lại, cập nhật bàn giao và commit/push. Yêu cầu thay đổi 01 chưa hoàn tất.
+
+## 2026-10-20 — Yêu cầu thay đổi 01: dùng GEMINI/AGENTS, chốt F12/F13 và kiểm tra lại tài liệu
+
+- Người dùng chốt dùng `GEMINI.md` hoặc `AGENTS.md` thay `CLAUDE.md`, đồng ý F12/F13; hỏi giải thích ý nghĩa ngoại lệ placeholder. Đã giải thích: giữ mã cũ ở Android/test/assets/DOCX, mẫu khác, đầu vào prompt và lịch sử để không vượt phạm vi hoặc làm hỏng chức năng đang dùng. Không coi câu hỏi của người dùng là chấp thuận sửa checklist hay cho phép thay đổi Android.
+- Kết quả: hoàn tất phần cập nhật tài liệu trong phạm vi. AGENTS giữ nguồn quy tắc chung và bổ sung quy tắc Mẫu đóng gói/tự sinh, code tìm vị trí, model chỉ mô tả, bảo vệ file gốc/neo và thông báo gửi form cho LLM; quy tắc dữ liệu ghi chú được giới hạn đúng các tác vụ phân loại/tổng hợp/rút gọn. GEMINI giữ điểm dẫn, thêm mục tiêu/công nghệ/cấu trúc thư mục và liên kết docs/10 theo nội dung thay đổi 01. Không tạo CLAUDE hay tự dựng lại quy tắc 1–9 không có bản gốc.
+- Đã thêm F12/F13, giữ nguyên F11 backup; mục H/I cập nhật phần mở rộng/dự phòng, phần thiết lập form cơ bản trước đây ở H được dẫn tới docs/10 và bước 8b. Lộ trình phân biệt phạm vi cũ được ghi nhận hoàn thành với phạm vi mới còn chưa triển khai. Quyết định 0003 liên kết bằng tên đầy đủ tới `0006-tu-dat-placeholder.md` để tránh nhầm với quyết định một lượt duyệt.
+- Checklist chạy lại bằng Python: đạt về 5 file mới khớp nội dung cung cấp (docs/10 chỉ nối thêm câu hỏi mở); toàn bộ JSON Mẫu hợp lệ; 13 trường hiện + 1 ẩn; metadata/nhãn/giới hạn/mặc định đúng; mỗi phần B/C có đúng 13 mã khớp schema; đầu ra prompt khớp các trường lấy từ ghi chú. Mục kiểm tra CLAUDE được thay bằng kiểm tra GEMINI/AGENTS theo chỉ dẫn mới: các quy tắc tương ứng yêu cầu 4/10/11 và liên kết docs/10 đầy đủ; F1–F13 không trùng, F11 không đổi; liên kết đã kiểm tra tồn tại.
+- Checklist toàn repo loại mã cũ vẫn CHƯA ĐẠT: còn 13 file đã liệt kê ở kết quả trước, gồm code/test/assets, DOCX, mẫu cá nhân, đầu vào prompt công trường, kế hoạch và WORK_LOG cũ. Phần B/C form công trường đã sạch mã cũ. Đây là kết quả kiểm tra thật, không đánh dấu toàn bộ checklist đạt hoặc tự sửa file ngoài phạm vi. Không có việc sửa tài liệu đang chờ xử lý vì thiếu CLAUDE/F11; các câu hỏi sản phẩm/ký tự thiếu tiếp tục để ở docs/10.
+- Đạt `git diff --check`; xác minh README gốc, hai prompt phân loại/rút gọn, toàn bộ app, DOCX và Gradle không đổi so với `8bb61cf`; lịch sử WORK_LOG trước task được giữ nguyên. Không chạy build/test/thiết bị hay Google/LLM vì chỉ cập nhật tài liệu; chưa triển khai/đo độ chính xác nhận diện hay sức chứa thực tế.
+- Commit/push từng phần lên `origin/main`: `1e5316d` (GEMINI/AGENTS), `d001048` (F12/F13, H/I, lộ trình và liên kết quyết định). Cập nhật SUMMARY và mục log này để lưu trạng thái kiểm tra.
+- Tổng danh sách 21 file tạo/sửa cho Yêu cầu thay đổi 01 (5 mới, 16 sửa; không phải danh sách tính năng đã triển khai):
+
+```text
+M AGENTS.md
+M GEMINI.md
+M docs/02-yeu-cau.md
+M docs/03-kien-truc.md
+M docs/04-du-lieu.md
+M docs/05-llm.md
+M docs/06-google-doc-mau.md
+M docs/07-lo-trinh.md
+M docs/08-cong-viec-tuong-lai.md
+A docs/10-thiet-lap-form.md
+M docs/SUMMARY.md
+M docs/WORK_LOG.md
+M docs/quyet-dinh/0003-xuat-doc-bang-mau.md
+A docs/quyet-dinh/0006-tu-dat-placeholder.md
+A docs/quyet-dinh/0007-dau-vao-gdoc-va-docx.md
+A prompts/nhan-dien-cho-dien.md
+M templates/README.md
+M templates/nhat-ky-cong-truong/doc-mau.md
+M templates/nhat-ky-cong-truong/prompt.md
+M templates/nhat-ky-cong-truong/schema.json
+A templates/schema-chung.md
+```
