@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 class GroqLlmClient(
     private val apiKeyProvider: () -> String?,
-    private val preferredModel: String = "qwen/qwen3.8-27b",
+    private val preferredModel: String = "llama-3.3-70b-versatile",
     private val client: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
@@ -28,10 +28,10 @@ class GroqLlmClient(
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         val FALLBACK_MODELS = listOf(
+            "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
             "qwen/qwen3.8-27b",
-            "openai/gpt-oss-20b",
-            "openai/gpt-oss-120b",
-            "allam-2-7b"
+            "openai/gpt-oss-20b"
         )
     }
 
@@ -56,6 +56,7 @@ class GroqLlmClient(
                 val rootJson = JSONObject().apply {
                     put("model", modelName)
                     put("temperature", temperature.toDouble())
+                    put("max_tokens", 800)
 
                     if (responseJson) {
                         put("response_format", JSONObject().apply {
@@ -97,9 +98,9 @@ class GroqLlmClient(
                     }
                     Log.w(TAG, "Model $modelName thất bại: $errorMsg (code: ${response.code})")
 
-                    // Nếu là 404 (model not found), thử tiếp model khác
-                    if (response.code == 404) {
-                        lastError = IOException("Model $modelName không tồn tại: $errorMsg")
+                    // Nếu là 404 (model not found), 429 (vượt limit token/rate limit) hoặc lỗi 5xx, thử model tiếp theo trong danh sách
+                    if (response.code == 404 || response.code == 429 || response.code >= 500) {
+                        lastError = IOException("Model $modelName (${response.code}): $errorMsg")
                         continue
                     }
                     return@withContext Result.failure(IOException("Lỗi Groq LLM API: $errorMsg"))
