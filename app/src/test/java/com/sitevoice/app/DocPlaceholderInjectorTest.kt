@@ -61,25 +61,26 @@ class DocPlaceholderInjectorTest {
         val payload = DocPlaceholderInjector.buildBatchUpdatePayload(candidates)
         val requests = payload.getJSONArray("requests")
 
-        // 3 ứng viên hợp lệ x 2 thao tác (delete + insert) = 6 requests
-        assertEquals(6, requests.length())
+        // Ứng viên 3 (doan_trong) chỉ insert (1 request)
+        // Ứng viên 2 (o_tich): delete + insert (2 requests)
+        // Ứng viên 1 (dong_cham): delete + insert (2 requests)
+        // Tổng: 5 requests
+        assertEquals(5, requests.length())
 
-        // Request đầu tiên phải thao tác trên vị trí lớn nhất (100)
-        val firstDelete = requests.getJSONObject(0).getJSONObject("deleteContentRange")
-        val range = firstDelete.getJSONObject("range")
-        assertEquals(100, range.getInt("startIndex"))
-        assertEquals(120, range.getInt("endIndex"))
-
-        val firstInsert = requests.getJSONObject(1).getJSONObject("insertText")
+        // Request đầu tiên phải thao tác trên vị trí lớn nhất (100) và là insertText (không delete range doan_trong)
+        val firstInsert = requests.getJSONObject(0).getJSONObject("insertText")
         assertEquals(100, firstInsert.getJSONObject("location").getInt("index"))
         assertEquals("{{CONG_VIEC_THI_CONG}}", firstInsert.getString("text"))
 
-        // Request tiếp theo phải là vị trí 50
-        val secondDelete = requests.getJSONObject(2).getJSONObject("deleteContentRange")
+        // Request tiếp theo là vị trí 50 (delete + insert)
+        val secondDelete = requests.getJSONObject(1).getJSONObject("deleteContentRange")
         assertEquals(50, secondDelete.getJSONObject("range").getInt("startIndex"))
 
-        // Request cuối cùng phải là vị trí 10
-        val lastDelete = requests.getJSONObject(4).getJSONObject("deleteContentRange")
+        val secondInsert = requests.getJSONObject(2).getJSONObject("insertText")
+        assertEquals(50, secondInsert.getJSONObject("location").getInt("index"))
+
+        // Request cuối cùng là vị trí 10 (delete + insert)
+        val lastDelete = requests.getJSONObject(3).getJSONObject("deleteContentRange")
         assertEquals(10, lastDelete.getJSONObject("range").getInt("startIndex"))
     }
 }
