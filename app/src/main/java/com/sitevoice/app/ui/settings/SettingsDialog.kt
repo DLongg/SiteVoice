@@ -29,14 +29,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.sitevoice.app.settings.SecurePreferences
 
 @Composable
 fun SettingsDialog(
     currentApiKey: String?,
-    onSaveKey: (String) -> Unit,
+    currentDocTemplateId: String = SecurePreferences.DEFAULT_DOC_TEMPLATE_ID,
+    onSaveSettings: (apiKey: String, docTemplateId: String) -> Unit,
     onDismiss: () -> Unit
 ) {
     var inputKey by remember { mutableStateOf(currentApiKey ?: "") }
+    var inputDocId by remember { mutableStateOf(currentDocTemplateId) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -51,30 +54,62 @@ fun SettingsDialog(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Cài đặt API Key Groq",
+                    text = "Cài đặt hệ thống",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF111827)
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "API Key được mã hóa và lưu trữ an toàn bằng EncryptedSharedPreferences trên thiết bị của bạn.",
-                    fontSize = 13.sp,
+                    text = "Dữ liệu được mã hóa an toàn trên thiết bị bằng EncryptedSharedPreferences.",
+                    fontSize = 12.sp,
                     color = Color(0xFF6B7280)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Phần 1: Groq API Key
+                Text(
+                    text = "1. Groq API Key (STT & LLM)",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1E293B)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
                 OutlinedTextField(
                     value = inputKey,
                     onValueChange = { inputKey = it },
-                    label = { Text("Groq API Key (gsk_...)") },
-                    placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx") },
+                    placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx", fontSize = 12.sp) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Phần 2: Link Google Doc mẫu
+                Text(
+                    text = "2. Google Doc mẫu (A4 ≤ 2 trang)",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1E293B)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = inputDocId,
+                    onValueChange = { inputDocId = it },
+                    placeholder = { Text("Dán link hoặc Doc ID mẫu", fontSize = 12.sp) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "ID mẫu mặc định: ${SecurePreferences.DEFAULT_DOC_TEMPLATE_ID}",
+                    fontSize = 11.sp,
+                    color = Color(0xFF94A3B8)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -95,13 +130,13 @@ fun SettingsDialog(
 
                     Button(
                         onClick = {
-                            onSaveKey(inputKey.trim())
+                            onSaveSettings(inputKey.trim(), inputDocId.trim())
                             onDismiss()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Lưu cấu hình")
+                        Text("Lưu cài đặt")
                     }
                 }
             }

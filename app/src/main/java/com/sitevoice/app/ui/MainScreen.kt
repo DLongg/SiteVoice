@@ -200,12 +200,14 @@ fun MainScreen(
             }
         }
 
-        // Hộp thoại cài đặt API key
+        // Hộp thoại cài đặt API key & Doc mẫu
         if (showSettingsDialog) {
             SettingsDialog(
                 currentApiKey = securePreferences.groqApiKey,
-                onSaveKey = { newKey ->
+                currentDocTemplateId = securePreferences.docTemplateId,
+                onSaveSettings = { newKey, newDocId ->
                     securePreferences.groqApiKey = newKey
+                    securePreferences.docTemplateId = newDocId
                 },
                 onDismiss = { showSettingsDialog = false }
             )
