@@ -27,9 +27,10 @@
 - Ngân sách thấp: ưu tiên dịch vụ rẻ/miễn phí, người dùng tự nhập API key.
 - Không bịa dữ liệu: LLM chỉ dùng thông tin trong ghi chú.
 - API key lưu mã hóa.
+- Form nguồn: Google Doc hoặc DOCX; không hỗ trợ PDF/ảnh. Luôn làm việc trên bản sao.
 
 ## Ngoài phạm vi (tạm thời)
-iOS, web, đồng bộ nhiều thiết bị, đăng lên Google Play.
+iOS, web, đồng bộ nhiều thiết bị, đăng lên Google Play. PDF/ảnh làm form nguồn.
 
 ## Tiêu chí hoàn thành phiên bản đầu
 Một ngày ghi thật ≥ 15 ghi chú ra được Google Doc đúng form, ≤ 2 trang, người dùng chỉ phải sửa nhẹ.

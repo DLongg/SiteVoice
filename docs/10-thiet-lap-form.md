@@ -75,3 +75,5 @@ Chốt chặn: bước duyệt và Doc thử.
 - Có cho người dùng giữ nhiều Mẫu sinh ra cùng lúc không?
 - Có cần xuất kết quả ngược lại thành DOCX tải về không (Drive `files.export`)?
 - Ngưỡng `do_tin_cay` để chuyển từ "chắc chắn" sang "nghi ngờ" là bao nhiêu (đề xuất 0.85, chỉnh sau khi đo)?
+- Nội dung yêu cầu được cung cấp bị trống ký tự ô tích và dấu so sánh ở mức chính xác 90%/giới hạn 2 trang. Cần xác nhận bộ ký tự và dấu trước khi triển khai; hiện giữ nguyên nội dung được cung cấp trong các tài liệu liên quan.
+- `do_tin_cay_suc_chua` được lưu ở cấp Mẫu hay từng chỗ điền, và kiểu dữ liệu/ý nghĩa cụ thể là gì? Khuôn schema được cung cấp chưa định nghĩa trường này.
