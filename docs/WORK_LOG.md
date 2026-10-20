@@ -438,3 +438,19 @@ A templates/schema-chung.md
 - Cập nhật: `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: 37/37 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công.
 - Còn lại: Người dùng cắm cáp USB hoặc cài đặt APK mới để trải nghiệm tính năng 1 chạm Tự động tạo Mẫu từ Doc mẫu trên điện thoại.
+
+
+## 2026-10-20 — Bổ sung tính năng chỉnh tay trực tiếp chỗ điền trong FormSetupDialog — Hoàn thành
+
+- Kết quả: Đáp ứng yêu cầu người dùng ("phần nhận diện tạo mẫu tôi cần có thể chỉnh tay trực tiếp từ trong app"):
+  + Nâng cấp toàn diện `FormSetupDialog.kt`: Chuyển đổi danh sách ứng viên chỗ điền sang dạng thẻ tương tác có thể mở rộng (Expandable Card) với hiệu ứng thị giác chuẩn mực theo `design-taste-frontend` App Screens.
+  + Cho phép người dùng chạm trực tiếp vào bất kỳ chỗ điền nào hoặc bấm nút "Sửa ✏️" để mở form tinh chỉnh:
+    * Chỉnh sửa tay mã thẻ placeholder `ma` (tự động viết hoa, thay khoảng trắng thành gạch dưới: ví dụ `CONG_VIEC_THI_CONG`).
+    * Chỉnh sửa tay tên mục hiển thị `ten` trong báo cáo.
+    * Chọn trực tiếp kiểu dữ liệu `loai` qua thanh chip cuộn ngang: Danh sách, Văn bản, Số lượng, Ngày tháng, Ô tích.
+    * Chọn trực tiếp nguồn dữ liệu bóc tách `nguon` qua thanh chip: Thi công, Nghiệm thu, An toàn, Nhập tay cuối ngày, Vật tư, Máy móc, Thời tiết, Nhân lực, Ý kiến CĐT, TVGS, Nhà thầu.
+    * Nút bấm bật/tắt nhanh Bỏ qua / Khôi phục vị trí và nút "✓ Xong" để thu gọn.
+  + Toàn bộ thay đổi của người dùng được bảo toàn và truyền trực tiếp vào `applyPlaceholdersAndGenerateTemplate` để tiêm đúng placeholder vào bản sao Google Doc và sinh `schemaJson` chính xác.
+- File sửa: `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`.
+- Kiểm tra: Toàn bộ Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt trực tiếp qua USB adb (`adb install -r app-debug.apk`) lên thiết bị thật `33c4f658` và khởi chạy thành công.
+- Còn lại: Người dùng trải nghiệm và xác nhận thao tác trực tiếp trên điện thoại.
