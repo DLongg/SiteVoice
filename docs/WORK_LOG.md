@@ -482,3 +482,15 @@ A templates/schema-chung.md
 - File sửa: `app/src/main/assets/templates/nhat-ky-cong-truong/schema.json`, `app/src/main/assets/templates/nhat-ky-cong-truong/prompt.md`, `templates/nhat-ky-cong-truong/schema.json`, `templates/nhat-ky-cong-truong/prompt.md`, `app/src/main/java/com/sitevoice/app/template/TemplateRepository.kt`, `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`.
 - Kiểm tra: 52/52 Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt trực tiếp qua adb lên điện thoại thật `33c4f658` và khởi chạy thành công.
 - Còn lại: Người dùng trải nghiệm Mẫu mới và bật Developer Mode để chỉnh sửa Prompt trực tiếp trong ứng dụng.
+
+
+## 2026-10-20 — Tích hợp xem & sửa dữ liệu JSON do LLM trả về trong Developer Mode — Hoàn thành
+
+- Kết quả: Hoàn thành theo yêu cầu ("cả phần llm trả về nữa"):
+  + Trong màn hình Xem trước Báo cáo (`DailyReportPreviewScreen.kt`): Khi bật Developer Mode, hiển thị thêm Card **"🛠️ Dữ liệu JSON do LLM trả về"** chứa toàn bộ chuỗi JSON nguyên bản được format thụt lề đẹp mắt.
+  + Cho phép người dùng chỉnh sửa trực tiếp nội dung JSON này và bấm nút **"💾 Lưu sửa đổi JSON vào Báo cáo"** để cập nhật ngay vào database Room mà không cần tổng hợp lại từ đầu.
+  + Thêm nút **"📋 Sao chép"** để copy JSON vào bộ nhớ tạm.
+  + Trong màn hình Cài đặt (`SettingsDialog.kt`): Hiển thị thêm hộp xem kết quả JSON gần nhất mà LLM đã trả về trong phần Developer Mode.
+- File sửa: `app/src/main/java/com/sitevoice/app/ui/daily/DailyReportPreviewScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`.
+- Kiểm tra: 52/52 Unit tests pass 100% (`.\gradlew.bat testDebugUnitTest`), build APK debug thành công (`.\gradlew.bat assembleDebug`), cài đặt thành công lên thiết bị thật `33c4f658` và khởi chạy sẵn sàng.
+- Còn lại: Người dùng trải nghiệm tính năng xem và chỉnh sửa trực tiếp JSON trả về từ LLM.
