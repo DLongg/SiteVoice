@@ -1,0 +1,20 @@
+{
+  "id": "nhat-ky-ca-nhan",
+  "ten": "Nhật ký hằng ngày cá nhân",
+  "gom_theo": "ngay",
+  "gioi_han_trang": 1,
+  "nhap_tay": {
+    "ngay": { "kieu": "ngay" },
+    "tam_trang": { "kieu": "chon", "lua_chon": ["tich_cuc", "binh_thuong", "met_moi", "cang_thang"] }
+  },
+  "muc_ghi_chu": [
+    "cong_viec", "ton_dong", "suy_nghi", "suc_khoe", "chua_phan_loai"
+  ],
+  "truong_tong_hop": {
+    "cong_viec_hoan_thanh": { "kieu": "danh_sach", "toi_da_dong": 12, "ky_tu_moi_dong": 100, "muc_nguon": ["cong_viec"] },
+    "viec_ton_dong": { "kieu": "danh_sach", "toi_da_dong": 8, "ky_tu_moi_dong": 100, "muc_nguon": ["ton_dong"] },
+    "suy_nghi_bai_hoc": { "kieu": "danh_sach", "toi_da_dong": 6, "ky_tu_moi_dong": 100, "muc_nguon": ["suy_nghi"] },
+    "suc_khoe_tam_trang": { "kieu": "van_ban", "toi_da_ky_tu": 150, "muc_nguon": ["suc_khoe"] },
+    "chua_phan_loai": { "kieu": "danh_sach", "toi_da_dong": 10, "ky_tu_moi_dong": 160, "hien_trong_doc": false }
+  }
+}

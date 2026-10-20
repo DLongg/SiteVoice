@@ -245,3 +245,16 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `docs/ke-hoach-thuc-hien.md` (nâng cấp nhánh 4.1 sang Thư viện & Builder mẫu tùy biến), `docs/07-lo-trinh.md` (cập nhật đầu việc 11), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: Đối chiếu mã task, mô tả, người làm, đầu vào, kết quả và trạng thái với cấu trúc chuẩn của dự án; kiểm tra liên kết giữa các tài liệu.
 - Còn lại: Bắt đầu triển khai Task 4.1.1: Cấu trúc Mẫu động & Mẫu sẵn có.
+
+## 2026-10-20 — Triển khai Task 4.1.1: Cấu trúc Mẫu động & Tích hợp Mẫu Nhật ký công trường & Nhật ký cá nhân — Hoàn thành
+
+- Kết quả: Hoàn thành 100% Task 4.1.1 mở màn cho Giai đoạn 4:
+  + Xây dựng `TemplateItemEntity` trong Room DB: lưu `id`, `name`, `description`, `docTemplateUrl`, `systemPrompt`, `schemaJson`, `isBuiltIn`, `isActive`, `createdAt`, `updatedAt`.
+  + Nâng cấp Room Database lên version 4 với `MIGRATION_3_4` tạo bảng `templates` an toàn, không mất dữ liệu hiện có.
+  + Xây dựng `TemplateDao` cung cấp đầy đủ các thao tác Reactive Flow và Sync: lấy tất cả mẫu, lấy mẫu active, tìm theo id, thêm/sửa, chuyển đổi active template, xóa mẫu tùy chỉnh (chặn xóa mẫu built-in).
+  + Đóng gói sẵn 2 bộ Mẫu chuẩn: (1) "Nhật ký thi công công trường" và (2) "Nhật ký hằng ngày cá nhân" đầy đủ `schema.json`, `prompt.md`, `doc-mau.md` trong cả thư mục gốc `templates/` và `app/src/main/assets/templates/`.
+  + Xây dựng `DefaultTemplateRepository`: Tự động seed 2 mẫu chuẩn vào Room khi ứng dụng khởi chạy lần đầu (`ensureBuiltInTemplatesSeeded()`), tích hợp vào `MainActivity.kt`.
+- Tạo: `app/src/main/java/com/sitevoice/app/data/TemplateItemEntity.kt`, `app/src/main/java/com/sitevoice/app/data/TemplateDao.kt`, `app/src/main/java/com/sitevoice/app/template/TemplateRepository.kt`, `templates/nhat-ky-ca-nhan/` (`schema.json`, `prompt.md`, `doc-mau.md`), `app/src/main/assets/templates/nhat-ky-ca-nhan/`, `app/src/test/java/com/sitevoice/app/TemplateRepositoryTest.kt`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/data/AppDatabase.kt`, `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: `TemplateRepositoryTest` và toàn bộ 29/29 unit tests chạy pass 100%; `.\gradlew.bat assembleDebug` build APK thành công không lỗi (BUILD SUCCESSFUL).
+- Còn lại: Sẵn sàng triển khai Task 4.1.2: Xây dựng UI Thư viện Mẫu (`TemplateLibraryScreen`) và Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`).

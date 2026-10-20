@@ -542,8 +542,8 @@
 | **Mô tả** | Thiết kế cấu trúc lưu trữ Mẫu động (`TemplateEntity` trong Room hoặc cấu hình JSON trong `filesDir/templates/`). Đóng gói sẵn 2 mẫu chuẩn: (1) "Nhật ký công trường" (thi công, vật tư, an toàn, nhân lực, thời tiết) và (2) "Nhật ký cá nhân / Hằng ngày" (công việc đã làm, việc tồn đọng, ghi chú suy nghĩ, bài học kinh nghiệm). |
 | **Người làm** | Agent |
 | **Đầu vào** | `docs/quyet-dinh/0005-kien-truc-theo-mau.md`, `templates/nhat-ky-cong-truong/schema.json` |
-| **Kết quả** | `TemplateRepository` hỗ trợ CRUD mẫu động từ Room/Storage, tích hợp sẵn 2 mẫu mặc định |
-| **Trạng thái** | 🔲 Chưa bắt đầu |
+| **Kết quả** | `TemplateItemEntity`, `TemplateDao`, `DefaultTemplateRepository` hỗ trợ CRUD mẫu động từ Room, tự động seed 2 mẫu mặc định (Công trường & Cá nhân), 29/29 unit tests pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 4.1.2 Bộ công cụ Tạo & Căn chỉnh Mẫu (Template Builder & Library UI)
 | | |

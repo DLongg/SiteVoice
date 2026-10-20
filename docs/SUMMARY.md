@@ -17,8 +17,8 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3. Đã lập kế hoạch chi tiết cho Giai đoạn 4: Mở rộng gồm 12 task (Task 4.1.1 đến 4.4.2 trong [ke-hoach-thuc-hien.md](ke-hoach-thuc-hien.md)).
-- Chuyển hướng kiến trúc STT: Quyết định 0007 thay thế một phần Quyết định 0001; loại bỏ hoàn toàn whisper.cpp on-device, giải phóng thư mục `files/models/` trên điện thoại, lưu tệp âm thanh gốc `.m4a` chờ kết nối mạng để tự động chuyển văn bản và phân loại.
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1 của Giai đoạn 4.
+- Đã xây dựng kiến trúc Thư viện Mẫu động trong Room Database (version 4): tích hợp sẵn Mẫu "Nhật ký thi công công trường" và "Nhật ký hằng ngày cá nhân". `TemplateRepository` hỗ trợ CRUD mẫu và kiểm soát an toàn. 29/29 unit tests pass 100%.
 
 ## Quyết định phải giữ
 
@@ -30,5 +30,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Bắt đầu triển khai Nhóm 4.1: Thư viện Mẫu & Tự tạo/căn chỉnh Mẫu (Task 4.1.1: Cấu trúc TemplateEntity trong Room, tích hợp sẵn Mẫu Nhật ký công trường & Nhật ký cá nhân).
-2. Xây dựng UI Thư viện mẫu và bộ công cụ tạo/căn chỉnh mẫu (Task 4.1.2) cho phép người dùng tùy ý thêm mẫu mới và căn chỉnh placeholder/ký tự.
+1. Triển khai Task 4.1.2: Xây dựng giao diện Thư viện Mẫu (`TemplateLibraryScreen`) và Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`) theo chuẩn `design-taste-frontend` App Screens.
+2. Triển khai Task 4.1.3: Bộ chọn Mẫu (`TemplateSelector`) trên màn hình chính và nạp động schema cho LLM.
