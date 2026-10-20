@@ -1,8 +1,6 @@
 package com.sitevoice.app.queue
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -17,11 +15,14 @@ import androidx.work.WorkerParameters
 import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.stt.GroqWhisper
-import com.sitevoice.app.stt.WhisperModelManager
-import com.sitevoice.app.stt.WhisperOfflineStt
 import java.io.File
 import java.util.concurrent.TimeUnit
 
+/**
+ * Worker xử lý chuyển giọng nói thành văn bản (STT) khi có mạng.
+ * Tuân thủ Quyết định 0007: Âm thanh gốc được lưu trên máy khi offline,
+ * WorkManager giữ hàng đợi chờ kết nối mạng để gọi Groq Whisper API (Whisper Large-v3-Turbo).
+ */
 class SttWorker(
     appContext: Context,
     workerParams: WorkerParameters
@@ -32,9 +33,9 @@ class SttWorker(
         const val KEY_NOTE_ID = "note_id"
         const val KEY_AUDIO_PATH = "audio_path"
 
-        fun createWorkRequest(noteId: Long, audioPath: String, requireNetwork: Boolean = true): OneTimeWorkRequest {
+        fun createWorkRequest(noteId: Long, audioPath: String): OneTimeWorkRequest {
             val constraints = Constraints.Builder()
-                .setRequiredNetworkType(if (requireNetwork) NetworkType.CONNECTED else NetworkType.NOT_REQUIRED)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
             val inputData = Data.Builder()
@@ -55,28 +56,13 @@ class SttWorker(
         }
 
         fun enqueue(context: Context, noteId: Long, audioPath: String) {
-            val securePreferences = SecurePreferences(context)
-            val isOfflineEnabled = securePreferences.isOfflineSttEnabled
-            val offlineModelId = securePreferences.selectedOfflineModelId
-            val isModelReady = isOfflineEnabled && WhisperModelManager.isModelDownloaded(context, offlineModelId)
-
-            // Nếu đã tải và bật model offline: không bắt buộc phải có mạng để chạy STT
-            val requireNetwork = !isModelReady
-            val request = createWorkRequest(noteId, audioPath, requireNetwork)
-
+            val request = createWorkRequest(noteId, audioPath)
             WorkManager.getInstance(context).enqueueUniqueWork(
                 "stt_work_$noteId",
                 ExistingWorkPolicy.REPLACE,
                 request
             )
         }
-    }
-
-    private fun isNetworkAvailable(context: Context): Boolean {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
-        val network = cm.activeNetwork ?: return false
-        val caps = cm.getNetworkCapabilities(network) ?: return false
-        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     override suspend fun doWork(): Result {
@@ -104,80 +90,25 @@ class SttWorker(
 
         val securePreferences = SecurePreferences(applicationContext)
         val apiKey = securePreferences.groqApiKey
-        val isOfflineEnabled = securePreferences.isOfflineSttEnabled
-        val offlineModelId = securePreferences.selectedOfflineModelId
-        val isModelReady = isOfflineEnabled && WhisperModelManager.isModelDownloaded(applicationContext, offlineModelId)
-        val hasNetwork = isNetworkAvailable(applicationContext)
 
-        Log.i(TAG, "Bắt đầu STT cho note $noteId (attempt: $runAttemptCount, hasNetwork: $hasNetwork, isModelReady: $isModelReady)")
-
-        // 1. Nếu có mạng và có API key: Ưu tiên Groq Whisper online
-        if (hasNetwork && !apiKey.isNullOrBlank()) {
-            val whisper = GroqWhisper(apiKeyProvider = { apiKey })
-            val sttResult = whisper.transcribe(audioFile)
-            if (sttResult.isSuccess) {
-                val text = sttResult.getOrThrow()
-                Log.i(TAG, "Groq STT thành công cho note $noteId: $text")
-                noteDao.update(
-                    note.copy(
-                        text = text,
-                        sttSource = "groq",
-                        status = "TRANSCRIBED",
-                        error = null
-                    )
-                )
-                ClassifyWorker.enqueue(applicationContext, noteId, text)
-                return Result.success()
-            } else {
-                Log.w(TAG, "Groq STT thất bại: ${sttResult.exceptionOrNull()?.message}")
-                // Nếu có model offline sẵn sàng, fallback sang offline
-                if (isModelReady) {
-                    Log.i(TAG, "Chuyển hướng fallback sang Whisper offline...")
-                    return runOfflineStt(noteId, audioFile, offlineModelId, noteDao, note)
-                }
-            }
-        }
-
-        // 2. Nếu không có mạng (hoặc chưa cài API key) nhưng có model offline: Chạy whisper.cpp on-device
-        if (isModelReady) {
-            return runOfflineStt(noteId, audioFile, offlineModelId, noteDao, note)
-        }
-
-        // 3. Nếu chưa cài API Key và không có model offline
         if (apiKey.isNullOrBlank()) {
-            Log.w(TAG, "Chưa cài đặt Groq API Key và chưa có model Whisper offline")
-            noteDao.update(note.copy(error = "Chưa cài đặt API Key hoặc chưa tải model offline"))
+            Log.w(TAG, "Chưa cài đặt Groq API Key")
+            noteDao.update(note.copy(error = "Chưa cài đặt API Key Groq trong Cài đặt"))
             return Result.failure()
         }
 
-        // 4. Nếu không có mạng: Chờ mạng thử lại với exponential backoff
-        Log.i(TAG, "Không có mạng và chưa có model offline, chờ kết nối mạng để thử lại...")
-        return if (runAttemptCount < 5) Result.retry() else {
-            noteDao.update(note.copy(error = "Không có kết nối mạng để nhận diện giọng nói"))
-            Result.failure()
-        }
-    }
+        Log.i(TAG, "Bắt đầu gọi Groq STT cho note $noteId (attempt: $runAttemptCount)")
 
-    private suspend fun runOfflineStt(
-        noteId: Long,
-        audioFile: File,
-        offlineModelId: String,
-        noteDao: com.sitevoice.app.data.NoteDao,
-        note: com.sitevoice.app.data.NoteEntity
-    ): Result {
-        val offlineStt = WhisperOfflineStt(
-            context = applicationContext,
-            modelFileProvider = { WhisperModelManager.getModelFile(applicationContext, offlineModelId) }
-        )
+        val whisper = GroqWhisper(apiKeyProvider = { apiKey })
+        val sttResult = whisper.transcribe(audioFile)
 
-        val result = offlineStt.transcribe(audioFile)
-        return if (result.isSuccess) {
-            val text = result.getOrThrow()
-            Log.i(TAG, "Whisper offline STT thành công cho note $noteId: $text")
+        return if (sttResult.isSuccess) {
+            val text = sttResult.getOrThrow()
+            Log.i(TAG, "Groq STT thành công cho note $noteId: $text")
             noteDao.update(
                 note.copy(
                     text = text,
-                    sttSource = "whisper_offline",
+                    sttSource = "groq",
                     status = "TRANSCRIBED",
                     error = null
                 )
@@ -185,9 +116,9 @@ class SttWorker(
             ClassifyWorker.enqueue(applicationContext, noteId, text)
             Result.success()
         } else {
-            val err = result.exceptionOrNull()?.message ?: "Lỗi nhận diện whisper offline"
-            Log.e(TAG, "Whisper offline STT thất bại cho note $noteId: $err")
-            if (runAttemptCount < 2) {
+            val err = sttResult.exceptionOrNull()?.message ?: "Lỗi chuyển giọng nói sang văn bản"
+            Log.w(TAG, "Groq STT thất bại cho note $noteId: $err")
+            if (runAttemptCount < 5) {
                 Result.retry()
             } else {
                 noteDao.update(note.copy(error = err))

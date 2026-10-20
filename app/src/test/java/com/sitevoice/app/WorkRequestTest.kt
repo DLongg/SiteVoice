@@ -19,9 +19,6 @@ class WorkRequestTest {
         assertEquals("/path/to/audio.m4a", request.workSpec.input.getString(SttWorker.KEY_AUDIO_PATH))
         assertTrue(request.tags.contains("SttWorker"))
         assertTrue(request.tags.contains("note_123"))
-
-        val offlineRequest = SttWorker.createWorkRequest(123L, "/path/to/audio.m4a", requireNetwork = false)
-        assertEquals(NetworkType.NOT_REQUIRED, offlineRequest.workSpec.constraints.requiredNetworkType)
     }
 
     @Test
