@@ -21,10 +21,13 @@
 
 ## Giai đoạn 3: Chạy không cần mạng
 - [x] 9. Hàng đợi WorkManager cho STT, phân loại, xuất (Task 3.1)
-- [x] 10. whisper.cpp offline (model tiny/base/small) (Task 3.2)
+- [x] 10. whisper.cpp offline / Hàng đợi lưu âm thanh ngoại tuyến và chờ mạng gọi API Groq Whisper (Task 3.2, Quyết định 0007)
 
-## Giai đoạn 4: Mở rộng (đang lập kế hoạch)
-- [ ] 11. Thư viện Mẫu & Tự tạo/căn chỉnh Mẫu: Cho phép user tự tạo mẫu, căn chỉnh placeholder/ký tự, lưu vào thư viện; tùy chọn mẫu cho từng loại công việc (Nhật ký công trường vs. Nhật ký hằng ngày cá nhân) (Task 4.1)
-- [ ] 12. Ảnh hiện trường: Chụp/đính kèm ảnh vào ghi chú, hiển thị thumbnail, chèn ảnh vào Google Doc (Task 4.2)
-- [ ] 13. Từ ghi chú sang hành động: LLM trích xuất việc cần làm (To-do), quản lý việc, chia sẻ nhanh qua Zalo (Task 4.3)
-- [ ] 14. Tìm kiếm & Lọc: Truy vấn từ khóa full-text, lọc theo ngày và danh mục ghi chú (Task 4.4)
+## Giai đoạn 4: Mở rộng
+- [x] 11. Thư viện Mẫu & Tự tạo/căn chỉnh Mẫu: Cho phép user tự tạo mẫu, căn chỉnh placeholder/ký tự, lưu vào thư viện; tùy chọn mẫu cho từng loại công việc (Nhật ký công trường vs. Nhật ký hằng ngày cá nhân); xuất Google Doc tương ứng từng mẫu (Task 4.1.1 - 4.1.4)
+- [—] 12. Ảnh hiện trường (Task 4.2): Dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng
+- [—] 13. Từ ghi chú sang hành động: To-do & chia sẻ Zalo (Task 4.3): Dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng
+- [—] 14. Tìm kiếm & Lọc (Task 4.4): Dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng
+
+## Trạng thái hiện tại
+✅ Hoàn thành 100% toàn bộ các giai đoạn phát triển cam kết (Giai đoạn 0, 1, 2, 3 và Nhóm 4.1 của Giai đoạn 4). Ứng dụng đã sẵn sàng cho người dùng kiểm thử và nghiệm thu thực tế ngoài công trường.

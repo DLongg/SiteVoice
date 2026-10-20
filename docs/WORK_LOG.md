@@ -313,4 +313,14 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
   + Nâng cấp `ExportWorker.kt`: Đọc `templateId` trực tiếp từ `DailyReportEntity`, truy vấn Room DB để lấy thông tin Mẫu và `docTemplateUrl` riêng của mẫu đó; trích xuất Doc ID tự động và fallback về cấu hình chung nếu mẫu chưa có URL riêng; cập nhật trạng thái `EXPORTED` và link Doc kết quả.
   + Cập nhật & mở rộng Unit Tests: Bổ sung các test case kiểm tra trích xuất Doc ID, ánh xạ placeholder động cho Mẫu cá nhân và xuất báo cáo đa mẫu trong `PlaceholderMapperTest.kt` và `GoogleDocsExporterTest.kt`.
 - Code & Test: Cập nhật `PlaceholderMapper.kt`, `GoogleDocsExporter.kt`, `ExportWorker.kt`, `PlaceholderMapperTest.kt`, `GoogleDocsExporterTest.kt`. Toàn bộ 32/32 unit tests pass 100%. `.\gradlew.bat assembleDebug` build thành công ra APK 11.94 MB và đã cài đặt (`adb install -r`) trực tiếp lên điện thoại thật `33c4f658`.
-- Còn lại: Chuyển sang Nhóm 4.2 (Ảnh hiện trường kèm ghi chú). Các việc cần người dùng thao tác thực tế (test app trên máy thật, tạo file Doc mẫu cá nhân) được tổng hợp để người dùng nợ thực hiện khi thuận tiện.
+- Còn lại: Người dùng kiểm tra trực tiếp danh sách ghi chú trên điện thoại thật. Chốt phạm vi phiên bản hiện tại (hoàn thành 100% Giai đoạn 0, 1, 2, 3 và Nhóm 4.1 của Giai đoạn 4); toàn bộ các nhóm 4.2 (Ảnh), 4.3 (To-do) và 4.4 (Tìm kiếm) được dời sang công việc tương lai theo yêu cầu người dùng.
+
+## 2026-10-20 — Chốt phạm vi phiên bản hiện tại & Dời các nhóm 4.2, 4.3, 4.4 sang Future Work — Hoàn thành
+
+- Kết quả: Theo yêu cầu người dùng ("Bỏ phần này, gom vào future work chưa làm ở hiện tại") và xác nhận qua dialog câu hỏi:
+  + Dời toàn bộ các nhóm tính năng mở rộng còn lại của Giai đoạn 4 (Nhóm 4.2: Ảnh hiện trường kèm ghi chú, Nhóm 4.3: Việc cần làm To-do & Chia sẻ Zalo, Nhóm 4.4: Tìm kiếm & Bộ lọc) sang `docs/08-cong-viec-tuong-lai.md`.
+  + Chốt hoàn thành 100% phạm vi phiên bản hiện tại của SiteVoice gồm: Giai đoạn 0 (Chuẩn bị), Giai đoạn 1 (Lõi chạy được), Giai đoạn 2 (Ra tài liệu Google Doc từ mẫu chuẩn công trường), Giai đoạn 3 (Chạy không cần mạng & WorkManager) và Nhóm 4.1 (Thư viện Mẫu, Bộ tạo/căn chỉnh Mẫu, và Xuất Google Doc tự động theo Mẫu tùy biến).
+  + Tổng kết: 46/46 task cam kết đã hoàn thành 100%, 8 task mở rộng dời sang tương lai.
+  + Toàn bộ 32 unit tests pass 100%, APK 11.94 MB đã cài đặt trên điện thoại thật `33c4f658`, git working tree sạch sẽ.
+- Cập nhật: `docs/07-lo-trinh.md`, `docs/08-cong-viec-tuong-lai.md`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Còn lại: Người dùng trải nghiệm và nghiệm thu thực tế trên điện thoại theo danh sách việc đã lọc (nợ). Sẵn sàng bàn giao phiên làm việc.
