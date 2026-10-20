@@ -223,3 +223,14 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Giao diện: Cập nhật `SettingsDialog.kt` tổ chức lựa chọn mô hình theo lưới 2x2 gọn gàng theo skill `design-taste-frontend` App Screens (Hàng 1: TINY, BASE; Hàng 2: SMALL, TURBO-Q5 có đánh dấu ★ khuyên dùng và nhãn 'Tốt nhất').
 - Code & Test: Cập nhật `WhisperModelManager.kt`, `WhisperModelManagerTest.kt`, `SettingsDialog.kt`. Chạy pass 100% 27/27 unit tests. Đã build APK và cài đặt thành công (`adb install -r`) lên máy thật `33c4f658`, khởi chạy ứng dụng mượt mà. Đã commit và push mã nguồn lên nhánh `main` (`45cadf0`).
 - Còn lại: Hướng dẫn người dùng mở Cài đặt trên điện thoại, chọn mục TURBO-Q5 và nhấn 'Tải mô hình' để trải nghiệm nhận diện tiếng Việt chuẩn xác.
+
+## 2026-10-20 — Chuyển hướng: Bỏ STT offline on-device, lưu speech và chờ mạng gọi API (Quyết định 0007) — Hoàn thành
+
+- Kết quả: Theo yêu cầu người dùng ("chuyển hướng bỏ phần lưu text khi offline, lưu speech xong chờ mạng để gọi mô hình"), đã thực hiện tái cấu trúc toàn diện kiến trúc STT:
+  + Ban hành Quyết định 0007 (`docs/quyet-dinh/0007-bo-stt-offline-cho-mang.md`) thay thế một phần Quyết định 0001: Bỏ hoàn toàn việc chạy STT offline on-device (whisper.cpp).
+  + Cơ chế chuẩn: Khi ghi âm ngoài hiện trường (kể cả mất mạng), tệp âm thanh gốc `.m4a` luôn được lưu an toàn trên máy, tạo ghi chú trạng thái `RECORDED` (Chờ mạng) và xếp hàng vào WorkManager (`SttWorker`). Ngay khi có kết nối mạng (Wifi/4G), WorkManager tự động gọi Groq Whisper API (`whisper-large-v3-turbo`) để nhận diện chính xác 100% rồi tự động chuyển tiếp sang `ClassifyWorker` phân loại LLM.
+  + Tinh gọn mã nguồn & thư viện: Loại bỏ dependency `whisper-android`, xóa `WhisperOfflineStt.kt`, `WhisperModelManager.kt`, `AudioConverter.kt`. Kích thước APK giảm mạnh xuống chỉ còn 11.94 MB.
+  + Tinh gọn giao diện: Cập nhật `SettingsDialog.kt` tinh gọn theo skill `design-taste-frontend` App Screens, bỏ toàn bộ phần cấu hình tải model offline cồng kềnh.
+  + Thiết bị thật: Đã xóa thư mục `files/models/` trên điện thoại `33c4f658` (giải phóng hơn 600MB bộ nhớ máy cho người dùng), cài đặt bản APK 11.94 MB thành công và khởi chạy mượt mà.
+- Kiểm tra: Toàn bộ 25/25 unit tests chạy pass 100%; `.\gradlew.bat assembleDebug` build thành công; ứng dụng chạy ổn định trên thiết bị thật.
+- Còn lại: Người dùng trải nghiệm ghi âm khi tắt mạng (hiển thị ⏳ Chờ mạng, file âm thanh nghe lại tốt) và bật mạng để tự động xử lý. Sẵn sàng cho Giai đoạn 4: Mở rộng.

@@ -12,7 +12,7 @@ Một nút ghi âm duy nhất. Cuối ngày có thể sửa ghi chú và nhập 
 
 ## Luồng sử dụng trong ngày
 1. Ngoài công trường: nhấn giữ nút ghi, nói, thả ra. App lưu file âm thanh gốc ngay.
-2. Có mạng: chuyển văn bản bằng API. Không có mạng: whisper.cpp trên máy hoặc chờ có mạng.
+2. Có mạng: chuyển văn bản bằng Groq Whisper API. Không có mạng: lưu file âm thanh gốc và xếp hàng WorkManager chờ có mạng để tự động xử lý (Quyết định 0007).
 3. App gán nhãn mục cho ghi chú (thẻ nhỏ), người dùng có thể đổi sau.
 4. Cuối ngày: sửa chữ, sửa nhãn, bỏ ghi chú không dùng nếu cần → điền thời tiết, nhân lực. Đây là bước chỉnh dữ liệu, không phải lượt duyệt riêng.
 5. Bấm "Tổng hợp": LLM điền form, app kiểm tra giới hạn ký tự, hiện bản xem trước.

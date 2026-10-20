@@ -5,7 +5,7 @@
 |---|---|
 | ui/ | Màn hình Compose: Ghi âm, Danh sách, Duyệt cuối ngày, Xem trước, Cài đặt |
 | audio/ | Ghi âm, lưu file, phát lại |
-| stt/ | Interface `SpeechToText`; cài đặt: `GroqWhisper`, `OpenAiWhisper`, `WhisperCpp` |
+| stt/ | Interface `SpeechToText`; cài đặt: `GroqWhisper` (Quyết định 0007) |
 | llm/ | Interface `LlmClient`; phân loại, tổng hợp, rút gọn; đếm ký tự |
 | template/ | Đọc Mẫu từ `templates/` (đóng gói vào assets), kiểm tra schema |
 | export/ | Google Sign-In, Drive (copy mẫu), Docs (replaceAllText) |
