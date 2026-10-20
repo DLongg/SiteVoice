@@ -416,46 +416,46 @@
 | | |
 |---|---|
 | **Mô tả** | Tích hợp Google Sign-In, xin quyền `drive.file` + `documents`. Lưu tài khoản vào settings. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | Google Cloud Console project, `docs/06-google-doc-mau.md` |
-| **Kết quả** | Đăng nhập Google thành công |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `GoogleAuthManager.kt` và nút đăng nhập/đăng xuất trong `SettingsDialog`, lưu tài khoản trong `SecurePreferences` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.3.3 Cài đặt link Doc mẫu
 | | |
 |---|---|
 | **Mô tả** | Trong Settings: trường nhập link/ID Google Doc mẫu. Lưu vào EncryptedSharedPreferences. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 0.3 |
-| **Kết quả** | Lưu và đọc lại link Doc mẫu |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Trường nhập link Doc mẫu trong Cài đặt, tự trích xuất Doc ID, unit test `SecurePreferencesTest` pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.3.4 Copy Doc mẫu bằng Drive API
 | | |
 |---|---|
 | **Mô tả** | Module `export/`: dùng Drive API copy Doc mẫu → tên "Nhật ký thi công yyyy-MM-dd". Trả về ID Doc mới. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 2.3.2 + 2.3.3 |
-| **Kết quả** | Thấy bản sao trong Google Drive |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `GoogleDocsExporter.kt` gọi Drive API v3 copy file, unit test `GoogleDocsExporterTest` pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.3.5 Thay placeholder bằng Docs API
 | | |
 |---|---|
 | **Mô tả** | `batchUpdate` với `replaceAllText` cho từng placeholder. Ô tích thời tiết dùng ☑/☐. Danh sách nối bằng xuống dòng + "- ". Placeholder không có dữ liệu → chuỗi rỗng. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `templates/nhat-ky-cong-truong/doc-mau.md`, 2.3.4 |
-| **Kết quả** | Google Doc hoàn chỉnh, không còn `{{...}}` |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `PlaceholderMapper.kt` và Docs API v1 batchUpdate trong `GoogleDocsExporter.kt`, unit test pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.3.6 Kiểm tra sau xuất + lưu link
 | | |
 |---|---|
 | **Mô tả** | Kiểm tra Doc không còn sót `{{`. Lưu link vào `DailyReport.docUrl`, status = EXPORTED. Hiện nút mở Doc. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 2.3.5 |
-| **Kết quả** | Bấm link → mở Google Doc đúng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Lưu link `docUrl` vào `DailyReportEntity`, cập nhật status `EXPORTED`, hiển thị thẻ mở Google Doc trực tiếp trên trình duyệt |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
