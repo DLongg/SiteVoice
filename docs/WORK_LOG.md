@@ -216,3 +216,10 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kết quả: Đã cài đặt thành công bản APK `app-debug.apk` mới nhất (chứa đầy đủ WorkManager hàng đợi ngoại tuyến và thư viện native `libwhisper.so`) lên điện thoại thật `33c4f658` thông qua `adb install -r`. Khởi chạy `MainActivity` thành công, không phát sinh lỗi hay crash.
 - Kiểm tra: Lệnh `adb devices` xác nhận thiết bị `33c4f658 device`; lệnh `adb install -r` trả về `Success`; lệnh `adb shell am start` khởi động ứng dụng thành công; logcat sạch, không có exception.
 - Còn lại: Người dùng kiểm tra trải nghiệm tải mô hình Whisper trong Cài đặt và thử nghiệm ghi âm ngoại tuyến khi bật Chế độ máy bay.
+
+## 2026-10-20 — Bổ sung mô hình Whisper Large-v3-Turbo Q5 cho nhận diện STT Offline — Hoàn thành
+
+- Kết quả: Theo phản hồi của người dùng về chất lượng nhận diện tiếng Việt ngoài công trường của mô hình nhỏ (Base/Small) chưa tối ưu, đã bổ sung mô hình `Whisper Large-v3-Turbo Quantized (Q5_0)` (~547MB) vào danh mục `WhisperModelManager`. Đây là mô hình nén 5-bit của OpenAI Whisper Large-v3-Turbo từ ggerganov/whisper.cpp, tốc độ nhanh hơn Large-v3 gốc 4 lần và nhận diện tiếng Việt chuẩn xác vượt trội trong khi dung lượng chỉ 547MB (chỉ nhỉnh hơn model Small 81MB).
+- Giao diện: Cập nhật `SettingsDialog.kt` tổ chức lựa chọn mô hình theo lưới 2x2 gọn gàng theo skill `design-taste-frontend` App Screens (Hàng 1: TINY, BASE; Hàng 2: SMALL, TURBO-Q5 có đánh dấu ★ khuyên dùng và nhãn 'Tốt nhất').
+- Code & Test: Cập nhật `WhisperModelManager.kt`, `WhisperModelManagerTest.kt`, `SettingsDialog.kt`. Chạy pass 100% 27/27 unit tests. Đã build APK và cài đặt thành công (`adb install -r`) lên máy thật `33c4f658`, khởi chạy ứng dụng mượt mà. Đã commit và push mã nguồn lên nhánh `main` (`45cadf0`).
+- Còn lại: Hướng dẫn người dùng mở Cài đặt trên điện thoại, chọn mục TURBO-Q5 và nhấn 'Tải mô hình' để trải nghiệm nhận diện tiếng Việt chuẩn xác.

@@ -17,7 +17,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Đang triển khai và bàn giao
 
 - [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% toàn bộ Giai đoạn 0, Giai đoạn 1, Giai đoạn 2 và Giai đoạn 3 (42/42 tasks trong kế hoạch thực hiện).
-- Giai đoạn 3 (Chạy không cần mạng): Hoàn thành Task 3.1 (Hàng đợi WorkManager) và Task 3.2 (whisper.cpp offline: `AudioConverter`, `WhisperOfflineStt`, `WhisperModelManager`, cài đặt tải/xóa model trong `SettingsDialog`).
+- Giai đoạn 3 (Chạy không cần mạng): Hoàn thành Task 3.1 (Hàng đợi WorkManager) và Task 3.2 (whisper.cpp offline: `AudioConverter`, `WhisperOfflineStt`, `WhisperModelManager`, cài đặt tải/xóa model trong `SettingsDialog`). Bổ sung mô hình `Whisper Large-v3-Turbo Q5` (~547MB) nhận diện tiếng Việt chính xác cao nhất on-device.
 
 ## Quyết định phải giữ
 
@@ -28,5 +28,6 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Kết nối điện thoại thật để cài đặt bản APK mới nhất, kiểm tra trải nghiệm tải mô hình Whisper trong Cài đặt và thử nghiệm nhận diện ngoại tuyến khi bật Chế độ máy bay.
-2. Chuẩn bị kế hoạch cho Giai đoạn 4: Mở rộng (xem `08-cong-viec-tuong-lai.md`).
+1. Người dùng mở ứng dụng trên điện thoại `33c4f658`, vào biểu tượng Cài đặt (bánh răng), chọn mô hình `TURBO-Q5` (có dấu ★) và nhấn "Tải mô hình".
+2. Bật công tắc "Bật STT offline khi mất mạng" và thử nghiệm ghi âm khi bật Chế độ máy bay (offline).
+3. Chuẩn bị kế hoạch cho Giai đoạn 4: Mở rộng (xem `08-cong-viec-tuong-lai.md`).
