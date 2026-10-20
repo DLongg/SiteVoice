@@ -243,10 +243,14 @@ fun MainScreen(
                 currentDocTemplateId = securePreferences.docTemplateId,
                 currentGoogleWebClientId = securePreferences.googleWebClientId,
                 currentGoogleAccountEmail = securePreferences.googleAccountEmail,
-                onSaveSettings = { newKey, newDocId, newClientId ->
+                initialOfflineSttEnabled = securePreferences.isOfflineSttEnabled,
+                initialOfflineModelId = securePreferences.selectedOfflineModelId,
+                onSaveSettings = { newKey, newDocId, newClientId, isOfflineEnabled, modelId ->
                     securePreferences.groqApiKey = newKey
                     securePreferences.docTemplateId = newDocId
                     securePreferences.googleWebClientId = newClientId
+                    securePreferences.isOfflineSttEnabled = isOfflineEnabled
+                    securePreferences.selectedOfflineModelId = modelId
                 },
                 onSignInGoogleClick = {
                     val client = GoogleAuthManager.getSignInClient(context, securePreferences.googleWebClientId)
