@@ -103,9 +103,12 @@ class GoogleDocsExporter(
             val batchBody = batchResponse.body?.string().orEmpty()
 
             if (!batchResponse.isSuccessful) {
-                return@withContext Result.failure(
-                    IOException("Lỗi thay thế placeholder (${batchResponse.code}): $batchBody")
-                )
+                val errorMsg = if (batchBody.contains("The document must not be an Office file")) {
+                    "File mẫu đang là định dạng Word (.docx). Vui lòng mở file trên Google Drive, vào 'Tệp' -> chọn 'Lưu dưới dạng Google Tài liệu' rồi dán link tài liệu mới vào Cài đặt."
+                } else {
+                    "Lỗi thay thế placeholder (${batchResponse.code}): $batchBody"
+                }
+                return@withContext Result.failure(IOException(errorMsg))
             }
 
             val docUrl = "https://docs.google.com/document/d/$newDocId/edit"

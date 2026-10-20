@@ -347,3 +347,12 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Tạo: `docs/10-do-chinh-xac.md`, `app/src/test/resources/golden_dataset.json`, `app/src/test/java/com/sitevoice/app/ClassificationBenchmarkTest.kt`.
 - Cập nhật: `docs/05-llm.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Còn lại: Sẵn sàng triển khai Bước 2 trong lộ trình: Xây dựng `TextNormalizer` (chuẩn hóa từ điển) và `ClauseSplitter` (tách câu/mệnh đề) để nâng điểm benchmark nhóm `multi_intent` và `dialect_and_typo`.
+
+## 2026-10-20 — Bổ sung hướng dẫn xử lý lỗi Office File trong Google Docs Exporter — Hoàn thành
+
+- Kết quả: Khắc phục thông báo lỗi 400 "The document must not be an Office file" khi xuất Google Doc:
+  + Nguyên nhân: File mẫu hiện tại trên Drive là file Microsoft Word (.docx) tải lên chứ chưa được lưu sang định dạng chuẩn Google Docs (`application/vnd.google-apps.document`). Google Docs API chỉ hỗ trợ thay thế batchUpdate trên tài liệu Google Docs gốc.
+  + Cập nhật `GoogleDocsExporter.kt`: Bổ sung cơ chế phát hiện lỗi file Office và đưa ra thông báo tiếng Việt rõ ràng, dễ hiểu cho người dùng ("File mẫu đang là định dạng Word (.docx). Vui lòng mở file trên Google Drive, vào 'Tệp' -> chọn 'Lưu dưới dạng Google Tài liệu' rồi dán link tài liệu mới vào Cài đặt").
+  + Build & Test: 34/34 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/export/GoogleDocsExporter.kt`, `docs/WORK_LOG.md`.
+- Còn lại: Hướng dẫn người dùng thao tác 1 bước trên Google Drive để đổi file sang Google Docs.
