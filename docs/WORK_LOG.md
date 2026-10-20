@@ -304,3 +304,13 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/src/main/java/com/sitevoice/app/data/NoteDao.kt`, `app/src/main/java/com/sitevoice/app/export/GoogleAuthManager.kt`, `docs/06-google-doc-mau.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: 30/30 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công; `adb install -r` trả về `Success` trên thiết bị `33c4f658`.
 - Còn lại: Người dùng kiểm tra trực tiếp danh sách ghi chú trên điện thoại thật và sẵn sàng triển khai Task 4.1.4 (Xuất Doc động theo Mẫu).
+
+## 2026-10-20 — Triển khai Task 4.1.4: Nâng cấp Xuất Google Doc theo Mẫu tùy biến — Hoàn thành
+
+- Kết quả: Hoàn thành 100% Task 4.1.4, chính thức khép lại trọn vẹn Nhóm 4.1 (Thư viện Mẫu & Bộ tạo Mẫu):
+  + Nâng cấp `PlaceholderMapper.kt`: Bổ sung hàm tiện ích `extractDocId(urlOrId)` tự động nhận diện và trích xuất Google Doc ID từ đường link Drive/Docs đầy đủ hoặc ID trực tiếp; nâng cấp hàm `buildPlaceholderMap(date, dailyInput, reportContent, template)` hỗ trợ phân tích động các trường trong `schemaJson` của Mẫu và duyệt toàn bộ `allFields` để ánh xạ cả chữ hoa lẫn chữ thường (`{{ngay}}`, `{{NGAY}}`, `{{tam_trang}}`, `{{cong_viec_hoan_thanh}}`...), đảm bảo tương thích ngược 100% với mẫu Nhật ký công trường gốc.
+  + Nâng cấp `GoogleDocsExporter.kt`: Hỗ trợ tham số `template: TemplateItemEntity?` và `customTitle: String?`, đặt tên tài liệu xuất theo tên mẫu (VD: "Nhật ký cá nhân 2026-10-20"), tự động thay thế toàn bộ placeholder động tương ứng của mẫu đó.
+  + Nâng cấp `ExportWorker.kt`: Đọc `templateId` trực tiếp từ `DailyReportEntity`, truy vấn Room DB để lấy thông tin Mẫu và `docTemplateUrl` riêng của mẫu đó; trích xuất Doc ID tự động và fallback về cấu hình chung nếu mẫu chưa có URL riêng; cập nhật trạng thái `EXPORTED` và link Doc kết quả.
+  + Cập nhật & mở rộng Unit Tests: Bổ sung các test case kiểm tra trích xuất Doc ID, ánh xạ placeholder động cho Mẫu cá nhân và xuất báo cáo đa mẫu trong `PlaceholderMapperTest.kt` và `GoogleDocsExporterTest.kt`.
+- Code & Test: Cập nhật `PlaceholderMapper.kt`, `GoogleDocsExporter.kt`, `ExportWorker.kt`, `PlaceholderMapperTest.kt`, `GoogleDocsExporterTest.kt`. Toàn bộ 32/32 unit tests pass 100%. `.\gradlew.bat assembleDebug` build thành công ra APK 11.94 MB và đã cài đặt (`adb install -r`) trực tiếp lên điện thoại thật `33c4f658`.
+- Còn lại: Chuyển sang Nhóm 4.2 (Ảnh hiện trường kèm ghi chú). Các việc cần người dùng thao tác thực tế (test app trên máy thật, tạo file Doc mẫu cá nhân) được tổng hợp để người dùng nợ thực hiện khi thuận tiện.

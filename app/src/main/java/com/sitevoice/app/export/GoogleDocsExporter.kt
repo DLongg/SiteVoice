@@ -1,6 +1,7 @@
 package com.sitevoice.app.export
 
 import com.sitevoice.app.data.DailyInputEntity
+import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.template.DailyReportContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,10 +33,12 @@ class GoogleDocsExporter(
         dailyInput: DailyInputEntity?,
         reportContent: DailyReportContent,
         templateDocId: String,
-        accessToken: String
+        accessToken: String,
+        template: TemplateItemEntity? = null,
+        customTitle: String? = null
     ): Result<ExportResult> = withContext(Dispatchers.IO) {
         try {
-            val docTitle = "Nhật ký thi công $date"
+            val docTitle = customTitle ?: (template?.let { "${it.name} $date" } ?: "Nhật ký thi công $date")
 
             // Bước 1: Sao chép bản Doc mẫu (Drive API v3)
             val copyPayload = JSONObject().apply {
@@ -67,7 +70,7 @@ class GoogleDocsExporter(
             }
 
             // Bước 2: Thay thế toàn bộ placeholder (Docs API v1 batchUpdate)
-            val placeholderMap = PlaceholderMapper.buildPlaceholderMap(date, dailyInput, reportContent)
+            val placeholderMap = PlaceholderMapper.buildPlaceholderMap(date, dailyInput, reportContent, template)
             val requestsArray = JSONArray()
 
             for ((placeholder, replacement) in placeholderMap) {

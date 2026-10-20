@@ -1,6 +1,7 @@
 package com.sitevoice.app
 
 import com.sitevoice.app.data.DailyInputEntity
+import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.export.PlaceholderMapper
 import com.sitevoice.app.template.DailyReportContent
 import org.junit.Assert.assertEquals
@@ -8,6 +9,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PlaceholderMapperTest {
+
+    @Test
+    fun testExtractDocId() {
+        val standardUrl = "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
+        assertEquals("1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms", PlaceholderMapper.extractDocId(standardUrl))
+
+        val driveUrl = "https://drive.google.com/file/d/1vP4n_Q16p_mK1Jp8u3BwzV1xZ/view"
+        assertEquals("1vP4n_Q16p_mK1Jp8u3BwzV1xZ", PlaceholderMapper.extractDocId(driveUrl))
+
+        val rawId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+        assertEquals(rawId, PlaceholderMapper.extractDocId(rawId))
+
+        assertEquals("", PlaceholderMapper.extractDocId(""))
+        assertEquals("", PlaceholderMapper.extractDocId("   "))
+    }
 
     @Test
     fun testBuildPlaceholderMapWithCompleteData() {
@@ -36,6 +52,7 @@ class PlaceholderMapperTest {
         assertEquals("20", map["{{NGAY}}"])
         assertEquals("10", map["{{THANG}}"])
         assertEquals("2026", map["{{NAM}}"])
+        assertEquals("20/10/2026", map["{{NGAY_THANG_NAM}}"])
 
         // Thời tiết
         assertEquals("☑", map["{{SANG_NANG}}"])
@@ -62,6 +79,41 @@ class PlaceholderMapperTest {
 
         // Đảm bảo chua_phan_loai không có placeholder trong doc
         assertTrue(!map.containsKey("{{CHUA_PHAN_LOAI}}"))
+    }
+
+    @Test
+    fun testBuildPlaceholderMapWithCustomTemplate() {
+        val customTemplate = TemplateItemEntity(
+            id = "nhat-ky-ca-nhan",
+            name = "Nhật ký cá nhân",
+            description = "Báo cáo cá nhân",
+            systemPrompt = "Tóm tắt cá nhân",
+            schemaJson = """
+                {
+                    "summaryFields": [
+                        {"name": "tam_trang", "type": "string"},
+                        {"name": "cong_viec_hoan_thanh", "type": "list"},
+                        {"name": "ton_dong_can_xu_ly", "type": "list"}
+                    ]
+                }
+            """.trimIndent()
+        )
+
+        val reportContent = DailyReportContent(
+            allFields = mapOf(
+                "tam_trang" to "Phấn chấn, nhiều năng lượng",
+                "cong_viec_hoan_thanh" to listOf("Xong tài liệu kiến trúc", "Build APK 11.94 MB"),
+                "ton_dong_can_xu_ly" to listOf("Gửi bản vẽ cho kỹ sư")
+            )
+        )
+
+        val map = PlaceholderMapper.buildPlaceholderMap("2026-10-20", null, reportContent, customTemplate)
+
+        assertEquals("20", map["{{ngay}}"])
+        assertEquals("Phấn chấn, nhiều năng lượng", map["{{tam_trang}}"])
+        assertEquals("Phấn chấn, nhiều năng lượng", map["{{TAM_TRANG}}"])
+        assertEquals("- Xong tài liệu kiến trúc\n- Build APK 11.94 MB", map["{{cong_viec_hoan_thanh}}"])
+        assertEquals("- Gửi bản vẽ cho kỹ sư", map["{{ton_dong_can_xu_ly}}"])
     }
 
     @Test

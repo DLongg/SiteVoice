@@ -15,6 +15,7 @@ import androidx.work.WorkerParameters
 import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.export.GoogleAuthManager
 import com.sitevoice.app.export.GoogleDocsExporter
+import com.sitevoice.app.export.PlaceholderMapper
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.template.DailyReportContent
 import java.util.concurrent.TimeUnit
@@ -65,6 +66,7 @@ class ExportWorker(
         val database = AppDatabase.getDatabase(applicationContext)
         val dailyReportDao = database.dailyReportDao()
         val dailyInputDao = database.dailyInputDao()
+        val templateDao = database.templateDao()
 
         val report = dailyReportDao.getByDateSync(date) ?: run {
             Log.e(TAG, "Không tìm thấy báo cáo cho ngày $date")
@@ -86,25 +88,45 @@ class ExportWorker(
 
         val dailyInput = dailyInputDao.getByDateSync(date)
         val reportContent = DailyReportContent.fromJson(report.contentJson)
+        val template = templateDao.getTemplateByIdSync(report.templateId)
         val securePreferences = SecurePreferences(applicationContext)
-        val templateId = securePreferences.docTemplateId
+
+        // Lấy Doc Template ID: ưu tiên từ Mẫu hiện hành, fallback về SecurePreferences
+        val templateDocId = if (template != null && template.docTemplateUrl.isNotBlank()) {
+            val extracted = PlaceholderMapper.extractDocId(template.docTemplateUrl)
+            if (extracted.isNotBlank()) extracted else securePreferences.docTemplateId
+        } else {
+            securePreferences.docTemplateId
+        }
+
+        if (templateDocId.isBlank()) {
+            Log.e(TAG, "Chưa cấu hình Google Doc Template ID cho mẫu ${template?.name ?: report.templateId}")
+            return Result.failure()
+        }
 
         val exporter = GoogleDocsExporter()
         val exportResult = exporter.exportReport(
             date = date,
             dailyInput = dailyInput,
             reportContent = reportContent,
-            templateDocId = templateId,
-            accessToken = token
+            templateDocId = templateDocId,
+            accessToken = token,
+            template = template
         )
 
         return if (exportResult.isSuccess) {
             val result = exportResult.getOrThrow()
-            dailyReportDao.updateDocUrl(date, result.docUrl, "EXPORTED")
             Log.i(TAG, "Xuất Doc thành công: ${result.docUrl}")
+            val updatedReport = report.copy(
+                status = "EXPORTED",
+                docUrl = result.docUrl,
+                updatedAt = System.currentTimeMillis()
+            )
+            dailyReportDao.insertOrUpdate(updatedReport)
             Result.success()
         } else {
-            Log.e(TAG, "Xuất Doc thất bại: ${exportResult.exceptionOrNull()?.message}")
+            val error = exportResult.exceptionOrNull()
+            Log.e(TAG, "Lỗi xuất Google Doc: ${error?.message}", error)
             if (runAttemptCount < 3) Result.retry() else Result.failure()
         }
     }

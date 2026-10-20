@@ -569,8 +569,8 @@
 | **Mô tả** | Xuất Google Doc tương thích với mọi mẫu do người dùng tạo: sao chép template Google Doc riêng của mẫu đó trên Drive của người dùng và batchUpdate thay thế chính xác các placeholder đã định nghĩa trong mẫu. |
 | **Người làm** | Agent |
 | **Đầu vào** | 4.1.2, 4.1.3, `ExportWorker` |
-| **Kết quả** | Xuất tài liệu thành công cho cả Nhật ký công trường, Nhật ký cá nhân và các mẫu do người dùng tự tạo |
-| **Trạng thái** | 🔲 Chưa bắt đầu |
+| **Kết quả** | Nâng cấp `PlaceholderMapper`, `GoogleDocsExporter` và `ExportWorker`: tự động trích xuất Doc ID từ link của Mẫu kích hoạt, ánh xạ linh hoạt mọi placeholder trong schema & allFields, xuất Doc riêng cho từng mẫu; unit tests pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 

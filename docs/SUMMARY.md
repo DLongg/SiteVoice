@@ -17,10 +17,10 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1, 4.1.2, 4.1.3 của Giai đoạn 4.
-- Đã hoàn thành Thư viện Mẫu (`TemplateLibraryScreen`), Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`), nạp động Schema & Prompt cho LLM (`ReportSynthesizer`), màn hình xem trước đa mẫu (`DailyReportPreviewScreen`), chọn mẫu linh hoạt (`TemplateSelector`). Tích hợp sẵn 2 mẫu chuẩn: Nhật ký thi công công trường & Nhật ký hằng ngày cá nhân.
-- Kiểm thử: 30/30 unit tests pass 100%, build APK debug thành công. Git working tree sạch, đã push đồng bộ `origin/main`.
-- Việc cụ thể tiếp theo khi tiếp tục phiên mới: Triển khai Task 4.1.4 (Nâng cấp xuất Google Doc theo Mẫu tùy biến: nạp Google Doc ID và ánh xạ placeholder tương ứng của từng mẫu) rồi chuyển sang Nhóm 4.2 (Ảnh hiện trường kèm ghi chú).
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành trọn vẹn 100% Nhóm 4.1 (Task 4.1.1 - 4.1.4) của Giai đoạn 4.
+- Đã hoàn thành Thư viện Mẫu (`TemplateLibraryScreen`), Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`), nạp động Schema & Prompt cho LLM (`ReportSynthesizer`), màn hình xem trước đa mẫu (`DailyReportPreviewScreen`), chọn mẫu linh hoạt (`TemplateSelector`), và xuất Google Doc tự động theo Doc ID & placeholder của từng Mẫu (`GoogleDocsExporter`, `ExportWorker`).
+- Kiểm thử: 32/32 unit tests pass 100%, build APK debug (11.94 MB) thành công và đã cài đặt trên máy thật `33c4f658`.
+- Việc cụ thể tiếp theo: Triển khai Nhóm 4.2 (Ảnh hiện trường kèm ghi chú: chụp/chọn ảnh, lưu an toàn, thumbnail UI và chèn ảnh vào Google Doc).
 
 ## Quyết định phải giữ
 
@@ -32,5 +32,6 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Task 4.1.4: Nâng cấp `ExportWorker` và `GoogleDocsExporter` hỗ trợ xuất Google Doc theo Mẫu tùy biến (Doc ID và placeholder tương ứng của từng mẫu).
-2. Chuẩn bị triển khai Nhóm 4.2: Chụp & đính kèm ảnh hiện trường vào ghi chú (Task 4.2.1 - 4.2.3).
+1. Triển khai Task 4.2.1: Chụp & đính kèm ảnh hiện trường vào ghi chú (thêm `photoUri`, Room migration version 5, File storage).
+2. Triển khai Task 4.2.2: Hiển thị thumbnail và phóng to ảnh trên UI.
+3. Triển khai Task 4.2.3: Tải ảnh lên Drive & chèn vào Google Doc.

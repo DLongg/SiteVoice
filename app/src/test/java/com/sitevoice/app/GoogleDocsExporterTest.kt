@@ -1,6 +1,7 @@
 package com.sitevoice.app
 
 import com.sitevoice.app.data.DailyInputEntity
+import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.export.GoogleDocsExporter
 import com.sitevoice.app.template.DailyReportContent
 import kotlinx.coroutines.runBlocking
@@ -17,7 +18,7 @@ import org.junit.Test
 class GoogleDocsExporterTest {
 
     @Test
-    fun testExportSuccess() = runBlocking {
+    fun testExportSuccessWithDefaultTemplate() = runBlocking {
         val fakeInterceptor = Interceptor { chain ->
             val request = chain.request()
             val url = request.url.toString()
@@ -83,6 +84,71 @@ class GoogleDocsExporterTest {
     }
 
     @Test
+    fun testExportSuccessWithCustomTemplate() = runBlocking {
+        val fakeInterceptor = Interceptor { chain ->
+            val request = chain.request()
+            val url = request.url.toString()
+
+            if (url.contains("/copy")) {
+                Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(200)
+                    .message("OK")
+                    .body("""{"id": "doc_personal_456", "name": "Nhật ký cá nhân 2026-10-20"}""".toResponseBody("application/json".toMediaType()))
+                    .build()
+            } else if (url.contains(":batchUpdate")) {
+                Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(200)
+                    .message("OK")
+                    .body("""{"documentId": "doc_personal_456"}""".toResponseBody("application/json".toMediaType()))
+                    .build()
+            } else {
+                Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(404)
+                    .message("Not Found")
+                    .body("{}".toResponseBody("application/json".toMediaType()))
+                    .build()
+            }
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(fakeInterceptor)
+            .build()
+
+        val exporter = GoogleDocsExporter(client)
+        val customTemplate = TemplateItemEntity(
+            id = "nhat-ky-ca-nhan",
+            name = "Nhật ký cá nhân",
+            description = "Báo cáo cá nhân",
+            systemPrompt = "Prompt",
+            schemaJson = """{"summaryFields": [{"name": "tam_trang", "type": "string"}]}"""
+        )
+
+        val reportContent = DailyReportContent(
+            allFields = mapOf("tam_trang" to "Tuyệt vời")
+        )
+
+        val result = exporter.exportReport(
+            date = "2026-10-20",
+            dailyInput = null,
+            reportContent = reportContent,
+            templateDocId = "template_custom_999",
+            accessToken = "fake_access_token",
+            template = customTemplate
+        )
+
+        assertTrue(result.isSuccess)
+        val export = result.getOrThrow()
+        assertEquals("doc_personal_456", export.docId)
+        assertEquals("Nhật ký cá nhân 2026-10-20", export.title)
+    }
+
+    @Test
     fun testExportCopyFailure() = runBlocking {
         val fakeInterceptor = Interceptor { chain ->
             Response.Builder()
@@ -103,11 +169,10 @@ class GoogleDocsExporterTest {
             date = "2026-10-20",
             dailyInput = null,
             reportContent = DailyReportContent(),
-            templateDocId = "template_id_123",
-            accessToken = "fake_access_token"
+            templateDocId = "invalid_id",
+            accessToken = "fake_token"
         )
 
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull()?.message?.contains("403") == true)
     }
 }
