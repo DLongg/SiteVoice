@@ -42,10 +42,12 @@ fun DailyReportPreviewScreen(
     reportEntity: DailyReportEntity?,
     dailyInput: DailyInputEntity?,
     isSynthesizing: Boolean,
+    isExporting: Boolean = false,
     onApproveClick: () -> Unit,
     onResynthesizeClick: () -> Unit,
     onBackToEditClick: () -> Unit,
     onExportDocClick: () -> Unit,
+    onOpenDocClick: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -368,21 +370,83 @@ fun DailyReportPreviewScreen(
                     }
                 }
             } else {
-                // Trạng thái đã duyệt: Nút Xuất Doc (Giai đoạn 3)
+                // Trạng thái đã duyệt: Nút Xuất Doc & Mở Doc
+                val docUrl = reportEntity.docUrl
+                if (!docUrl.isNullOrBlank()) {
+                    // Đã xuất thành công
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF)),
+                        shape = RoundedCornerShape(10.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF93C5FD))
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(
+                                text = "✓ " + stringResource(id = R.string.report_export_success),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1D4ED8)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Bản sao đã được tạo tại Google Drive cá nhân của bạn.",
+                                fontSize = 12.sp,
+                                color = Color(0xFF3B82F6)
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Button(
+                                onClick = { onOpenDocClick?.invoke(docUrl) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.report_btn_open_doc),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Nút xuất Google Doc (hoặc xuất lại)
                 Button(
                     onClick = onExportDocClick,
+                    enabled = !isExporting,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (docUrl.isNullOrBlank()) Color(0xFF2563EB) else Color(0xFF0F172A)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text(
-                        text = "📄 " + stringResource(id = R.string.report_btn_export_doc),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    if (isExporting) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.report_exporting_loading),
+                            fontSize = 13.sp,
+                            color = Color.White
+                        )
+                    } else {
+                        val exportBtnText = if (docUrl.isNullOrBlank()) {
+                            "📄 " + stringResource(id = R.string.report_btn_export_doc)
+                        } else {
+                            "🔄 Xuất lại bản Google Doc mới"
+                        }
+                        Text(
+                            text = exportBtnText,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

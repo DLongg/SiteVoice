@@ -1,5 +1,6 @@
 package com.sitevoice.app.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,11 +11,14 @@ import com.sitevoice.app.data.DailyReportEntity
 import com.sitevoice.app.data.DailyReportRepository
 import com.sitevoice.app.data.NoteEntity
 import com.sitevoice.app.data.NoteRepository
+import com.sitevoice.app.export.GoogleAuthManager
+import com.sitevoice.app.export.GoogleDocsExporter
 import com.sitevoice.app.llm.GroqLlmClient
 import com.sitevoice.app.llm.NoteClassifier
 import com.sitevoice.app.llm.ReportSynthesizer
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.stt.GroqWhisper
+import com.sitevoice.app.template.DailyReportContent
 import com.sitevoice.app.template.TemplateSchema
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,7 +47,8 @@ class MainViewModel(
     private val templateSchema: TemplateSchema,
     private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
     private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey })),
-    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }), templateSchema)
+    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }), templateSchema),
+    private val exporter: GoogleDocsExporter = GoogleDocsExporter()
 ) : ViewModel() {
 
     val audioPlayer = AudioPlayer()
@@ -76,6 +81,12 @@ class MainViewModel(
 
     private val _synthesisError = MutableStateFlow<String?>(null)
     val synthesisError: StateFlow<String?> = _synthesisError.asStateFlow()
+
+    private val _isExporting = MutableStateFlow(false)
+    val isExporting: StateFlow<Boolean> = _isExporting.asStateFlow()
+
+    private val _exportError = MutableStateFlow<String?>(null)
+    val exportError: StateFlow<String?> = _exportError.asStateFlow()
 
     private val _currentSttStatus = MutableStateFlow<CurrentSttStatus>(CurrentSttStatus.Idle)
     val currentSttStatus: StateFlow<CurrentSttStatus> = _currentSttStatus.asStateFlow()
@@ -268,6 +279,65 @@ class MainViewModel(
 
     fun clearSynthesisError() {
         _synthesisError.value = null
+    }
+
+    fun exportDailyReport(context: Context, onSuccess: (docUrl: String) -> Unit) {
+        val account = GoogleAuthManager.getLastSignedInAccount(context)
+        if (account == null) {
+            _exportError.value = "Chưa đăng nhập tài khoản Google. Vui lòng mở Cài đặt và bấm 'Đăng nhập Google' trước."
+            return
+        }
+
+        val report = dailyReport.value
+        if (report == null) {
+            _exportError.value = "Chưa có bản tổng hợp nhật ký để xuất."
+            return
+        }
+
+        viewModelScope.launch {
+            _isExporting.value = true
+            _exportError.value = null
+            try {
+                val acc = account.account
+                if (acc == null) {
+                    _exportError.value = "Không tìm thấy thông tin tài khoản Google."
+                    return@launch
+                }
+                val tokenResult = GoogleAuthManager.fetchAccessToken(context, acc)
+                if (tokenResult.isFailure) {
+                    _exportError.value = "Không thể lấy quyền truy cập Google: ${tokenResult.exceptionOrNull()?.message}"
+                    return@launch
+                }
+                val token = tokenResult.getOrThrow()
+                val currentDailyInput = dailyInput.value
+                val reportContent = DailyReportContent.fromJson(report.contentJson)
+                val templateId = securePreferences.docTemplateId
+
+                val exportResult = exporter.exportReport(
+                    date = currentDate,
+                    dailyInput = currentDailyInput,
+                    reportContent = reportContent,
+                    templateDocId = templateId,
+                    accessToken = token
+                )
+
+                if (exportResult.isSuccess) {
+                    val result = exportResult.getOrThrow()
+                    dailyReportRepository.markExported(currentDate, result.docUrl)
+                    onSuccess(result.docUrl)
+                } else {
+                    _exportError.value = exportResult.exceptionOrNull()?.message ?: "Lỗi khi xuất Google Doc"
+                }
+            } catch (e: Exception) {
+                _exportError.value = e.message ?: "Lỗi hệ thống khi xuất Doc"
+            } finally {
+                _isExporting.value = false
+            }
+        }
+    }
+
+    fun clearExportError() {
+        _exportError.value = null
     }
 
     override fun onCleared() {

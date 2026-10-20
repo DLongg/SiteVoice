@@ -1,7 +1,9 @@
 package com.sitevoice.app.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,21 +29,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.sitevoice.app.R
 import com.sitevoice.app.settings.SecurePreferences
 
 @Composable
 fun SettingsDialog(
     currentApiKey: String?,
     currentDocTemplateId: String = SecurePreferences.DEFAULT_DOC_TEMPLATE_ID,
-    onSaveSettings: (apiKey: String, docTemplateId: String) -> Unit,
+    currentGoogleWebClientId: String? = null,
+    currentGoogleAccountEmail: String? = null,
+    onSaveSettings: (apiKey: String, docTemplateId: String, webClientId: String) -> Unit,
+    onSignInGoogleClick: () -> Unit,
+    onSignOutGoogleClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
     var inputKey by remember { mutableStateOf(currentApiKey ?: "") }
     var inputDocId by remember { mutableStateOf(currentDocTemplateId) }
+    var inputWebClientId by remember { mutableStateOf(currentGoogleWebClientId ?: "") }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -50,7 +61,8 @@ fun SettingsDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
@@ -112,6 +124,76 @@ fun SettingsDialog(
                     color = Color(0xFF94A3B8)
                 )
 
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Phần 3: Google Account & Web Client ID
+                Text(
+                    text = stringResource(id = R.string.settings_google_section),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1E293B)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+
+                OutlinedTextField(
+                    value = inputWebClientId,
+                    onValueChange = { inputWebClientId = it },
+                    label = { Text(stringResource(id = R.string.settings_google_client_id), fontSize = 12.sp) },
+                    placeholder = { Text(stringResource(id = R.string.settings_google_client_id_hint), fontSize = 12.sp) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Thẻ trạng thái tài khoản Google
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFF8FAFC), RoundedCornerShape(8.dp))
+                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
+                        .padding(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(id = R.string.settings_google_account),
+                                fontSize = 11.sp,
+                                color = Color(0xFF64748B)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = currentGoogleAccountEmail ?: stringResource(id = R.string.settings_google_not_signed_in),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (currentGoogleAccountEmail != null) Color(0xFF15803D) else Color(0xFF94A3B8)
+                            )
+                        }
+
+                        if (currentGoogleAccountEmail != null) {
+                            OutlinedButton(
+                                onClick = onSignOutGoogleClick,
+                                shape = RoundedCornerShape(6.dp)
+                            ) {
+                                Text(text = stringResource(id = R.string.settings_btn_sign_out_google), fontSize = 11.sp)
+                            }
+                        } else {
+                            Button(
+                                onClick = onSignInGoogleClick,
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                shape = RoundedCornerShape(6.dp)
+                            ) {
+                                Text(text = stringResource(id = R.string.settings_btn_sign_in_google), fontSize = 11.sp)
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
@@ -130,7 +212,7 @@ fun SettingsDialog(
 
                     Button(
                         onClick = {
-                            onSaveSettings(inputKey.trim(), inputDocId.trim())
+                            onSaveSettings(inputKey.trim(), inputDocId.trim(), inputWebClientId.trim())
                             onDismiss()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),

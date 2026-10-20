@@ -84,4 +84,17 @@
     <string name="report_empty_field">(Không có phát sinh)</string>
     <string name="report_view_preview">Xem bản tổng hợp</string>
     <string name="report_edit_again">Mở lại dự thảo để sửa</string>
+
+    <!-- Google Sign-In & Export -->
+    <string name="settings_google_section">3. Tài khoản Google (Xuất Doc)</string>
+    <string name="settings_google_client_id">Web Client ID (từ Cloud Console)</string>
+    <string name="settings_google_client_id_hint">xxxxxxxx.apps.googleusercontent.com</string>
+    <string name="settings_google_account">Tài khoản Google:</string>
+    <string name="settings_google_not_signed_in">Chưa đăng nhập</string>
+    <string name="settings_btn_sign_in_google">Đăng nhập Google</string>
+    <string name="settings_btn_sign_out_google">Đăng xuất</string>
+    <string name="report_btn_open_doc">📂 Mở Google Doc đã xuất</string>
+    <string name="report_exporting_loading">Đang sao chép bản mẫu và điền dữ liệu vào Google Doc...</string>
+    <string name="report_export_success">Đã xuất Google Doc thành công!</string>
+    <string name="report_export_login_required">Vui lòng đăng nhập Google trong Cài đặt để xuất Google Doc.</string>
 </resources>

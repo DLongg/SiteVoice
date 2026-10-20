@@ -1,6 +1,10 @@
 package com.sitevoice.app.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,7 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 import com.sitevoice.app.R
+import com.sitevoice.app.export.GoogleAuthManager
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.ui.daily.DailyInputScreen
 import com.sitevoice.app.ui.daily.DailyReportPreviewScreen
@@ -50,6 +57,24 @@ fun MainScreen(
     val dailyReport by viewModel.dailyReport.collectAsState()
     val isSynthesizing by viewModel.isSynthesizing.collectAsState()
     val synthesisError by viewModel.synthesisError.collectAsState()
+    val isExporting by viewModel.isExporting.collectAsState()
+    val exportError by viewModel.exportError.collectAsState()
+
+    // Activity Result Launcher cho Google Sign-In
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            if (account != null) {
+                securePreferences.googleAccountEmail = account.email
+                Toast.makeText(context, "Đăng nhập Google thành công: ${account.email}", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(context, "Lỗi đăng nhập Google: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -167,6 +192,7 @@ fun MainScreen(
                             reportEntity = dailyReport,
                             dailyInput = dailyInput,
                             isSynthesizing = isSynthesizing,
+                            isExporting = isExporting,
                             onApproveClick = {
                                 viewModel.approveDailyReport()
                                 Toast.makeText(context, "✓ Đã phê duyệt nhật ký thi công!", Toast.LENGTH_SHORT).show()
@@ -178,7 +204,17 @@ fun MainScreen(
                                 showReportPreview = false
                             },
                             onExportDocClick = {
-                                Toast.makeText(context, "Chức năng xuất Google Doc sẽ hoạt động ở Giai đoạn 3.", Toast.LENGTH_LONG).show()
+                                viewModel.exportDailyReport(context) { docUrl ->
+                                    Toast.makeText(context, "✓ Đã xuất Google Doc thành công!", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            onOpenDocClick = { docUrl ->
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(docUrl))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Không thể mở trình duyệt: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         )
                     } else {
@@ -200,14 +236,28 @@ fun MainScreen(
             }
         }
 
-        // Hộp thoại cài đặt API key & Doc mẫu
+        // Hộp thoại cài đặt API key, Doc mẫu & Google Sign-In
         if (showSettingsDialog) {
             SettingsDialog(
                 currentApiKey = securePreferences.groqApiKey,
                 currentDocTemplateId = securePreferences.docTemplateId,
-                onSaveSettings = { newKey, newDocId ->
+                currentGoogleWebClientId = securePreferences.googleWebClientId,
+                currentGoogleAccountEmail = securePreferences.googleAccountEmail,
+                onSaveSettings = { newKey, newDocId, newClientId ->
                     securePreferences.groqApiKey = newKey
                     securePreferences.docTemplateId = newDocId
+                    securePreferences.googleWebClientId = newClientId
+                },
+                onSignInGoogleClick = {
+                    val client = GoogleAuthManager.getSignInClient(context, securePreferences.googleWebClientId)
+                    googleSignInLauncher.launch(client.signInIntent)
+                },
+                onSignOutGoogleClick = {
+                    GoogleAuthManager.signOut(context) {
+                        securePreferences.googleAccountEmail = null
+                        securePreferences.googleAccessToken = null
+                        Toast.makeText(context, "Đã đăng xuất tài khoản Google", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 onDismiss = { showSettingsDialog = false }
             )
@@ -222,6 +272,22 @@ fun MainScreen(
                 confirmButton = {
                     TextButton(
                         onClick = { viewModel.clearSynthesisError() }
+                    ) {
+                        Text("Đóng")
+                    }
+                }
+            )
+        }
+
+        // Hộp thoại báo lỗi khi xuất Google Doc thất bại
+        if (exportError != null) {
+            AlertDialog(
+                onDismissRequest = { viewModel.clearExportError() },
+                title = { Text("Lỗi xuất tài liệu", fontWeight = FontWeight.Bold) },
+                text = { Text(exportError ?: "") },
+                confirmButton = {
+                    TextButton(
+                        onClick = { viewModel.clearExportError() }
                     ) {
                         Text("Đóng")
                     }
