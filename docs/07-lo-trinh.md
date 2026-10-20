@@ -21,7 +21,7 @@
 
 ## Giai đoạn 3: Chạy không cần mạng
 - [x] 9. Hàng đợi WorkManager cho STT, phân loại, xuất (Task 3.1)
-- [ ] 👉 10. whisper.cpp offline (model base/small) (Task 3.2)
+- [x] 10. whisper.cpp offline (model tiny/base/small) (Task 3.2)
 
 ## Giai đoạn 4: Mở rộng
-Xem `08-cong-viec-tuong-lai.md`.
+👉 Xem `08-cong-viec-tuong-lai.md`.

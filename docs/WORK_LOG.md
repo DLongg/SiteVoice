@@ -193,4 +193,20 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/notes/NotesListScreen.kt`, `app/src/main/res/values/strings.xml`, `docs/ke-hoach-thuc-hien.md`, `docs/07-lo-trinh.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: `WorkRequestTest.kt` cùng toàn bộ 25 unit tests chạy pass 100%; `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (BUILD SUCCESSFUL).
 - Vấn đề và xử lý: Đảm bảo khi mất kết nối mạng ngoài công trường, toàn bộ bản ghi âm vẫn lưu an toàn 100% trên bộ nhớ máy, ghi chú xếp hàng chờ trong WorkManager và tự động đồng bộ khi có sóng trở lại.
-- Còn lại: Task 3.2 (whisper.cpp offline model base/small).
+- Còn lại: Sẵn sàng bước sang Task 3.2.
+
+## 2026-10-20 — Triển khai Giai đoạn 3: Nhận diện giọng nói ngoại tuyến với whisper.cpp (Task 3.2) — Hoàn thành
+
+- Kết quả: Hoàn thành 100% Task 3.2, chính thức hoàn thành toàn bộ Giai đoạn 3 (Chạy không cần mạng).
+  + Tích hợp thư viện `dev.ffmpegkit-maintained:whisper-android:1.0.0` (chứa native `libwhisper.so` biên dịch cho kiến trúc 64-bit ARM `arm64-v8a`) qua Maven Central.
+  + Xây dựng `AudioConverter.kt`: Giải mã file âm thanh M4A/AAC sang WAV 16kHz Mono bằng `MediaExtractor` và `MediaCodec` phần cứng của Android, hỗ trợ nội suy tần số lấy mẫu (resampling) và gộp kênh stereo sang mono; kèm thuật toán ghi header chuẩn WAV 44-byte.
+  + Xây dựng `WhisperModelManager.kt`: Quản lý danh mục mô hình Whisper GGML (Tiny ~75MB, Base ~142MB khuyến nghị, Small ~466MB); hỗ trợ tải luồng từ HuggingFace với callback cập nhật tiến trình %, kiểm tra file và xóa mô hình khỏi bộ nhớ.
+  + Xây dựng `WhisperOfflineStt.kt`: Hiện thực interface `SpeechToText`, nạp mô hình offline và gọi `Whisper.transcribe` xử lý file WAV 16kHz on-device với cấu hình tiếng Việt `language = "vi"`.
+  + Cập nhật `SttWorker.kt`: Logic thông minh chọn kênh: có mạng ưu tiên Groq Whisper (nhanh 1-2s), mất mạng tự động chuyển sang `WhisperOfflineStt` on-device nếu người dùng đã tải mô hình; tự động fallback khi Groq gặp sự cố mạng/API; điều chỉnh ràng buộc WorkManager linh hoạt.
+  + Cập nhật `SecurePreferences.kt`: Thêm trường lưu trữ mã hóa `isOfflineSttEnabled` và `selectedOfflineModelId`.
+  + Cập nhật `SettingsDialog.kt`: Bổ sung Phần 4 trực quan cho phép người dùng bật/tắt nhận diện offline, chọn phiên bản mô hình, xem dung lượng, bấm tải mô hình kèm thanh tiến trình phần trăm và nút xóa giải phóng bộ nhớ.
+- Tạo: `app/src/main/java/com/sitevoice/app/audio/AudioConverter.kt`, `app/src/main/java/com/sitevoice/app/stt/WhisperModelManager.kt`, `app/src/main/java/com/sitevoice/app/stt/WhisperOfflineStt.kt`, `app/src/test/java/com/sitevoice/app/AudioConverterTest.kt`, `app/src/test/java/com/sitevoice/app/WhisperModelManagerTest.kt`.
+- Cập nhật: `gradle/libs.versions.toml`, `app/build.gradle.kts`, `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`, `app/src/main/java/com/sitevoice/app/queue/SttWorker.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/res/values/strings.xml`, `app/src/test/java/com/sitevoice/app/WorkRequestTest.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/07-lo-trinh.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Toàn bộ 27/27 unit tests chạy pass 100% (`AudioConverterTest`, `WhisperModelManagerTest`, `WorkRequestTest`...); lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công không lỗi (BUILD SUCCESSFUL in 5m 33s); sinh file APK `app-debug.apk` chứa đầy đủ native `libwhisper.so`.
+- Vấn đề và xử lý: Tận dụng thư viện AAR prebuilt tương thích Android SDK 35 / 16KB memory page để tích hợp whisper.cpp gọn gàng mà không phụ thuộc cài đặt NDK cục bộ cồng kềnh; giải mã M4A sang WAV bằng MediaCodec gốc của Android nhẹ và mượt mà.
+- Còn lại: Toàn bộ Giai đoạn 0, 1, 2, 3 đã hoàn thành 100%. Sẵn sàng thử nghiệm thực tế toàn diện trên điện thoại và chuẩn bị cho Giai đoạn 4 (Mở rộng).

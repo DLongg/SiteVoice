@@ -506,29 +506,29 @@
 #### 3.2.1 Tích hợp whisper.cpp
 | | |
 |---|---|
-| **Mô tả** | Thêm dependency whisper.cpp (JNI/NDK). Tải model base (~140MB) hoặc small (~460MB). Class `WhisperCpp` implements `SpeechToText`. |
-| **Người làm** | |
+| **Mô tả** | Thêm dependency whisper.cpp (AAR prebuilt `dev.ffmpegkit-maintained:whisper-android`). Chuyển đổi âm thanh M4A sang WAV 16kHz mono qua `AudioConverter`. Class `WhisperOfflineStt` implements `SpeechToText`. |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/quyet-dinh/0001-stt-lai-online-offline.md` |
-| **Kết quả** | STT offline chạy được (chậm hơn nhưng đúng) |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `AudioConverter.kt`, `WhisperOfflineStt.kt`, nhận diện tiếng Việt offline bằng whisper.cpp trên máy, unit test pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 3.2.2 Logic chọn online/offline
 | | |
 |---|---|
-| **Mô tả** | Có mạng → Groq API. Không mạng → whisper.cpp (nếu người dùng bật trong settings) hoặc chờ mạng. |
-| **Người làm** | |
+| **Mô tả** | Có mạng → Groq API. Không mạng → whisper.cpp (nếu người dùng bật trong settings) hoặc chờ mạng. Fallback tự động khi Groq lỗi. |
+| **Người làm** | Agent |
 | **Đầu vào** | 3.2.1 + 3.1.1 |
-| **Kết quả** | Tắt mạng, ghi âm → vẫn có text (chậm hơn) |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `SttWorker.kt` thông minh: kiểm tra kết nối mạng, ưu tiên Groq, tự động chuyển sang whisper offline khi mất mạng nếu model đã tải |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 3.2.3 Quản lý model offline
 | | |
 |---|---|
-| **Mô tả** | Settings: cho người dùng tải/xóa model whisper. Hiển thị dung lượng. |
-| **Người làm** | |
+| **Mô tả** | Settings: cho người dùng tải/xóa model whisper (Tiny, Base, Small). Hiển thị dung lượng, thanh tiến trình tải. |
+| **Người làm** | Agent |
 | **Đầu vào** | 3.2.1 |
-| **Kết quả** | Tải/xóa model trong settings |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `WhisperModelManager.kt`, giao diện Phần 4 trong `SettingsDialog.kt` tải model từ HuggingFace với tiến trình % và nút xóa model |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
