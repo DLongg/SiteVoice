@@ -20,8 +20,8 @@
 - [x] 8. Xem trước & duyệt 1 lần duy nhất + xuất Google Doc từ mẫu (quyết định 0006)
 
 ## Giai đoạn 3: Chạy không cần mạng
-- [ ] 👉 9. Hàng đợi WorkManager cho STT, phân loại, xuất
-- [ ] 10. whisper.cpp offline (model base/small)
+- [x] 9. Hàng đợi WorkManager cho STT, phân loại, xuất (Task 3.1)
+- [ ] 👉 10. whisper.cpp offline (model base/small) (Task 3.2)
 
 ## Giai đoạn 4: Mở rộng
 Xem `08-cong-viec-tuong-lai.md`.

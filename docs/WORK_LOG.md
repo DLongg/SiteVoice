@@ -180,3 +180,17 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: Toàn bộ 24/24 unit tests pass 100% (`GoogleDocsExporterTest`, `PlaceholderMapperTest`, `SecurePreferencesTest`, `ReportSynthesizerTest`, `DailyReportContentTest`, `BudgetValidatorTest`, `TemplateSchemaTest`, `DailyReportRepositoryTest`, `DailyInputRepositoryTest`, `NoteClassifierTest`, `NoteRepositoryTest`, `GroqWhisperTest`, `TemplateAssetTest`). Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (BUILD SUCCESSFUL).
 - Vấn đề và xử lý: Sử dụng OkHttp gọi trực tiếp REST endpoints của Google Drive v3 và Docs v1 thay vì kéo bộ thư viện Google API Java Client cồng kềnh, giúp app nhẹ hơn, không bị xung đột META-INF và unit test hoàn toàn độc lập với mock Interceptor.
 - Còn lại: Sẵn sàng bước sang Giai đoạn 3 (Chạy không cần mạng: Hàng đợi WorkManager cho STT, phân loại, xuất báo cáo).
+
+## 2026-10-20 — Triển khai Giai đoạn 3: Hàng đợi WorkManager & Trạng thái ngoại tuyến (Task 3.1) — Hoàn thành
+
+- Kết quả: Hoàn thành 100% Task 3.1 (Hàng đợi WorkManager).
+  + Xây dựng `SttWorker.kt`: CoroutineWorker xử lý chuyển âm thanh sang văn bản qua Groq Whisper, ràng buộc mạng `NetworkType.CONNECTED`, cấu hình exponential backoff retry (15s), tự động kích hoạt `ClassifyWorker` ngay sau khi STT thành công.
+  + Xây dựng `ClassifyWorker.kt`: CoroutineWorker xử lý phân loại LLM theo nhãn schema, ràng buộc mạng `NetworkType.CONNECTED`, tự động fallback gán nhãn an toàn `chua_phan_loai` nếu gặp lỗi hoặc hết lượt retry.
+  + Xây dựng `ExportWorker.kt`: CoroutineWorker xuất Google Doc qua Drive v3 và Docs v1, ràng buộc mạng `NetworkType.CONNECTED`, tự động retry và cập nhật trạng thái `EXPORTED` cùng `docUrl` vào Room.
+  + Module `ui/`: Cập nhật `MainViewModel.kt` điều phối các tác vụ ghi âm, thử lại STT, gán lại nhãn, sửa nội dung và xuất Doc qua hàng đợi WorkManager; đồng bộ trạng thái reactive từ Room database.
+  + Cập nhật `NotesListScreen.kt`: Bổ sung badge và card trạng thái hàng đợi `⏳ Chờ mạng` / `🤖 Đang phân loại` / `❌ Lỗi STT`, hiển thị thông điệp tệp âm thanh gốc đã lưu an toàn trên thiết bị (tuân thủ nguyên tắc App Screens của skill `design-taste-frontend`).
+- Tạo: `app/src/main/java/com/sitevoice/app/queue/SttWorker.kt`, `app/src/main/java/com/sitevoice/app/queue/ClassifyWorker.kt`, `app/src/main/java/com/sitevoice/app/queue/ExportWorker.kt`, `app/src/test/java/com/sitevoice/app/WorkRequestTest.kt`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/notes/NotesListScreen.kt`, `app/src/main/res/values/strings.xml`, `docs/ke-hoach-thuc-hien.md`, `docs/07-lo-trinh.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: `WorkRequestTest.kt` cùng toàn bộ 25 unit tests chạy pass 100%; `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (BUILD SUCCESSFUL).
+- Vấn đề và xử lý: Đảm bảo khi mất kết nối mạng ngoài công trường, toàn bộ bản ghi âm vẫn lưu an toàn 100% trên bộ nhớ máy, ghi chú xếp hàng chờ trong WorkManager và tự động đồng bộ khi có sóng trở lại.
+- Còn lại: Task 3.2 (whisper.cpp offline model base/small).

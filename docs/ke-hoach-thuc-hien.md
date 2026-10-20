@@ -466,38 +466,38 @@
 #### 3.1.1 SttWorker
 | | |
 |---|---|
-| **Mô tả** | Worker gọi STT, ràng buộc `NetworkType.CONNECTED`. Thất bại → retry (backoff). Thành công → cập nhật Note. |
-| **Người làm** | |
+| **Mô tả** | Worker gọi STT, ràng buộc `NetworkType.CONNECTED`. Thất bại → retry (backoff). Thành công → cập nhật Note và tự kích hoạt ClassifyWorker. |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/03-kien-truc.md` |
-| **Kết quả** | Tắt mạng → ghi âm → bật mạng → STT tự chạy |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `SttWorker.kt`, tự động retry exponential backoff khi có mạng, unit test pass |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 3.1.2 ClassifyWorker
 | | |
 |---|---|
-| **Mô tả** | Worker gọi phân loại LLM, chạy sau SttWorker thành công. |
-| **Người làm** | |
-| **Đầu vào** | 1.5.3 |
-| **Kết quả** | Phân loại tự chạy nền khi có mạng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Mô tả** | Worker gọi phân loại LLM, chạy sau SttWorker thành công với ràng buộc mạng. |
+| **Người làm** | Agent |
+| **Đầu vào** | 1.5.3, 3.1.1 |
+| **Kết quả** | `ClassifyWorker.kt`, tự động phân loại nền khi có mạng, fallback nhãn an toàn, unit test pass |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 3.1.3 ExportWorker
 | | |
 |---|---|
 | **Mô tả** | Worker xuất Google Doc, ràng buộc mạng. Retry khi lỗi. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 2.3.4 + 2.3.5 |
-| **Kết quả** | Xuất thành công dù mất mạng giữa chừng (retry) |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `ExportWorker.kt`, xuất Doc và cập nhật status EXPORTED, tự động retry khi mất mạng |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 3.1.4 Hiển thị trạng thái hàng đợi
 | | |
 |---|---|
 | **Mô tả** | UI: hiện trạng thái (đang chờ mạng / đang xử lý / xong / lỗi) cho mỗi ghi chú. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 3.1.1 + 3.1.2 |
-| **Kết quả** | Người dùng biết trạng thái xử lý từng ghi chú |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Giao diện `NotesListScreen` hiển thị badge `⏳ Chờ mạng`, `🤖 Đang phân loại`, thông báo tệp âm thanh gốc an toàn; `MainViewModel` đồng bộ qua WorkManager |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
