@@ -30,6 +30,62 @@ class GroqWhisper(
             "Nhật ký thi công công trường xây dựng, CĐT, TVGS, BCH, ATLĐ, VSMT, " +
             "bê tông, cốt thép, cốp pha, dầm sàn, giàn giáo, nghiệm thu, trạm trộn, " +
             "máy đục, máy cắt rãnh, máy khoan bê tông, máy mài góc, máy laser."
+
+        // Danh sách các mẫu hallucination phổ biến của Whisper khi bản ghi im lặng hoặc chỉ có tiếng ồn
+        val KNOWN_HALLUCINATIONS = listOf(
+            "subscribe",
+            "sub kênh",
+            "đăng ký kênh",
+            "đăng kí kênh",
+            "like và share",
+            "like và đăng ký",
+            "lala school",
+            "lala",
+            "nhấn chuông",
+            "bấm chuông",
+            "cảm ơn các bạn đã theo dõi",
+            "cảm ơn các bạn đã xem",
+            "cảm ơn quý vị",
+            "chúc các bạn nghe nhạc",
+            "hẹn gặp lại các bạn",
+            "hẹn gặp lại quý vị",
+            "tạm biệt các bạn",
+            "phụ đề bởi",
+            "bản dịch bởi",
+            "trans by",
+            "sub by",
+            "video tiếp theo",
+            "clip tiếp theo",
+            "thank you for watching",
+            "see you next time"
+        )
+
+        fun isHallucinationOrSilence(text: String): Boolean {
+            val trimmed = text.trim()
+            if (trimmed.length < 3) return true
+
+            val lower = trimmed.lowercase()
+
+            // 1. Khớp với các câu hallucination đặc trưng
+            for (phrase in KNOWN_HALLUCINATIONS) {
+                if (lower.contains(phrase)) return true
+            }
+
+            // 2. Kiểm tra nếu kết quả chỉ là sự nhại lại danh sách từ khóa trong initial prompt
+            // (khi không nghe thấy gì thực tế, Whisper thường nhại lại prompt)
+            val promptWords = listOf("cđt", "tvgs", "bch", "atlđ", "vsmt", "bê tông", "cốt thép", "cốp pha", "dầm sàn", "giàn giáo", "nghiệm thu", "trạm trộn")
+            val wordsInText = lower.split(Regex("[\\s,.;:!?]+")).filter { it.isNotBlank() }
+            if (wordsInText.isNotEmpty()) {
+                val matchesPromptOnly = wordsInText.all { word ->
+                    promptWords.any { it.contains(word) } || word == "nhật" || word == "ký" || word == "thi" || word == "công" || word == "trường" || word == "dựng"
+                }
+                if (matchesPromptOnly && wordsInText.size <= 8) {
+                    return true
+                }
+            }
+
+            return false
+        }
     }
 
     override suspend fun transcribe(audioFile: File): Result<String> = withContext(Dispatchers.IO) {
@@ -81,8 +137,9 @@ class GroqWhisper(
 
             val json = JSONObject(responseBody)
             val text = json.optString("text", "").trim()
-            if (text.isEmpty()) {
-                Result.failure(IOException("Không nhận diện được giọng nói trong bản ghi."))
+
+            if (text.isEmpty() || isHallucinationOrSilence(text)) {
+                Result.failure(IOException("Không phát hiện giọng nói trong bản ghi (chỉ có tiếng ồn hoặc im lặng)."))
             } else {
                 Result.success(text)
             }

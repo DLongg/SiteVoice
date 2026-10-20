@@ -34,4 +34,18 @@ class GroqWhisperTest {
             assertTrue(result.exceptionOrNull()?.message?.contains("không tồn tại") == true)
         }
     }
+
+    @Test
+    fun testIsHallucinationOrSilenceDetection() {
+        // Các mẫu hallucination YouTube
+        assertTrue(GroqWhisper.isHallucinationOrSilence("Hãy subscribe cho kênh LaLa School nhé!"))
+        assertTrue(GroqWhisper.isHallucinationOrSilence("Đăng ký kênh để xem clip tiếp theo"))
+        assertTrue(GroqWhisper.isHallucinationOrSilence("Cảm ơn các bạn đã theo dõi video"))
+        assertTrue(GroqWhisper.isHallucinationOrSilence("   "))
+        assertTrue(GroqWhisper.isHallucinationOrSilence("a"))
+
+        // Văn bản hợp lệ công trường không được coi là hallucination
+        org.junit.Assert.assertFalse(GroqWhisper.isHallucinationOrSilence("Hôm nay tổ bê tông đổ 50m3 sàn tầng 2."))
+        org.junit.Assert.assertFalse(GroqWhisper.isHallucinationOrSilence("Kỹ sư TVGS kiểm tra nghiệm thu cốt thép móng."))
+    }
 }
