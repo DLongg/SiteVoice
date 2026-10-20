@@ -43,6 +43,8 @@ fun SettingsDialog(
     currentDocTemplateId: String = SecurePreferences.DEFAULT_DOC_TEMPLATE_ID,
     currentGoogleWebClientId: String? = null,
     currentGoogleAccountEmail: String? = null,
+    activeTemplateName: String? = null,
+    onOpenTemplateLibrary: () -> Unit = {},
     onSaveSettings: (apiKey: String, docTemplateId: String, webClientId: String) -> Unit,
     onSignInGoogleClick: () -> Unit,
     onSignOutGoogleClick: () -> Unit,
@@ -191,6 +193,39 @@ fun SettingsDialog(
                                 Text(text = stringResource(id = R.string.settings_btn_sign_in_google), fontSize = 11.sp)
                             }
                         }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Phần 4: Thư viện Mẫu
+                Text(
+                    text = "4. Thư viện Mẫu Báo cáo",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1E293B)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                OutlinedButton(
+                    onClick = {
+                        onDismiss()
+                        onOpenTemplateLibrary()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "📑 " + (activeTemplateName ?: "Quản lý Thư viện Mẫu"),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF1E293B)
+                        )
+                        Text(text = "Đổi / Căn chỉnh →", fontSize = 12.sp, color = Color(0xFF2563EB))
                     }
                 }
 

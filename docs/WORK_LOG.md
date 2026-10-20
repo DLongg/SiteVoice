@@ -258,3 +258,18 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật: `app/src/main/java/com/sitevoice/app/data/AppDatabase.kt`, `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Kiểm tra: `TemplateRepositoryTest` và toàn bộ 29/29 unit tests chạy pass 100%; `.\gradlew.bat assembleDebug` build APK thành công không lỗi (BUILD SUCCESSFUL).
 - Còn lại: Sẵn sàng triển khai Task 4.1.2: Xây dựng UI Thư viện Mẫu (`TemplateLibraryScreen`) và Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`).
+
+## 2026-10-20 — Triển khai Task 4.1.2: Xây dựng UI Thư viện Mẫu & Bộ tạo/căn chỉnh Mẫu — Hoàn thành
+
+- Kết quả: Hoàn thành 100% Task 4.1.2, mang đến khả năng tự do quản lý và căn chỉnh mẫu tài liệu cho người dùng:
+  + Xây dựng `TemplateLibraryScreen.kt`: Màn hình danh sách mẫu chuẩn App Screens (skill `design-taste-frontend`), hiển thị tên mẫu, mô tả, badge phân loại (Mặc định vs Tự tạo), trạng thái "✓ Đang áp dụng", số trường placeholder và số trang giới hạn. Cung cấp các thao tác 1 chạm: Áp dụng mẫu, Căn chỉnh, Nhân bản bản sao, Xóa mẫu tùy chỉnh kèm dialog xác nhận bảo vệ.
+  + Xây dựng `TemplateEditorScreen.kt`: Bộ công cụ tạo và căn chỉnh mẫu toàn diện: nhập tên, mô tả, link Doc mẫu Google Drive; trực quan thêm/xóa các trường placeholder `{{...}}`, chọn kiểu (danh sách vs văn bản), căn chỉnh trực tiếp số dòng tối đa và ký tự/dòng bằng các nút tăng/giảm (-) (+); tùy biến System Prompt hướng dẫn phong cách tóm tắt cho LLM; tự động sinh và kiểm tra hợp lệ `schemaJson`.
+  + Tích hợp vào `MainViewModel.kt`: Các state flow `templates`, `activeTemplate` và các hàm `setActiveTemplate`, `saveCustomTemplate`, `duplicateTemplate`, `deleteTemplate`.
+  + Tích hợp vào Navigation & Settings:
+    * Thêm nút "Quản lý Thư viện Mẫu" trong `SettingsDialog.kt`.
+    * Thêm chip pill "📑 Mẫu: [Tên mẫu] ▾" ngay trên Header của `RecordScreen.kt` cho phép người dùng 1 chạm chuyển đổi nhanh giữa các mẫu (Nhật ký công trường vs Nhật ký cá nhân).
+    * Kết nối điều hướng modal trong `MainScreen.kt`.
+- Tạo: `app/src/main/java/com/sitevoice/app/ui/template/TemplateLibraryScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/template/TemplateEditorScreen.kt`.
+- Cập nhật: `app/src/main/res/values/strings.xml` (thêm toàn bộ chuỗi tiếng Việt cho Thư viện Mẫu), `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Toàn bộ 29/29 unit tests pass 100%; `.\gradlew.bat assembleDebug` build thành công không lỗi (BUILD SUCCESSFUL in 27s).
+- Còn lại: Sẵn sàng triển khai Task 4.1.3: Nạp động schema và prompt từ Mẫu được chọn cho `ReportSynthesizer` và `BudgetValidator`.

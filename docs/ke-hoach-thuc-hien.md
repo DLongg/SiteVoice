@@ -551,8 +551,8 @@
 | **Mô tả** | Giao diện "Thư viện mẫu": xem danh sách các mẫu, nhân bản, chỉnh sửa, xóa mẫu tùy chỉnh. Giao diện "Bộ tạo/căn chỉnh mẫu": người dùng tự đặt tên, mô tả, link Doc mẫu trên Google Drive, tự thêm/sửa/xóa các trường placeholder `{{...}}`, căn chỉnh số dòng tối đa và số ký tự mỗi dòng, nhập prompt hướng dẫn LLM tóm tắt theo phong cách mong muốn. |
 | **Người làm** | Agent |
 | **Đầu vào** | 4.1.1, nguyên tắc UI `design-taste-frontend` App Screens |
-| **Kết quả** | Màn hình `TemplateLibraryScreen` và `TemplateEditorScreen` trực quan, tinh gọn, kiểm tra tính hợp lệ của schema |
-| **Trạng thái** | 🔲 Chưa bắt đầu |
+| **Kết quả** | `TemplateLibraryScreen.kt` và `TemplateEditorScreen.kt` chuẩn App Screens tinh gọn, chống slop; tích hợp vào `MainScreen`, `RecordScreen` và `SettingsDialog`; 29 unit tests pass, build APK thành công |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 4.1.3 Bộ chọn Mẫu (Template Selector) & Tổng hợp theo Mẫu động
 | | |

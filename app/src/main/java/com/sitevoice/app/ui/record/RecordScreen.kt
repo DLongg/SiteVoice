@@ -73,6 +73,8 @@ fun RecordScreen(
     viewModel: MainViewModel,
     securePreferences: SecurePreferences,
     onOpenSettings: () -> Unit,
+    onOpenTemplateLibrary: () -> Unit = {},
+    activeTemplateName: String? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -173,7 +175,29 @@ fun RecordScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
+            // Thanh hiển thị và đổi nhanh Mẫu báo cáo
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                OutlinedButton(
+                    onClick = onOpenTemplateLibrary,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White),
+                    modifier = Modifier.height(34.dp)
+                ) {
+                    Text(
+                        text = "📑 Mẫu: ${activeTemplateName ?: "Nhật ký thi công"} ▾",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF1E293B)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
 
             // Phần trung tâm: Nút ghi âm một chạm
             Column(

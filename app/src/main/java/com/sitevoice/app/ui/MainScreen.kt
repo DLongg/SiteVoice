@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.sitevoice.app.R
+import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.export.GoogleAuthManager
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.ui.daily.DailyInputScreen
@@ -41,6 +43,8 @@ import com.sitevoice.app.ui.daily.DailyReportPreviewScreen
 import com.sitevoice.app.ui.notes.NotesListScreen
 import com.sitevoice.app.ui.record.RecordScreen
 import com.sitevoice.app.ui.settings.SettingsDialog
+import com.sitevoice.app.ui.template.TemplateEditorScreen
+import com.sitevoice.app.ui.template.TemplateLibraryScreen
 
 @Composable
 fun MainScreen(
@@ -51,10 +55,15 @@ fun MainScreen(
     var selectedTab by remember { mutableIntStateOf(0) }
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showReportPreview by remember { mutableStateOf(false) }
+    var showTemplateLibrary by remember { mutableStateOf(false) }
+    var showTemplateEditor by remember { mutableStateOf(false) }
+    var editingTemplate by remember { mutableStateOf<TemplateItemEntity?>(null) }
 
     val activeNotes by viewModel.activeNotes.collectAsState()
     val dailyInput by viewModel.dailyInput.collectAsState()
     val dailyReport by viewModel.dailyReport.collectAsState()
+    val templates by viewModel.templates.collectAsState()
+    val activeTemplate by viewModel.activeTemplate.collectAsState()
     val isSynthesizing by viewModel.isSynthesizing.collectAsState()
     val synthesisError by viewModel.synthesisError.collectAsState()
     val isExporting by viewModel.isExporting.collectAsState()
@@ -175,7 +184,9 @@ fun MainScreen(
                 0 -> RecordScreen(
                     viewModel = viewModel,
                     securePreferences = securePreferences,
-                    onOpenSettings = { showSettingsDialog = true }
+                    activeTemplateName = activeTemplate?.name,
+                    onOpenSettings = { showSettingsDialog = true },
+                    onOpenTemplateLibrary = { showTemplateLibrary = true }
                 )
                 1 -> NotesListScreen(
                     notes = activeNotes,
@@ -243,6 +254,8 @@ fun MainScreen(
                 currentDocTemplateId = securePreferences.docTemplateId,
                 currentGoogleWebClientId = securePreferences.googleWebClientId,
                 currentGoogleAccountEmail = securePreferences.googleAccountEmail,
+                activeTemplateName = activeTemplate?.name,
+                onOpenTemplateLibrary = { showTemplateLibrary = true },
                 onSaveSettings = { newKey, newDocId, newClientId ->
                     securePreferences.groqApiKey = newKey
                     securePreferences.docTemplateId = newDocId
@@ -261,6 +274,63 @@ fun MainScreen(
                 },
                 onDismiss = { showSettingsDialog = false }
             )
+        }
+
+        // Màn hình Thư viện Mẫu Báo cáo
+        if (showTemplateLibrary) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF8FAFC))
+            ) {
+                TemplateLibraryScreen(
+                    templates = templates,
+                    onClose = { showTemplateLibrary = false },
+                    onActivateTemplate = { id ->
+                        viewModel.setActiveTemplate(id)
+                        val name = templates.find { it.id == id }?.name ?: id
+                        Toast.makeText(context, "Đã áp dụng mẫu: $name", Toast.LENGTH_SHORT).show()
+                    },
+                    onCreateNewTemplate = {
+                        editingTemplate = null
+                        showTemplateEditor = true
+                    },
+                    onEditTemplate = { t ->
+                        editingTemplate = t
+                        showTemplateEditor = true
+                    },
+                    onDuplicateTemplate = { t ->
+                        viewModel.duplicateTemplate(t) {
+                            Toast.makeText(context, "Đã nhân bản mẫu thành công", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    onDeleteTemplate = { id ->
+                        viewModel.deleteTemplate(id) {
+                            Toast.makeText(context, "Đã xóa mẫu tùy chỉnh", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+        }
+
+        // Màn hình Tạo / Căn chỉnh Mẫu Báo cáo
+        if (showTemplateEditor) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF8FAFC))
+            ) {
+                TemplateEditorScreen(
+                    template = editingTemplate,
+                    onClose = { showTemplateEditor = false },
+                    onSaveTemplate = { updatedTemplate ->
+                        viewModel.saveCustomTemplate(updatedTemplate) {
+                            showTemplateEditor = false
+                            Toast.makeText(context, "Đã lưu mẫu vào thư viện!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
         }
 
         // Hộp thoại báo lỗi khi tổng hợp LLM thất bại

@@ -17,8 +17,8 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1 của Giai đoạn 4.
-- Đã xây dựng kiến trúc Thư viện Mẫu động trong Room Database (version 4): tích hợp sẵn Mẫu "Nhật ký thi công công trường" và "Nhật ký hằng ngày cá nhân". `TemplateRepository` hỗ trợ CRUD mẫu và kiểm soát an toàn. 29/29 unit tests pass 100%.
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1, Task 4.1.2 của Giai đoạn 4.
+- Đã hoàn thành UI Thư viện Mẫu (`TemplateLibraryScreen`) và Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`) theo chuẩn `design-taste-frontend` App Screens. Người dùng có thể tự tạo mẫu mới, nhân bản, căn chỉnh số dòng/ký tự và prompt LLM. Tích hợp 1 chạm chuyển đổi mẫu ngay trên màn hình ghi âm và cài đặt. 29/29 unit tests pass 100%, APK build thành công.
 
 ## Quyết định phải giữ
 
@@ -30,5 +30,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Task 4.1.2: Xây dựng giao diện Thư viện Mẫu (`TemplateLibraryScreen`) và Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`) theo chuẩn `design-taste-frontend` App Screens.
-2. Triển khai Task 4.1.3: Bộ chọn Mẫu (`TemplateSelector`) trên màn hình chính và nạp động schema cho LLM.
+1. Triển khai Task 4.1.3: Cập nhật `ReportSynthesizer` và `BudgetValidator` nạp động schema và prompt từ Mẫu được chọn khi tổng hợp báo cáo.
+2. Triển khai Task 4.1.4: Xuất Google Doc theo Mẫu tùy biến (Doc ID và placeholder tương ứng của từng mẫu).

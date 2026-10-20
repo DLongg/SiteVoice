@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.sitevoice.app.audio.AudioPlayer
+import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.data.DailyInputEntity
 import com.sitevoice.app.data.DailyInputRepository
 import com.sitevoice.app.data.DailyReportEntity
@@ -12,6 +13,7 @@ import com.sitevoice.app.data.DailyReportRepository
 import com.sitevoice.app.data.NoteEntity
 import com.sitevoice.app.data.NoteRepository
 import com.sitevoice.app.export.GoogleAuthManager
+import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.export.GoogleDocsExporter
 import com.sitevoice.app.llm.GroqLlmClient
 import com.sitevoice.app.llm.NoteClassifier
@@ -22,6 +24,8 @@ import com.sitevoice.app.queue.SttWorker
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.stt.GroqWhisper
 import com.sitevoice.app.template.DailyReportContent
+import com.sitevoice.app.template.DefaultTemplateRepository
+import com.sitevoice.app.template.TemplateRepository
 import com.sitevoice.app.template.TemplateSchema
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,6 +53,7 @@ class MainViewModel(
     private val dailyReportRepository: DailyReportRepository,
     private val securePreferences: SecurePreferences,
     private val templateSchema: TemplateSchema,
+    val templateRepository: TemplateRepository = DefaultTemplateRepository(appContext, AppDatabase.getDatabase(appContext).templateDao()),
     private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
     private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey })),
     private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }), templateSchema),
@@ -58,6 +63,20 @@ class MainViewModel(
     val audioPlayer = AudioPlayer()
 
     val currentDate: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+    val templates: StateFlow<List<TemplateItemEntity>> = templateRepository.getAllTemplates()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val activeTemplate: StateFlow<TemplateItemEntity?> = templateRepository.getActiveTemplate()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     val activeNotes: StateFlow<List<NoteEntity>> = repository.getActiveNotesByDate(currentDate)
         .stateIn(
@@ -315,6 +334,41 @@ class MainViewModel(
         _exportError.value = null
     }
 
+    fun setActiveTemplate(id: String) {
+        viewModelScope.launch {
+            templateRepository.setActiveTemplate(id)
+        }
+    }
+
+    fun saveCustomTemplate(template: TemplateItemEntity, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            templateRepository.saveTemplate(template)
+            onComplete()
+        }
+    }
+
+    fun duplicateTemplate(template: TemplateItemEntity, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            val duplicated = template.copy(
+                id = "custom_" + System.currentTimeMillis(),
+                name = "${template.name} (Bản sao)",
+                isBuiltIn = false,
+                isActive = false,
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis()
+            )
+            templateRepository.saveTemplate(duplicated)
+            onComplete()
+        }
+    }
+
+    fun deleteTemplate(id: String, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            templateRepository.deleteTemplate(id)
+            onComplete()
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         audioPlayer.stop()
@@ -327,12 +381,15 @@ class MainViewModelFactory(
     private val dailyInputRepository: DailyInputRepository,
     private val dailyReportRepository: DailyReportRepository,
     private val securePreferences: SecurePreferences,
-    private val templateSchema: TemplateSchema
+    private val templateSchema: TemplateSchema,
+    private val templateRepository: TemplateRepository? = null
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(appContext, repository, dailyInputRepository, dailyReportRepository, securePreferences, templateSchema) as T
+            val db = AppDatabase.getDatabase(appContext)
+            val repo = templateRepository ?: DefaultTemplateRepository(appContext, db.templateDao())
+            return MainViewModel(appContext, repository, dailyInputRepository, dailyReportRepository, securePreferences, templateSchema, templateRepository = repo) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

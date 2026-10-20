@@ -105,4 +105,40 @@
     <string name="queue_badge_waiting">⏳ Chờ mạng</string>
     <string name="queue_badge_classifying">🤖 Đang phân loại</string>
     <string name="queue_badge_error">❌ Lỗi xử lý</string>
+
+    <!-- Template Library & Builder -->
+    <string name="template_library_title">Thư viện Mẫu Báo cáo</string>
+    <string name="template_library_subtitle">Chọn hoặc tự tạo mẫu tài liệu phù hợp với công việc</string>
+    <string name="template_btn_create_new">+ Tạo Mẫu Mới</string>
+    <string name="template_badge_builtin">Mẫu mặc định</string>
+    <string name="template_badge_custom">Mẫu tự tạo</string>
+    <string name="template_badge_active">Đang áp dụng</string>
+    <string name="template_btn_activate">Áp dụng mẫu này</string>
+    <string name="template_btn_edit">Căn chỉnh</string>
+    <string name="template_btn_duplicate">Nhân bản</string>
+    <string name="template_btn_delete">Xóa mẫu</string>
+    <string name="template_delete_confirm_title">Xác nhận xóa mẫu</string>
+    <string name="template_delete_confirm_msg">Bạn có chắc chắn muốn xóa mẫu \"%1$s\" không? Thao tác này không thể hoàn tác.</string>
+    <string name="template_editor_create_title">Tạo Mẫu Báo Cáo Mới</string>
+    <string name="template_editor_edit_title">Căn Chỉnh Mẫu Báo Cáo</string>
+    <string name="template_field_name">Tên mẫu tài liệu</string>
+    <string name="template_field_name_hint">VD: Nhật ký cá nhân, Biên bản hiện trường...</string>
+    <string name="template_field_desc">Mô tả mục đích sử dụng</string>
+    <string name="template_field_desc_hint">VD: Dùng để ghi lại công việc và suy nghĩ hằng ngày...</string>
+    <string name="template_field_doc_url">Link / ID Doc mẫu trên Google Drive</string>
+    <string name="template_field_doc_url_hint">https://docs.google.com/document/d/... (tùy chọn)</string>
+    <string name="template_section_fields">Các trường tổng hợp (Placeholder &amp; Ngân sách)</string>
+    <string name="template_section_fields_hint">Định nghĩa các placeholder {{...}} trong tài liệu mẫu và số dòng/ký tự tối đa.</string>
+    <string name="template_btn_add_field">+ Thêm trường mới</string>
+    <string name="template_field_key">Mã placeholder (VD: cong_viec_hoan_thanh)</string>
+    <string name="template_field_max_lines">Tối đa dòng</string>
+    <string name="template_field_chars_per_line">Ký tự/dòng</string>
+    <string name="template_field_type_list">Danh sách từng dòng</string>
+    <string name="template_field_type_text">Đoạn văn bản</string>
+    <string name="template_section_prompt">Prompt hướng dẫn AI tổng hợp</string>
+    <string name="template_section_prompt_hint">Chỉ dẫn phong cách viết, giọng văn và các nguyên tắc bắt buộc cho AI.</string>
+    <string name="template_btn_save_template">Lưu mẫu vào thư viện</string>
+    <string name="template_save_success">Đã lưu mẫu vào thư viện thành công!</string>
+    <string name="template_activate_success">Đã chuyển sang mẫu: %1$s</string>
+    <string name="template_duplicate_suffix">(Bản sao)</string>
 </resources>
