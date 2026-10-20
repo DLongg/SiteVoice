@@ -30,5 +30,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Lựa chọn nhóm task bắt đầu trong Giai đoạn 4: Nhóm 4.1 (Mẫu thứ hai & Đa mẫu Báo cáo tuần) hoặc Nhóm 4.2 (Ảnh hiện trường kèm ghi chú).
-2. Thử nghiệm trên máy thật `33c4f658`: bật Chế độ máy bay (offline), ghi âm một ghi chú -> kiểm tra file âm thanh lưu an toàn, phát lại tốt, hiển thị trạng thái `⏳ Chờ mạng` và kích hoạt tự động khi bật mạng lại.
+1. Bắt đầu triển khai Nhóm 4.1: Thư viện Mẫu & Tự tạo/căn chỉnh Mẫu (Task 4.1.1: Cấu trúc TemplateEntity trong Room, tích hợp sẵn Mẫu Nhật ký công trường & Nhật ký cá nhân).
+2. Xây dựng UI Thư viện mẫu và bộ công cụ tạo/căn chỉnh mẫu (Task 4.1.2) cho phép người dùng tùy ý thêm mẫu mới và căn chỉnh placeholder/ký tự.

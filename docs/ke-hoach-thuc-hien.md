@@ -534,42 +534,42 @@
 
 ## Giai đoạn 4 – Mở rộng
 
-### 4.1 Mẫu thứ hai & Đa mẫu (Báo cáo tuần)
+### 4.1 Thư viện Mẫu & Tự tạo/căn chỉnh Mẫu (Template Library & Builder)
 
-#### 4.1.1 Bộ mẫu Báo cáo tuần công trường
+#### 4.1.1 Cấu trúc Mẫu động & Mẫu sẵn có (Nhật ký công trường & Nhật ký cá nhân)
 | | |
 |---|---|
-| **Mô tả** | Thiết lập thư mục mẫu `templates/bao-cao-tuan/` gồm `schema.json`, `prompt.md`, `doc-mau.md` và mẫu Google Doc chuẩn. Định nghĩa các placeholder: tiến độ tuần, nhân lực trung bình, thời tiết/ngày mưa, tồn đọng và kế hoạch tuần tới. |
+| **Mô tả** | Thiết kế cấu trúc lưu trữ Mẫu động (`TemplateEntity` trong Room hoặc cấu hình JSON trong `filesDir/templates/`). Đóng gói sẵn 2 mẫu chuẩn: (1) "Nhật ký công trường" (thi công, vật tư, an toàn, nhân lực, thời tiết) và (2) "Nhật ký cá nhân / Hằng ngày" (công việc đã làm, việc tồn đọng, ghi chú suy nghĩ, bài học kinh nghiệm). |
 | **Người làm** | Agent |
-| **Đầu vào** | `docs/quyet-dinh/0005-kien-truc-theo-mau.md`, `docs/08-cong-viec-tuong-lai.md` |
-| **Kết quả** | Bộ file mẫu `templates/bao-cao-tuan/` đầy đủ schema kiểm soát ký tự và prompt LLM |
+| **Đầu vào** | `docs/quyet-dinh/0005-kien-truc-theo-mau.md`, `templates/nhat-ky-cong-truong/schema.json` |
+| **Kết quả** | `TemplateRepository` hỗ trợ CRUD mẫu động từ Room/Storage, tích hợp sẵn 2 mẫu mặc định |
 | **Trạng thái** | 🔲 Chưa bắt đầu |
 
-#### 4.1.2 Module Đa mẫu & Giao diện chọn Mẫu
+#### 4.1.2 Bộ công cụ Tạo & Căn chỉnh Mẫu (Template Builder & Library UI)
 | | |
 |---|---|
-| **Mô tả** | Nâng cấp module `template/` để nạp danh sách mẫu khả dụng từ assets/storage; thêm thành phần Compose `TemplateSelector` cho phép người dùng chọn Mẫu báo cáo (Nhật ký ngày / Báo cáo tuần) khi tổng hợp. |
+| **Mô tả** | Giao diện "Thư viện mẫu": xem danh sách các mẫu, nhân bản, chỉnh sửa, xóa mẫu tùy chỉnh. Giao diện "Bộ tạo/căn chỉnh mẫu": người dùng tự đặt tên, mô tả, link Doc mẫu trên Google Drive, tự thêm/sửa/xóa các trường placeholder `{{...}}`, căn chỉnh số dòng tối đa và số ký tự mỗi dòng, nhập prompt hướng dẫn LLM tóm tắt theo phong cách mong muốn. |
 | **Người làm** | Agent |
-| **Đầu vào** | 4.1.1, `docs/03-kien-truc.md` |
-| **Kết quả** | `TemplateRepository` hỗ trợ nhiều mẫu, UI chọn mẫu tinh gọn tuân thủ skill design-taste-frontend |
+| **Đầu vào** | 4.1.1, nguyên tắc UI `design-taste-frontend` App Screens |
+| **Kết quả** | Màn hình `TemplateLibraryScreen` và `TemplateEditorScreen` trực quan, tinh gọn, kiểm tra tính hợp lệ của schema |
 | **Trạng thái** | 🔲 Chưa bắt đầu |
 
-#### 4.1.3 Tổng hợp Báo cáo tuần từ chuỗi Nhật ký ngày
+#### 4.1.3 Bộ chọn Mẫu (Template Selector) & Tổng hợp theo Mẫu động
 | | |
 |---|---|
-| **Mô tả** | Module `llm/`: tổng hợp từ các báo cáo ngày đã duyệt trong tuần (hoặc danh sách ghi chú tuần), rút gọn số liệu ngày mưa, tổng công nhân, hạng mục thi công kéo dài, đối chiếu ngân sách ký tự của Mẫu tuần. |
+| **Mô tả** | Thành phần `TemplateSelector` trên màn hình chính/chuẩn bị báo cáo: cho phép người dùng tùy chọn mẫu phù hợp (chuyển đổi giữa Nhật ký công trường và Nhật ký cá nhân). Cập nhật `ReportSynthesizer` và `BudgetValidator` nạp động schema và prompt từ Mẫu được chọn thay vì đọc cố định asset. |
 | **Người làm** | Agent |
 | **Đầu vào** | 4.1.1, 4.1.2 |
-| **Kết quả** | Hàm tổng hợp báo cáo tuần trong `ReportSummarizer`, kiểm soát ngân sách dòng tuần |
+| **Kết quả** | Chọn mẫu linh hoạt, tổng hợp LLM tuân thủ chính xác schema động của mẫu được chọn |
 | **Trạng thái** | 🔲 Chưa bắt đầu |
 
-#### 4.1.4 Xuất Google Doc Báo cáo tuần
+#### 4.1.4 Xuất Google Doc theo Mẫu tùy biến
 | | |
 |---|---|
-| **Mô tả** | Sao chép Doc mẫu Báo cáo tuần và thay thế placeholder qua Drive API & Docs API v1 `batchUpdate`. Hỗ trợ duyệt 1 lần trước khi xuất. |
+| **Mô tả** | Xuất Google Doc tương thích với mọi mẫu do người dùng tạo: sao chép template Google Doc riêng của mẫu đó trên Drive của người dùng và batchUpdate thay thế chính xác các placeholder đã định nghĩa trong mẫu. |
 | **Người làm** | Agent |
-| **Đầu vào** | 4.1.1, 4.1.3 |
-| **Kết quả** | Tích hợp xuất Báo cáo tuần qua `ExportWorker`, lưu trữ link Doc tuần |
+| **Đầu vào** | 4.1.2, 4.1.3, `ExportWorker` |
+| **Kết quả** | Xuất tài liệu thành công cho cả Nhật ký công trường, Nhật ký cá nhân và các mẫu do người dùng tự tạo |
 | **Trạng thái** | 🔲 Chưa bắt đầu |
 
 ---
