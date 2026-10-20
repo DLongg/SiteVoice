@@ -13,14 +13,14 @@ import kotlinx.coroutines.withContext
 
 object GoogleAuthManager {
 
-    val SCOPE_DRIVE_FILE = Scope("https://www.googleapis.com/auth/drive.file")
+    val SCOPE_DRIVE = Scope("https://www.googleapis.com/auth/drive")
     val SCOPE_DOCUMENTS = Scope("https://www.googleapis.com/auth/documents")
-    const val OAUTH_SCOPE_STRING = "oauth2:https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/documents"
+    const val OAUTH_SCOPE_STRING = "oauth2:https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents"
 
     fun getSignInClient(context: Context, webClientId: String? = null): GoogleSignInClient {
         val gsoBuilder = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
-            .requestScopes(SCOPE_DRIVE_FILE, SCOPE_DOCUMENTS)
+            .requestScopes(SCOPE_DRIVE, SCOPE_DOCUMENTS)
 
         if (!webClientId.isNullOrBlank()) {
             gsoBuilder.requestIdToken(webClientId)

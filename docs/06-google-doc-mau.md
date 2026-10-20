@@ -14,7 +14,7 @@
 - Danh sách nhiều dòng: nối bằng ký tự xuống dòng, mỗi dòng bắt đầu bằng `- `.
 - Placeholder không có dữ liệu: thay bằng chuỗi rỗng, không để lại `{{...}}` trong Doc.
 - Không bao giờ sửa Doc mẫu gốc, chỉ sửa bản sao.
-- Quyền Google: chỉ xin `drive.file` và `documents` (tối thiểu cần thiết).
+- Quyền Google: xin `drive` và `documents` (cho phép đọc/sao chép Doc mẫu có sẵn và ghi nội dung).
 
 ## Kiểm tra sau khi xuất
 - Còn sót `{{` trong Doc → báo lỗi.
