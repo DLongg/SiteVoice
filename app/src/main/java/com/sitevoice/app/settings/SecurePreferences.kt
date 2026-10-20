@@ -16,6 +16,10 @@ class SecurePreferences(context: Context) {
         const val KEY_DOC_TEMPLATE_ID = "doc_template_id"
         const val DEFAULT_DOC_TEMPLATE_ID = "1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO"
 
+        const val KEY_GOOGLE_WEB_CLIENT_ID = "google_web_client_id"
+        const val KEY_GOOGLE_ACCOUNT_EMAIL = "google_account_email"
+        const val KEY_GOOGLE_ACCESS_TOKEN = "google_access_token"
+
         fun extractDocId(input: String): String {
             val trimmed = input.trim()
             if (trimmed.isBlank()) return DEFAULT_DOC_TEMPLATE_ID
@@ -44,6 +48,18 @@ class SecurePreferences(context: Context) {
     var docTemplateId: String
         get() = sharedPreferences.getString(KEY_DOC_TEMPLATE_ID, null)?.ifBlank { DEFAULT_DOC_TEMPLATE_ID } ?: DEFAULT_DOC_TEMPLATE_ID
         set(value) = sharedPreferences.edit().putString(KEY_DOC_TEMPLATE_ID, extractDocId(value)).apply()
+
+    var googleWebClientId: String?
+        get() = sharedPreferences.getString(KEY_GOOGLE_WEB_CLIENT_ID, null)
+        set(value) = sharedPreferences.edit().putString(KEY_GOOGLE_WEB_CLIENT_ID, value?.trim()).apply()
+
+    var googleAccountEmail: String?
+        get() = sharedPreferences.getString(KEY_GOOGLE_ACCOUNT_EMAIL, null)
+        set(value) = sharedPreferences.edit().putString(KEY_GOOGLE_ACCOUNT_EMAIL, value?.trim()).apply()
+
+    var googleAccessToken: String?
+        get() = sharedPreferences.getString(KEY_GOOGLE_ACCESS_TOKEN, null)
+        set(value) = sharedPreferences.edit().putString(KEY_GOOGLE_ACCESS_TOKEN, value).apply()
 
     fun getString(key: String, defaultValue: String? = null): String? {
         return sharedPreferences.getString(key, defaultValue)
