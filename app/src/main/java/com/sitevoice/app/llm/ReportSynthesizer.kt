@@ -11,20 +11,29 @@ import org.json.JSONObject
 class ReportSynthesizer(
     private val llmClient: LlmClient,
     private val schema: TemplateSchema,
-    private val validator: BudgetValidator = BudgetValidator(schema)
+    private val validator: BudgetValidator = BudgetValidator(schema),
+    private val customSystemPrompt: String? = null
 ) {
     companion object {
         private const val TAG = "ReportSynthesizer"
 
-        private const val SYSTEM_PROMPT = """Bạn là thư ký công trường xây dựng chuyên nghiệp tại Việt Nam.
-Từ các ghi chú được cung cấp trong ngày, hãy viết bản tổng hợp Nhật ký thi công hằng ngày bằng tiếng Việt, văn phong hành chính kỹ thuật ngắn gọn, súc tích để người dùng duyệt.
+        const val DEFAULT_SYSTEM_PROMPT = """Bạn là thư ký công trường xây dựng chuyên nghiệp tại Việt Nam.
+Từ các ghi chú được cung cấp trong ngày, hãy viết bản tổng hợp Nhật ký thi công hằng ngày bằng tiếng Việt, văn phong hành chính kỹ thuật ngắn gọn, súc tích để người dùng duyệt và xuất sang Google Doc chuẩn A4 tối đa 2 trang.
 
 Quy tắc bắt buộc:
-1. CHỈ dùng thông tin có trong ghi chú. Tuyệt đối KHÔNG bịa, KHÔNG suy đoán số liệu.
-2. Giữ nguyên số liệu (khối lượng, kích thước), vị trí (trục, tầng, phân đoạn), tên hạng mục, tên đơn vị.
-3. Mục nào không có dữ liệu: trả về mảng rỗng [] hoặc chuỗi rỗng "".
-4. Gộp các ý trùng lặp, ưu tiên việc quan trọng (khối lượng hoàn thành, nghiệm thu, sự cố, an toàn, yêu cầu CĐT/TVGS).
-5. Ghi chú thuộc "chua_phan_loai": KHÔNG tự gán vào mục khác, đưa vào trường "chua_phan_loai".
+1. PHÂN BỔ ĐA MỤC TỪNG Ý:
+   - Trong một bản ghi âm hoặc ghi chú, người nói có thể nói gộp nhiều nội dung thuộc nhiều mục khác nhau (ví dụ: một câu vừa có thời tiết, vừa có số lượng thợ, vừa có công việc thi công và công tác nghiệm thu).
+   - Bạn PHẢI đọc kỹ từng câu, bóc tách từng ý trong mỗi ghi chú để phân bổ chính xác vào đúng mục tương ứng:
+     * 'cong_viec_thi_cong': Toàn bộ các ý liên quan đến công tác triển khai thi công, vị trí (trục, tầng, phân đoạn), cấu kiện, khối lượng hoàn thành, máy móc sử dụng.
+     * 'nghiem_thu': Toàn bộ các ý liên quan đến kiểm tra, đo đạc, nghiệm thu công việc, mẫu thí nghiệm, cốt thép, cốp pha...
+     * 'an_toan': Toàn bộ các ý liên quan đến an toàn lao động, vệ sinh môi trường, trang bị bảo hộ, sự cố, nhắc nhở an toàn.
+     * 'y_kien_cdt', 'y_kien_tvgs', 'y_kien_nha_thau': Toàn bộ ý kiến, yêu cầu hoặc chỉ đạo tương ứng của các bên.
+     * 'chua_phan_loai': Các nội dung thuần túy không thuộc các mục kỹ thuật trên.
+   - Tuyệt đối KHÔNG bỏ sót ý chỉ vì ghi chú đó được gán nhãn mục khác lúc ban đầu.
+2. CHỈ dùng thông tin có trong ghi chú. Tuyệt đối KHÔNG tự bịa, KHÔNG suy đoán số liệu.
+3. Giữ nguyên số liệu (khối lượng, kích thước), vị trí (trục, tầng, phân đoạn), tên hạng mục, tên đơn vị.
+4. Mục nào không có dữ liệu: trả về mảng rỗng [] hoặc chuỗi rỗng "".
+5. Gộp các ý trùng lặp, ưu tiên việc quan trọng (khối lượng hoàn thành, nghiệm thu, sự cố, an toàn, yêu cầu CĐT/TVGS).
 6. Tuân thủ nghiêm ngặt giới hạn số dòng và số ký tự:
    - "cong_viec_thi_cong": mảng các dòng (tối đa 15 dòng, mỗi dòng ≤ 100 ký tự)
    - "nghiem_thu": mảng các dòng (tối đa 6 dòng, mỗi dòng ≤ 100 ký tự)
@@ -37,7 +46,17 @@ Quy tắc bắt buộc:
     suspend fun synthesizeReport(date: String, notes: List<NoteEntity>): Result<String> {
         val activeNotes = notes.filter { it.status != "DISCARDED" }
 
-        // Gom các ghi chú theo mục
+        // 1. Gom danh sách nguyên văn tất cả các ghi chú trong ngày
+        val allNotesList = StringBuilder()
+        activeNotes.forEachIndexed { index, note ->
+            val text = note.text?.trim()
+            if (!text.isNullOrBlank()) {
+                val labelHint = note.label?.ifBlank { NoteClassifier.LABEL_CHUA_PHAN_LOAI } ?: NoteClassifier.LABEL_CHUA_PHAN_LOAI
+                allNotesList.append("${index + 1}. [Gợi ý nhãn: $labelHint] $text\n")
+            }
+        }
+
+        // 2. Gom theo danh mục tham khảo
         val groupedNotes = JSONObject()
         val categories = listOf(
             NoteClassifier.LABEL_THI_CONG,
@@ -70,7 +89,11 @@ Quy tắc bắt buộc:
 
         val userPrompt = """Dữ liệu vào:
 Ngày báo cáo: $date
-Danh sách ghi chú theo từng mục:
+
+Danh sách toàn bộ các bản ghi âm/ghi chú nguyên văn trong ngày (lưu ý: mỗi ghi chú có thể chứa nhiều ý gộp):
+$allNotesList
+
+Phân nhóm sơ bộ tham khảo:
 ${groupedNotes.toString(2)}
 
 Yêu cầu định dạng JSON trả về:
@@ -84,8 +107,9 @@ Yêu cầu định dạng JSON trả về:
   "chua_phan_loai": ["..."]
 }"""
 
+        val effectiveSystemPrompt = customSystemPrompt?.ifBlank { DEFAULT_SYSTEM_PROMPT } ?: DEFAULT_SYSTEM_PROMPT
         val messages = listOf(
-            LlmMessage(role = "system", content = SYSTEM_PROMPT),
+            LlmMessage(role = "system", content = effectiveSystemPrompt),
             LlmMessage(role = "user", content = userPrompt)
         )
 

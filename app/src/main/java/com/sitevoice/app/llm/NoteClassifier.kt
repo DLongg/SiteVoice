@@ -43,6 +43,7 @@ Các khóa mục:
 - "chua_phan_loai": không đủ thông tin để chắc chắn
 
 Quy tắc:
+- Nếu ghi chú chứa nhiều ý gộp (ví dụ: vừa có thời tiết, vừa có thi công và nghiệm thu): ưu tiên chọn mục công việc cốt lõi (thi_cong, nghiem_thu hoặc an_toan) làm 'muc' đại diện.
 - Nếu có từ khóa mở đầu ("Thi công:", "Nghiệm thu:", "An toàn:", "Chủ đầu tư:", "Giám sát:", "Nhà thầu:") thì theo từ khóa đó.
 - Không chắc chắn thì chọn "chua_phan_loai", KHÔNG đoán.
 - Trả về CHỈ JSON theo định dạng:
