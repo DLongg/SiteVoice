@@ -148,3 +148,19 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: `DailyInputRepositoryTest.kt` và toàn bộ 14 unit tests chạy pass 100%; `.\gradlew.bat test assembleDebug` chạy thành công không lỗi (BUILD SUCCESSFUL); lệnh `adb install -r` cài đặt thành công lên máy thật và mở ứng dụng.
 - Vấn đề và xử lý: Đảm bảo logic kế thừa đúng quy tắc GEMINI/AGENTS: ngày mới tự động nạp dữ liệu cố định từ ngày gần nhất trước đó; giao diện tinh gọn, không gradient thừa.
 - Còn lại: Task 2.2 (LLM tổng hợp theo Mẫu nhật ký thi công) và Task 2.3 (Màn hình xem trước và duyệt báo cáo 1 lần duy nhất).
+
+
+## 2026-10-20 — Triển khai Giai đoạn 2: LLM Tổng hợp theo Mẫu, Ngân sách dòng & Màn hình xem trước, Duyệt báo cáo (Task 2.2 & 2.3.1) — Hoàn thành
+
+- Kết quả: Hoàn thành toàn diện Task 2.2 và Task 2.3.1.
+  + Module `template/`: `TemplateSchema` parse và kiểm tra giới hạn nghiêm ngặt từ `schema.json` trong assets.
+  + Module `template/`: `BudgetValidator` kiểm tra ngân sách dòng và ký tự (thi công ≤ 15 dòng, nghiệm thu ≤ 6 dòng, an toàn ≤ 3 dòng, các ý kiến ≤ 200 ký tự) nhằm đảm bảo văn bản xuất ra không tràn trang 3.
+  + Module `llm/`: `ReportSynthesizer` xây prompt từ các ghi chú chưa bị loại trong ngày, gọi LLM (`qwen/qwen3.8-27b`), kiểm tra ngân sách tự động và kích hoạt vòng rút gọn nếu có trường vượt trần.
+  + Module `data/`: `DailyReportEntity`, `DailyReportDao`, `DailyReportRepository` (`DefaultDailyReportRepository`) lưu trữ báo cáo với các trạng thái DRAFT → APPROVED → EXPORTED theo quyết định 0006.
+  + Module `ui/`: `DailyReportContent` parse JSON an toàn; `DailyReportPreviewScreen.kt` hiển thị đầy đủ thông tin hiện trường, danh sách hạng mục thi công, nghiệm thu, an toàn, ý kiến các bên; hiển thị riêng mục cảnh báo "Ghi chú chưa phân loại" (không đưa vào Doc); nút duyệt một lần duy nhất "Duyệt & Lưu nhật ký thi công" chuyển trạng thái sang APPROVED; nút tổng hợp lại và nút sửa dữ liệu.
+  + Tích hợp vào `MainViewModel.kt` và `DailyInputScreen.kt` (thẻ trạng thái bản dự thảo / đã duyệt với nút Xem nhanh).
+- Tạo: `app/src/main/java/com/sitevoice/app/data/DailyReportEntity.kt`, `app/src/main/java/com/sitevoice/app/data/DailyReportDao.kt`, `app/src/main/java/com/sitevoice/app/data/DailyReportRepository.kt`, `app/src/main/java/com/sitevoice/app/template/TemplateSchema.kt`, `app/src/main/java/com/sitevoice/app/template/BudgetValidator.kt`, `app/src/main/java/com/sitevoice/app/llm/ReportSynthesizer.kt`, `app/src/main/java/com/sitevoice/app/template/DailyReportContent.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyReportPreviewScreen.kt`, các test suites `DailyReportRepositoryTest.kt`, `TemplateSchemaTest.kt`, `BudgetValidatorTest.kt`, `ReportSynthesizerTest.kt`, `DailyReportContentTest.kt`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/data/AppDatabase.kt` (version 3), `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyInputScreen.kt`, `app/src/main/res/values/strings.xml`, `docs/ke-hoach-thuc-hien.md`, `docs/07-lo-trinh.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Toàn bộ 21 unit tests chạy pass 100%; lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` chạy thành công (BUILD SUCCESSFUL in 3m 24s); cài đặt trực tiếp bản APK mới lên điện thoại thật `33c4f658` thành công qua ADB (`Performing Streamed Install - Success`); khởi chạy ứng dụng mượt mà không có crash.
+- Vấn đề và xử lý: Thêm thư viện `testImplementation("org.json:json:20240303")` để chạy trơn tru các unit test parse JSON trên desktop JVM; model Groq gọi `qwen/qwen3.8-27b` với header `User-Agent: SiteVoice/1.0` ổn định.
+- Còn lại: Tiếp tục các bước tiếp theo của Task 2.3 (Google Sign-In, Drive API copy Doc mẫu, Docs API batchUpdate thay placeholder) và Giai đoạn 3 (WorkManager hàng đợi mạng).
