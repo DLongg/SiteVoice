@@ -422,3 +422,19 @@ M templates/nhat-ky-cong-truong/prompt.md
 M templates/nhat-ky-cong-truong/schema.json
 A templates/schema-chung.md
 ```
+
+## 2026-10-20 — Triển khai Phương án B: Thiết lập Form Tự động theo docs/10-thiet-lap-form.md — Hoàn thành
+
+- Kết quả: Hiện thực hóa 100% mục tiêu cốt lõi của SiteVoice ("Người dùng nạp form MỘT LẦN; app tự đặt placeholder, tự sinh Mẫu; người dùng chỉ việc duyệt"):
+  + Xây dựng `FormCandidate.kt`: Mô hình dữ liệu biểu diễn ứng viên chỗ điền, bao gồm vị trí, chỉ số, ngữ cảnh trước/sau, tín hiệu và phân loại.
+  + Xây dựng `FormCandidateScanner.kt`: Phân tích cấu trúc Google Doc JSON (`documents.get`), tự động tìm toàn bộ tín hiệu chỗ điền (dòng chấm `.....`, ô tích `☐`/`☑`, đoạn trống liên tiếp gộp dưới tiêu đề thi công/nghiệm thu/an toàn, dòng kết thúc bằng dấu hai chấm) hoàn toàn bằng CODE theo đúng Mục 20 của `docs/10-thiet-lap-form.md`.
+  + Xây dựng `FormLlmDescriber.kt`: Tầng quy tắc tất định kết hợp LLM để gán mã placeholder chuẩn (`{{NGAY}}`, `{{CONG_VIEC_THI_CONG}}`, `{{BAN_CHI_HUY}}`...), gán loại dữ liệu và ghép nguồn ghi chú tự động.
+  + Xây dựng `DocPlaceholderInjector.kt`: Tạo payload batchUpdate xóa dòng chấm và chèn thẻ `{{MA}}` theo thứ tự chỉ số GIẢM DẦN từ cuối lên đầu, bảo vệ tuyệt đối vị trí của các trường dữ liệu.
+  + Xây dựng `FormSetupService.kt`: Điều phối trọn vẹn 7 bước: tạo bản sao làm việc trên Google Drive (bảo vệ file gốc), quét ứng viên, mô tả LLM, chèn placeholder vào bản sao và sinh `TemplateItemEntity` động lưu vào Room.
+  + Xây dựng UI `FormSetupDialog.kt`: Giao diện duyệt chỗ điền trực quan, cho phép người dùng xem danh sách thẻ phát hiện, bật/tắt hoặc sửa tên trước khi bấm xác nhận.
+  + Tích hợp vào `SettingsDialog.kt` và `MainScreen.kt`: Nút "✨ Tự động nhận diện & Tạo Mẫu từ Doc này" cho phép 1 chạm quét và biến mọi file Word/Doc in viết tay thành Mẫu điện tử chuẩn của SiteVoice.
+  + Cập nhật và bổ sung Unit Tests: `FormCandidateScannerTest`, `FormLlmDescriberTest`, `DocPlaceholderInjectorTest` chạy pass 100%. Toàn bộ 37 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công.
+- Tạo: `app/src/main/java/com/sitevoice/app/formsetup/FormCandidate.kt`, `app/src/main/java/com/sitevoice/app/formsetup/FormCandidateScanner.kt`, `app/src/main/java/com/sitevoice/app/formsetup/FormLlmDescriber.kt`, `app/src/main/java/com/sitevoice/app/formsetup/DocPlaceholderInjector.kt`, `app/src/main/java/com/sitevoice/app/formsetup/FormSetupService.kt`, `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`, `app/src/test/java/com/sitevoice/app/FormCandidateScannerTest.kt`, `app/src/test/java/com/sitevoice/app/FormLlmDescriberTest.kt`, `app/src/test/java/com/sitevoice/app/DocPlaceholderInjectorTest.kt`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: 37/37 unit tests pass 100%; `.\gradlew.bat assembleDebug` thành công.
+- Còn lại: Người dùng cắm cáp USB hoặc cài đặt APK mới để trải nghiệm tính năng 1 chạm Tự động tạo Mẫu từ Doc mẫu trên điện thoại.

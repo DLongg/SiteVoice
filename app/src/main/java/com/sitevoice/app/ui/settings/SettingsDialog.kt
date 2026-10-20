@@ -45,6 +45,7 @@ fun SettingsDialog(
     currentGoogleAccountEmail: String? = null,
     activeTemplateName: String? = null,
     onOpenTemplateLibrary: () -> Unit = {},
+    onAutoSetupFormClick: (docUrlOrId: String) -> Unit = {},
     onSaveSettings: (apiKey: String, docTemplateId: String, webClientId: String) -> Unit,
     onSignInGoogleClick: () -> Unit,
     onSignOutGoogleClick: () -> Unit,
@@ -125,6 +126,21 @@ fun SettingsDialog(
                     fontSize = 11.sp,
                     color = Color(0xFF94A3B8)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { onAutoSetupFormClick(inputDocId) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "✨ Tự động nhận diện & Tạo Mẫu từ Doc này",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(14.dp))
 

@@ -17,6 +17,10 @@ import com.sitevoice.app.data.NoteRepository
 import com.sitevoice.app.export.GoogleAuthManager
 import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.export.GoogleDocsExporter
+import com.sitevoice.app.export.PlaceholderMapper
+import com.sitevoice.app.formsetup.FormCandidate
+import com.sitevoice.app.formsetup.FormSetupAnalysis
+import com.sitevoice.app.formsetup.FormSetupService
 import com.sitevoice.app.llm.GroqLlmClient
 import com.sitevoice.app.llm.NoteClassifier
 import com.sitevoice.app.llm.ReportSynthesizer
@@ -125,6 +129,19 @@ class MainViewModel(
 
     private val _lastCreatedNoteId = MutableStateFlow<Long?>(null)
     val lastCreatedNoteId: StateFlow<Long?> = _lastCreatedNoteId.asStateFlow()
+
+    private val formSetupService by lazy {
+        FormSetupService(llmClient = GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }))
+    }
+
+    private val _formSetupAnalysis = MutableStateFlow<FormSetupAnalysis?>(null)
+    val formSetupAnalysis: StateFlow<FormSetupAnalysis?> = _formSetupAnalysis.asStateFlow()
+
+    private val _isFormSettingUp = MutableStateFlow(false)
+    val isFormSettingUp: StateFlow<Boolean> = _isFormSettingUp.asStateFlow()
+
+    private val _formSetupError = MutableStateFlow<String?>(null)
+    val formSetupError: StateFlow<String?> = _formSetupError.asStateFlow()
 
     init {
         // Đồng bộ trạng thái STT của bản ghi mới nhất từ Room database (hỗ trợ WorkManager chạy ngầm)
@@ -400,6 +417,97 @@ class MainViewModel(
             templateRepository.deleteTemplate(id)
             onComplete()
         }
+    }
+
+    fun startFormSetup(context: Context, docUrlOrId: String) {
+        val docId = PlaceholderMapper.extractDocId(docUrlOrId)
+        if (docId.isBlank()) {
+            _formSetupError.value = "Link hoặc ID Google Doc không hợp lệ."
+            return
+        }
+
+        val account = GoogleAuthManager.getLastSignedInAccount(context)
+        if (account == null || account.account == null) {
+            _formSetupError.value = "Chưa đăng nhập tài khoản Google. Vui lòng bấm 'Đăng nhập Google' trong Cài đặt trước."
+            return
+        }
+
+        viewModelScope.launch {
+            _isFormSettingUp.value = true
+            _formSetupError.value = null
+            _formSetupAnalysis.value = null
+
+            val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
+            if (tokenResult.isFailure) {
+                val ex = tokenResult.exceptionOrNull()
+                if (ex is UserRecoverableAuthException) {
+                    _isFormSettingUp.value = false
+                    _authConsentIntent.value = ex.intent
+                    return@launch
+                }
+                _formSetupError.value = "Không thể lấy quyền truy cập Google: ${ex?.message}"
+                _isFormSettingUp.value = false
+                return@launch
+            }
+
+            val token = tokenResult.getOrThrow()
+            val analysisResult = formSetupService.analyzeForm(docId, token)
+
+            _isFormSettingUp.value = false
+            if (analysisResult.isSuccess) {
+                _formSetupAnalysis.value = analysisResult.getOrThrow()
+            } else {
+                _formSetupError.value = analysisResult.exceptionOrNull()?.message ?: "Lỗi phân tích biểu mẫu"
+            }
+        }
+    }
+
+    fun confirmFormSetup(
+        context: Context,
+        templateName: String,
+        candidates: List<FormCandidate>,
+        onSuccess: (TemplateItemEntity) -> Unit
+    ) {
+        val analysis = _formSetupAnalysis.value ?: return
+        val account = GoogleAuthManager.getLastSignedInAccount(context) ?: return
+
+        viewModelScope.launch {
+            _isFormSettingUp.value = true
+            _formSetupError.value = null
+
+            val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
+            if (tokenResult.isFailure) {
+                _formSetupError.value = "Không thể lấy quyền truy cập Google"
+                _isFormSettingUp.value = false
+                return@launch
+            }
+
+            val token = tokenResult.getOrThrow()
+            val result = formSetupService.applyPlaceholdersAndGenerateTemplate(
+                workingDocId = analysis.workingDocId,
+                templateName = templateName,
+                candidates = candidates,
+                accessToken = token
+            )
+
+            _isFormSettingUp.value = false
+            if (result.isSuccess) {
+                val template = result.getOrThrow()
+                templateRepository.saveTemplate(template)
+                templateRepository.setActiveTemplate(template.id)
+                securePreferences.docTemplateId = analysis.workingDocId
+                _formSetupAnalysis.value = null
+                onSuccess(template)
+            } else {
+                _formSetupError.value = result.exceptionOrNull()?.message ?: "Lỗi chèn placeholder"
+            }
+        }
+    }
+
+    fun dismissFormSetup() {
+        _formSetupAnalysis.value = null
+        _formSetupError.value = null
+        _isFormSettingUp.value = false
     }
 
     override fun onCleared() {

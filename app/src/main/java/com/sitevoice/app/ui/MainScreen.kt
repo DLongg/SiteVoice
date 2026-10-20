@@ -45,6 +45,7 @@ import com.sitevoice.app.ui.daily.DailyReportPreviewScreen
 import com.sitevoice.app.ui.notes.NotesListScreen
 import com.sitevoice.app.ui.record.RecordScreen
 import com.sitevoice.app.ui.settings.SettingsDialog
+import com.sitevoice.app.ui.template.FormSetupDialog
 import com.sitevoice.app.ui.template.TemplateEditorScreen
 import com.sitevoice.app.ui.template.TemplateLibraryScreen
 
@@ -60,6 +61,7 @@ fun MainScreen(
     var showTemplateLibrary by remember { mutableStateOf(false) }
     var showTemplateEditor by remember { mutableStateOf(false) }
     var editingTemplate by remember { mutableStateOf<TemplateItemEntity?>(null) }
+    var showFormSetupDialog by remember { mutableStateOf(false) }
 
     val activeNotes by viewModel.activeNotes.collectAsState()
     val dailyInput by viewModel.dailyInput.collectAsState()
@@ -71,6 +73,9 @@ fun MainScreen(
     val isExporting by viewModel.isExporting.collectAsState()
     val exportError by viewModel.exportError.collectAsState()
     val authConsentIntent by viewModel.authConsentIntent.collectAsState()
+    val formSetupAnalysis by viewModel.formSetupAnalysis.collectAsState()
+    val isFormSettingUp by viewModel.isFormSettingUp.collectAsState()
+    val formSetupError by viewModel.formSetupError.collectAsState()
 
     // Activity Result Launcher xử lý cấp quyền bổ sung của Google (UserRecoverableAuthException)
     val consentLauncher = rememberLauncherForActivityResult(
@@ -284,6 +289,10 @@ fun MainScreen(
                 currentGoogleAccountEmail = securePreferences.googleAccountEmail,
                 activeTemplateName = activeTemplate?.name,
                 onOpenTemplateLibrary = { showTemplateLibrary = true },
+                onAutoSetupFormClick = { docUrlOrId ->
+                    showFormSetupDialog = true
+                    viewModel.startFormSetup(context, docUrlOrId)
+                },
                 onSaveSettings = { newKey, newDocId, newClientId ->
                     securePreferences.groqApiKey = newKey
                     securePreferences.docTemplateId = newDocId
@@ -301,6 +310,26 @@ fun MainScreen(
                     }
                 },
                 onDismiss = { showSettingsDialog = false }
+            )
+        }
+
+        // Hộp thoại Thiết lập Form Tự động (7 bước theo docs/10-thiet-lap-form.md)
+        if (showFormSetupDialog) {
+            FormSetupDialog(
+                analysis = formSetupAnalysis,
+                isLoading = isFormSettingUp,
+                errorMessage = formSetupError,
+                onConfirmSetup = { templateName, candidates ->
+                    viewModel.confirmFormSetup(context, templateName, candidates) { createdTemplate ->
+                        showFormSetupDialog = false
+                        showSettingsDialog = false
+                        Toast.makeText(context, "Đã tạo Mẫu '${createdTemplate.name}' và chèn placeholder thành công!", Toast.LENGTH_LONG).show()
+                    }
+                },
+                onDismiss = {
+                    showFormSetupDialog = false
+                    viewModel.dismissFormSetup()
+                }
             )
         }
 
