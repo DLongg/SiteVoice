@@ -20,8 +20,8 @@
     "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau", "chua_phan_loai"
   ],
   "truong_tong_hop": {
-    "cong_viec_thi_cong": { "kieu": "danh_sach", "toi_da_dong": 8, "ky_tu_moi_dong": 110, "muc_nguon": ["thi_cong"] },
-    "nghiem_thu": { "kieu": "danh_sach", "toi_da_dong": 4, "ky_tu_moi_dong": 120, "muc_nguon": ["nghiem_thu"] },
+    "cong_viec_thi_cong": { "kieu": "danh_sach", "toi_da_dong": 15, "ky_tu_moi_dong": 100, "muc_nguon": ["thi_cong"] },
+    "nghiem_thu": { "kieu": "danh_sach", "toi_da_dong": 6, "ky_tu_moi_dong": 100, "muc_nguon": ["nghiem_thu"] },
     "an_toan": { "kieu": "danh_sach", "toi_da_dong": 3, "ky_tu_moi_dong": 100, "muc_nguon": ["an_toan"] },
     "y_kien_cdt": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_cdt"] },
     "y_kien_tvgs": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_tvgs"] },

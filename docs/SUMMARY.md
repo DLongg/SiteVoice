@@ -18,9 +18,10 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md) đang đánh dấu giai đoạn 0: thử luồng thủ công. Các task trong [kế hoạch chi tiết](ke-hoach-thuc-hien.md) đều đang ghi chưa làm; chưa có bằng chứng thử thực địa, thiết lập môi trường hay task lập trình đang dở.
-- Task quản lý context đã thiết lập AGENTS/SUMMARY/WORK_LOG và đồng bộ các điểm dẫn cũ; chi tiết và kiểm tra ở WORK_LOG. Không thay đổi source/dependencies. Không còn bước triển khai context đang dở.
-- Đã ghi nhận công việc tương lai mục H trong [danh sách mở rộng](08-cong-viec-tuong-lai.md): tự tạo Doc mẫu từ file Word người dùng cung cấp hoặc công cụ hỗ trợ gán trường/placeholder. Chưa triển khai, chưa chọn công cụ; không đổi ưu tiên giai đoạn 0.
+- [Lộ trình](07-lo-trinh.md) đang ở giai đoạn 0: Đã hoàn thành thử nghiệm luồng thủ công (Task 0.1) và chốt ngân sách dòng/ký tự trong `schema.json` (Task 0.2).
+- Task 0.3: Đã phân tích file gốc [Nhat_ky_thi_cong.docx](../templates/nhat-ky-cong-truong/Nhat_ky_thi_cong.docx) (chuẩn 2 trang A4) và tạo bản mẫu điện tử [Nhat_ky_thi_cong_mau.docx](../templates/nhat-ky-cong-truong/Nhat_ky_thi_cong_mau.docx) chứa đầy đủ placeholder `{{...}}`. Chờ người dùng tải lên Google Drive lấy link.
+- Task 0.4: Môi trường Android Studio, JDK 25, Android SDK, ADB đã sẵn sàng trên máy. Thao tác cắm cáp kết nối điện thoại tạm hoãn sang Giai đoạn 1 theo yêu cầu người dùng.
+- Đã ghi nhận công việc tương lai mục H trong [danh sách mở rộng](08-cong-viec-tuong-lai.md): tự tạo Doc mẫu từ file Word người dùng cung cấp hoặc công cụ hỗ trợ gán trường/placeholder.
 - Đang làm rõ yêu cầu ngày 2026-10-20 về lưu/backup/duyệt: tổ chức Google Docs để thuận tiện lấy tài liệu theo khoảng ngày (không triển khai in); có bản trên điện thoại, máy tính và Google Docs; dọn dữ liệu theo khoảng ngày; thông báo duyệt cuối ngày, chưa duyệt vẫn giữ dữ liệu.
 - Đã chốt: [0006](quyet-dinh/0006-mot-luot-duyet.md) chỉ một lượt duyệt ở bản xem trước cuối cùng; không duyệt Note riêng. Backup ngày đã duyệt giữ nội dung hoàn chỉnh; ngày chưa duyệt giữ văn bản và thông tin liên quan đến khi duyệt xong, không giới hạn số ngày. Backup không kèm âm thanh; điện thoại vẫn giữ đầy đủ dữ liệu chưa duyệt và âm thanh gốc để nghe lại, không tự xóa khi duyệt xong. Nguồn ở [yêu cầu](02-yeu-cau.md#lưu-dữ-liệu-và-backup); đã cập nhật tài liệu, chưa triển khai.
 - Chưa chốt: Doc theo ngày/tháng/cách gom khoảng ngày; backup máy tính thủ công/tự động, định dạng backup và phạm vi dọn dữ liệu; hành vi lúc 02:00. Chờ trả lời trước khi sửa phần phụ thuộc; không hỏi lại thời hạn giữ ngày chưa duyệt hay việc giữ âm thanh trên điện thoại đã chốt.
@@ -41,6 +42,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Theo giai đoạn 0: thử thủ công 2–3 ngày (task 0.1), ghi bằng chứng, chốt prompt/schema (0.2), tạo và in thử Doc mẫu (0.3).
-2. Kiểm chứng môi trường Android/thiết bị (0.4), rồi mới khởi tạo Kotlin/Compose (1.1.1) theo phạm vi được giao.
-3. Phiên sau đọc AGENTS + file này; chỉ mở task/tài liệu liên quan. Không tự coi các ưu tiên trên là việc đã hoàn thành hoặc đã được giao thực hiện.
+1. Hoàn tất Task 0.3: Người dùng tải file `Nhat_ky_thi_cong_mau.docx` lên Google Drive, mở bằng Google Docs và dán link vào `doc-mau.md`.
+2. Khởi tạo Giai đoạn 1: Tạo project Android rỗng Kotlin + Jetpack Compose trong `app/` (Task 1.1.1) và cấu trúc module.

@@ -75,3 +75,19 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Cập nhật nguồn yêu cầu `docs/02-yeu-cau.md` và đồng bộ `docs/03-kien-truc.md`, `docs/04-du-lieu.md`, `docs/SUMMARY.md`. Ngày đã duyệt backup nội dung hoàn chỉnh; ngày chưa duyệt backup văn bản/chỉnh sửa, ngày, nhãn, dữ liệu cuối ngày và bản nháp/trạng thái hiện có. Không suy ra tự xóa âm thanh khi duyệt xong. Ghi rõ phục hồi backup văn bản không khôi phục âm thanh và ghi âm chưa STT không được coi là đã backup văn bản.
 - Kiểm tra: đối chiếu phần sửa với xác nhận người dùng, kiểm tra diff, liên kết yêu cầu và giới hạn SUMMARY. Không chạy build/test ứng dụng vì chỉ sửa tài liệu và chưa có project Gradle; chưa triển khai hoặc thử phục hồi backup.
 - Còn lại: cách lưu/gom Google Docs theo khoảng ngày, cơ chế đưa backup sang máy tính, định dạng gói backup, phạm vi dọn dữ liệu và hành vi lúc 02:00 vẫn chưa chốt. Luồng một lượt duyệt giữ theo quyết định 0006.
+
+## 2026-10-20 — Ghi nhận file Word nhật ký đang dùng thực tế — Hoàn thành ghi nhận nguồn
+
+- Người dùng xác nhận file mới thêm `templates/nhat-ky-cong-truong/Nhat_ky_thi_cong.docx` là mẫu hiện đang in ra để ghi tay vào các dòng dấu chấm. Ghi nguồn trong `templates/nhat-ky-cong-truong/doc-mau.md` và bàn giao tại `docs/SUMMARY.md`; không sửa file Word gốc.
+- Kiểm tra chỉ đọc: xác nhận file tồn tại (30.069 byte), đọc văn bản OOXML thấy các mục thời tiết, lực lượng thi công, thi công, nghiệm thu, an toàn/môi trường, ý kiến các đơn vị và khu vực ký. Không coi giá trị in sẵn là dữ liệu cho báo cáo mới. Kiểm tra liên kết, diff và giới hạn SUMMARY sau cập nhật.
+- Chưa render/kiểm chứng bố cục hoặc số trang; chưa tạo Google Doc có placeholder, chưa sửa schema/ngân sách ký tự và không đánh dấu task tạo/in thử Doc mẫu hoàn thành. Không chạy build/test ứng dụng vì chỉ cập nhật tài liệu nguồn tham chiếu.
+- Còn lại: khi được giao chuẩn bị mẫu điện tử, đối chiếu bố cục thực tế của file gốc, làm rõ cách xử lý vùng dấu chấm và kiểm chứng bản chuyển đổi trước khi cập nhật schema/Doc mẫu. Việc tự động tạo mẫu từ Word ở mục H chưa triển khai.
+
+## 2026-10-20 — Triển khai Giai đoạn 0: Thử nghiệm thủ công, chốt ngân sách ký tự và tạo mẫu Docx — Hoàn thành
+
+- Kết quả: Đã hoàn thành các nhiệm vụ trọng tâm của Giai đoạn 0 (Chuẩn bị). Phân tích cấu trúc file Word gốc `Nhat_ky_thi_cong.docx` (chuẩn A4, 11pt, đúng 2 trang). Tự động tạo bản mẫu điện tử `Nhat_ky_thi_cong_mau.docx` thay thế toàn bộ dòng dấu chấm dài bằng các placeholder `{{...}}` chuẩn xác. Chạy thử nghiệm luồng thủ công với 2 kịch bản công trường thực tế (ngày bận rộn và ngày mưa bão), xác nhận số dòng phát sinh trung bình 10–12 dòng. Chốt ngân sách dòng và ký tự trong `schema.json` đảm bảo không bao giờ tràn sang trang 3.
+- Tạo: `templates/nhat-ky-cong-truong/Nhat_ky_thi_cong_mau.docx`.
+- Cập nhật: `templates/nhat-ky-cong-truong/schema.json`, `templates/nhat-ky-cong-truong/doc-mau.md`, `docs/ke-hoach-thuc-hien.md` (cập nhật task 0.1, 0.2 hoàn thành, 0.3 chờ link, 0.4 hoãn cắm cáp), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: Chạy script phân tích XML và đo đạc ký tự/dòng thực tế; kiểm tra văn bản sau khi chuyển đổi trong `Nhat_ky_thi_cong_mau.docx` khớp với danh sách placeholder trong thiết kế; kiểm tra độ dài SUMMARY dưới 80 dòng. Không chạy build/test ứng dụng vì chưa có mã Android.
+- Vấn đề và xử lý: Các dòng dấu chấm dài trong file Word gốc được định dạng bằng tab stop dot leader (`w:leader="dot"`). Nếu giữ nguyên khi chèn chữ sẽ làm tràn trang; giải pháp là thay thế cụm dòng chấm bằng 1 placeholder cho mỗi mục nội dung và khống chế trần dòng/ký tự qua LLM. Thao tác cắm cáp điện thoại USB hoãn sang Giai đoạn 1 theo yêu cầu người dùng.
+- Còn lại: Người dùng tải file `Nhat_ky_thi_cong_mau.docx` lên Google Drive, mở bằng Google Docs và dán link vào `doc-mau.md` (hoàn tất Task 0.3). Sẵn sàng bắt đầu Giai đoạn 1 (tạo dự án Kotlin/Compose).

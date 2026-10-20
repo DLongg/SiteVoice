@@ -2,6 +2,11 @@
 
 Link Doc mẫu: (dán link vào đây)
 
+## File mẫu điện tử & File gốc tham chiếu
+
+- [Nhat_ky_thi_cong_mau.docx](Nhat_ky_thi_cong_mau.docx): Bản mẫu điện tử đã được tạo tự động từ file gốc, thay thế toàn bộ các dòng dấu chấm dài bằng các placeholder `{{...}}` chuẩn xác, giữ nguyên 100% căn lề, font chữ, bảng thời tiết và chữ ký 2 trang A4. Dùng file này tải lên Google Drive và "Mở bằng Google Docs" để tạo Doc mẫu.
+- [Nhat_ky_thi_cong.docx](Nhat_ky_thi_cong.docx): File Word gốc người dùng cung cấp (dùng để in ra viết tay với các dòng chấm dài).
+
 ## Cấu trúc nội dung trong Doc mẫu
 
 ```

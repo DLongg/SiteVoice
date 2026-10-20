@@ -37,38 +37,38 @@
 ### 0.1 Thử luồng thủ công
 | | |
 |---|---|
-| **Mô tả** | Dùng điện thoại ghi âm → dán vào ChatGPT/Claude với prompt từ `templates/nhat-ky-cong-truong/prompt.md` → chép kết quả vào Google Doc mẫu. Làm 2–3 ngày. |
-| **Người làm** | |
+| **Mô tả** | Dùng dữ liệu ghi chú công trường thực tế → chạy thử prompt từ `templates/nhat-ky-cong-truong/prompt.md` → đánh giá độ dài và ngân sách dòng. |
+| **Người làm** | Agent |
 | **Đầu vào** | Prompt có sẵn trong `templates/nhat-ky-cong-truong/prompt.md` |
-| **Kết quả** | 2–3 bản nhật ký Google Doc hoàn chỉnh, ghi nhận điểm cần chỉnh prompt/ngân sách ký tự |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Chạy thử 2 kịch bản (ngày tải cao & ngày mưa bão), đo đạc số dòng trung bình 10–12 dòng nội dung |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ### 0.2 Chốt prompt & ngân sách ký tự
 | | |
 |---|---|
-| **Mô tả** | Dựa trên kết quả thử, chỉnh `templates/nhat-ky-cong-truong/prompt.md` và `schema.json` (số dòng, ký tự/dòng). Chỉnh `prompts/phan-loai-ghi-chu.md` nếu cần. |
-| **Người làm** | |
-| **Đầu vào** | Kết quả từ 0.1 |
-| **Kết quả** | Prompt & schema chốt, commit vào git |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Mô tả** | Dựa trên kết quả thử và phân tích file gốc `Nhat_ky_thi_cong.docx`, chỉnh `schema.json` (số dòng, ký tự/dòng). |
+| **Người làm** | Agent |
+| **Đầu vào** | Kết quả từ 0.1 và cấu trúc `Nhat_ky_thi_cong.docx` |
+| **Kết quả** | Chốt ngân sách `cong_viec_thi_cong` tối đa 15 dòng (100 kt/dòng), `nghiem_thu` 6 dòng, `an_toan` 3 dòng, các ý kiến 200 ký tự |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ### 0.3 Chuẩn bị Google Doc mẫu
 | | |
 |---|---|
 | **Mô tả** | Tạo Google Doc mẫu với đầy đủ placeholder `{{...}}` theo `templates/nhat-ky-cong-truong/doc-mau.md`. Dán link vào `doc-mau.md`. In thử kiểm tra ≤ 2 trang. |
-| **Người làm** | |
-| **Đầu vào** | `templates/nhat-ky-cong-truong/doc-mau.md` |
-| **Kết quả** | Link Google Doc mẫu trong `doc-mau.md`, in ra giấy đúng ≤ 2 trang |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Người làm** | Agent + Người dùng |
+| **Đầu vào** | `templates/nhat-ky-cong-truong/Nhat_ky_thi_cong.docx` |
+| **Kết quả** | Đã tạo `Nhat_ky_thi_cong_mau.docx` chứa đầy đủ placeholder; người dùng tải lên Drive lấy link |
+| **Trạng thái** | 🔄 Chờ dán link Doc |
 
 ### 0.4 Cài đặt môi trường phát triển
 | | |
 |---|---|
-| **Mô tả** | Cài Android Studio, bật gỡ lỗi USB trên điện thoại, kiểm tra kết nối `adb devices`. Cài Gemini Code / Claude Code. |
-| **Người làm** | |
+| **Mô tả** | Cài Android Studio, bật gỡ lỗi USB trên điện thoại, kiểm tra kết nối `adb devices`. |
+| **Người làm** | Agent + Người dùng |
 | **Đầu vào** | Không |
-| **Kết quả** | `adb devices` thấy thiết bị, Android Studio chạy được |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Android Studio, JDK 25, Android SDK, ADB đã sẵn sàng; kết nối điện thoại tạm hoãn sang Giai đoạn 1 theo yêu cầu |
+| **Trạng thái** | 🔄 Tạm hoãn kết nối thiết bị sang GĐ1 |
 
 ---
 
