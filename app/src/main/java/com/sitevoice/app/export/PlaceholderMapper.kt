@@ -77,14 +77,31 @@ object PlaceholderMapper {
         map["{{CONG_NHAN}}"] = congNhan
         map["{{MAY_MOC}}"] = mayMoc
 
+        // Các alias phổ biến từ mẫu tự tạo / viết tắt
+        map["{{s_n}}"] = morningNang
+        map["{{s_m}}"] = morningMua
+        map["{{c_n}}"] = afternoonNang
+        map["{{c_m}}"] = afternoonMua
+        map["{{t_b}}"] = eveningBinhThuong
+        map["{{t_bt}}"] = eveningBinhThuong
+        map["{{t_m}}"] = eveningMua
+        map["{{tong_quan_thoi_tiet}}"] = "Sáng: ${if (morningNang == "☑") "nắng" else "mưa"}, Chiều: ${if (afternoonNang == "☑") "nắng" else "mưa"}, Tối: ${if (eveningBinhThuong == "☑") "bình thường" else "mưa"}"
+
+        map["{{ng_ch}}"] = banChiHuy
+        map["{{ng_cn}}"] = congNhan
+        map["{{may_moc}}"] = mayMoc
+
         // 3. Các trường chuẩn của Nhật ký công trường
         val congViecThiCong = formatList(reportContent.congViecThiCong)
         val nghiemThu = formatList(reportContent.nghiemThu)
         val anToan = formatList(reportContent.anToan)
 
         map["{{CONG_VIEC_THI_CONG}}"] = congViecThiCong
+        map["{{thi_cong_trong_ngay}}"] = congViecThiCong
         map["{{NGHIEM_THU}}"] = nghiemThu
+        map["{{nghiem_thu_trong_ngay}}"] = nghiemThu
         map["{{AN_TOAN}}"] = anToan
+        map["{{an_toan_lao_dong}}"] = anToan
 
         map["{{Y_KIEN_CDT}}"] = reportContent.yKienCdt.trim()
         map["{{Y_KIEN_TVGS}}"] = reportContent.yKienTvgs.trim()

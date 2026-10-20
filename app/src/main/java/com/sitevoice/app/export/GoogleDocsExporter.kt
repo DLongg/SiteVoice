@@ -78,7 +78,7 @@ class GoogleDocsExporter(
                     val replaceAllTextObj = JSONObject().apply {
                         val containsTextObj = JSONObject().apply {
                             put("text", placeholder)
-                            put("matchCase", true)
+                            put("matchCase", false)
                         }
                         put("containsText", containsTextObj)
                         put("replaceText", replacement)
