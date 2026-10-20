@@ -13,6 +13,7 @@
 | Kiến trúc, dữ liệu | `docs/03-kien-truc.md`, `docs/04-du-lieu.md` |
 | LLM, thuật ngữ | `docs/05-llm.md`, `docs/09-thuat-ngu.md`, prompt liên quan trong `prompts/` |
 | Mẫu, giới hạn, placeholder | `templates/<ten-mau>/schema.json`, `prompt.md`, `doc-mau.md`; xuất Doc: `docs/06-google-doc-mau.md` |
+| Thiết lập form tự động (Google Doc/DOCX) | `docs/10-thiet-lap-form.md`, `templates/schema-chung.md`, `prompts/nhan-dien-cho-dien.md` |
 | Lộ trình, task cụ thể | `docs/07-lo-trinh.md`; tìm task ID trong `docs/ke-hoach-thuc-hien.md` |
 | Lý do quyết định, mở rộng | File liên quan trong `docs/quyet-dinh/`; `docs/08-cong-viec-tuong-lai.md` |
 | Thiết kế UI, nguyên tắc giao diện | Skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), `docs/03-kien-truc.md` |
@@ -24,9 +25,12 @@
 - Khi gặp bước cần người dùng thao tác, phải nêu rõ việc cần làm và đưa ra gợi ý hoặc hướng dẫn cụ thể. Nếu người dùng chốt phương án cho phép agent làm tiếp, tiếp tục theo phương án đã chốt. Nếu chưa chốt hoặc phương án vẫn cần người dùng thao tác, phải chờ người dùng xác nhận đã làm xong rồi mới thực hiện bước phụ thuộc; không coi việc đồng ý với gợi ý là đã hoàn tất thao tác.
 - Làm từng bước nhỏ trong phạm vi người dùng giao và lộ trình hiện hành. Không tự đổi kiến trúc, thêm chức năng hoặc dependency ngoài yêu cầu. Khi phát hiện xung đột thiết kế ảnh hưởng task, ghi lại và xin làm rõ trước khi tự chọn phương án.
 - Giữ các quyết định đã chấp nhận trong `docs/quyet-dinh/`. Khi thay đổi thiết kế đã được cho phép, sửa tài liệu gốc liên quan; quyết định lớn cần file quyết định mới.
-- Quy tắc sản phẩm kế thừa từ GEMINI.md: lưu âm thanh gốc trước mọi xử lý, không tự xóa; một nút nhấn giữ, không bắt chọn mục lúc ghi; thời tiết/nhân lực nhập cuối ngày, mặc định từ hôm trước; nội dung từng loại tài liệu đi qua Mẫu, không viết cứng trong lõi.
+- Quy tắc sản phẩm kế thừa từ GEMINI.md: lưu âm thanh gốc trước mọi xử lý, không tự xóa; một nút nhấn giữ, không bắt chọn mục lúc ghi; thời tiết/nhân lực nhập cuối ngày, mặc định từ hôm trước.
+- KHÔNG viết cứng nội dung nhật ký công trường trong code. Mọi loại tài liệu đi qua Mẫu (đóng gói sẵn trong templates/ hoặc do app sinh từ form của người dùng).
+- Chỗ điền trong form do CODE tìm; model chỉ đặt tên/phân loại/ghép nguồn, không tạo hoặc dời vị trí.
+- Không bao giờ sửa file gốc của người dùng; luôn làm việc trên bản sao. Không âm thầm điền khi không tìm thấy neo: phải báo người dùng.
 - Thiết kế giao diện (UI): Khi tạo mới hoặc chỉnh sửa màn hình Compose / giao diện ứng dụng, bắt buộc áp dụng skill `design-taste-frontend` (nguyên tắc App Screens trong `.agents/skills/design-taste-frontend/SKILL.md`: tinh gọn, chống "AI-slop", không gradient/glow/hiệu ứng thừa, kiểu chữ rõ ràng, phân cấp thị giác chuẩn, phản hồi trạng thái đầy đủ).
-- LLM chỉ dùng dữ liệu ghi chú; không rõ mục thì để chưa phân loại. Người dùng phải duyệt bản xem trước trước khi xuất Google Doc. Tác vụ mạng theo thiết kế phải qua WorkManager, chờ mạng và có retry.
+- Khi phân loại/tổng hợp/rút gọn, LLM chỉ dùng dữ liệu ghi chú; không rõ mục thì để chưa phân loại. Khi thiết lập form, LLM chỉ mô tả ứng viên do code cung cấp từ nội dung form; phải thông báo trước khi gửi nội dung form cho nhà cung cấp LLM. Người dùng phải duyệt bản xem trước trước khi xuất Google Doc. Tác vụ mạng theo thiết kế phải qua WorkManager, chờ mạng và có retry.
 - Chuỗi UI tiếng Việt trong `strings.xml`; tên biến/hàm/class tiếng Anh. API key lưu mã hóa, không lưu trong Room; không ghi key, token, credentials hoặc dữ liệu nhạy cảm vào log/context/commit.
 - Chỉ chạy lệnh build/test khi cấu hình thực sự tồn tại. Sau khi có Gradle wrapper, dùng wrapper của dự án (`.\gradlew.bat assembleDebug`, `.\gradlew.bat test`, `.\gradlew.bat lint` trên Windows; `./gradlew` tương ứng trên hệ khác), tại thư mục chứa wrapper.
 - Kiểm tra đúng phần thay đổi: logic thuần (đếm ký tự, phân loại từ khóa, ghép placeholder) cần test phù hợp khi triển khai; bước ứng dụng cần xác minh trên điện thoại thật theo lộ trình. Task tài liệu kiểm tra nội dung, liên kết, tính nhất quán; không cần tạo test ứng dụng.
