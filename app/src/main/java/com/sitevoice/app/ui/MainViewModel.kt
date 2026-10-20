@@ -6,12 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.sitevoice.app.audio.AudioPlayer
 import com.sitevoice.app.data.DailyInputEntity
 import com.sitevoice.app.data.DailyInputRepository
+import com.sitevoice.app.data.DailyReportEntity
+import com.sitevoice.app.data.DailyReportRepository
 import com.sitevoice.app.data.NoteEntity
 import com.sitevoice.app.data.NoteRepository
 import com.sitevoice.app.llm.GroqLlmClient
 import com.sitevoice.app.llm.NoteClassifier
+import com.sitevoice.app.llm.ReportSynthesizer
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.stt.GroqWhisper
+import com.sitevoice.app.template.TemplateSchema
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,9 +38,12 @@ sealed class CurrentSttStatus {
 class MainViewModel(
     private val repository: NoteRepository,
     private val dailyInputRepository: DailyInputRepository,
+    private val dailyReportRepository: DailyReportRepository,
     private val securePreferences: SecurePreferences,
+    private val templateSchema: TemplateSchema,
     private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
-    private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }))
+    private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey })),
+    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }), templateSchema)
 ) : ViewModel() {
 
     val audioPlayer = AudioPlayer()
@@ -56,6 +63,19 @@ class MainViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    val dailyReport: StateFlow<DailyReportEntity?> = dailyReportRepository.getReport(currentDate)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
+    private val _isSynthesizing = MutableStateFlow(false)
+    val isSynthesizing: StateFlow<Boolean> = _isSynthesizing.asStateFlow()
+
+    private val _synthesisError = MutableStateFlow<String?>(null)
+    val synthesisError: StateFlow<String?> = _synthesisError.asStateFlow()
 
     private val _currentSttStatus = MutableStateFlow<CurrentSttStatus>(CurrentSttStatus.Idle)
     val currentSttStatus: StateFlow<CurrentSttStatus> = _currentSttStatus.asStateFlow()
@@ -200,6 +220,56 @@ class MainViewModel(
         return dailyInputRepository.getDailyInputOrDefault(currentDate)
     }
 
+    fun synthesizeDailyReport(onSuccess: (() -> Unit)? = null) {
+        val apiKey = securePreferences.groqApiKey
+        if (apiKey.isNullOrBlank()) {
+            _synthesisError.value = "Chưa cài đặt Groq API Key trong Cài đặt."
+            return
+        }
+
+        val notes = activeNotes.value
+        if (notes.isEmpty()) {
+            _synthesisError.value = "Chưa có ghi chú nào hôm nay để tổng hợp báo cáo."
+            return
+        }
+
+        viewModelScope.launch {
+            _isSynthesizing.value = true
+            _synthesisError.value = null
+            try {
+                val result = reportSynthesizer.synthesizeReport(currentDate, notes)
+                if (result.isSuccess) {
+                    val json = result.getOrThrow()
+                    val reportEntity = DailyReportEntity(
+                        date = currentDate,
+                        templateId = templateSchema.id,
+                        contentJson = json,
+                        status = "DRAFT",
+                        updatedAt = System.currentTimeMillis()
+                    )
+                    dailyReportRepository.saveReport(reportEntity)
+                    onSuccess?.invoke()
+                } else {
+                    _synthesisError.value = result.exceptionOrNull()?.message ?: "Lỗi khi tổng hợp báo cáo"
+                }
+            } catch (e: Exception) {
+                _synthesisError.value = e.message ?: "Lỗi hệ thống khi tổng hợp"
+            } finally {
+                _isSynthesizing.value = false
+            }
+        }
+    }
+
+    fun approveDailyReport() {
+        viewModelScope.launch {
+            dailyReportRepository.approveReport(currentDate)
+        }
+    }
+
+    fun clearSynthesisError() {
+        _synthesisError.value = null
+    }
+
     override fun onCleared() {
         super.onCleared()
         audioPlayer.stop()
@@ -209,12 +279,14 @@ class MainViewModel(
 class MainViewModelFactory(
     private val repository: NoteRepository,
     private val dailyInputRepository: DailyInputRepository,
-    private val securePreferences: SecurePreferences
+    private val dailyReportRepository: DailyReportRepository,
+    private val securePreferences: SecurePreferences,
+    private val templateSchema: TemplateSchema
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(repository, dailyInputRepository, securePreferences) as T
+            return MainViewModel(repository, dailyInputRepository, dailyReportRepository, securePreferences, templateSchema) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

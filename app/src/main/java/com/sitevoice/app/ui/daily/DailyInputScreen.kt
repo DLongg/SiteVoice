@@ -42,13 +42,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sitevoice.app.R
 import com.sitevoice.app.data.DailyInputEntity
+import com.sitevoice.app.data.DailyReportEntity
 
 @Composable
 fun DailyInputScreen(
     currentDate: String,
     initialDailyInput: DailyInputEntity?,
+    dailyReport: DailyReportEntity? = null,
     onSaveDailyInput: (DailyInputEntity) -> Unit,
     onGenerateReportClick: () -> Unit,
+    onViewReportClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var weatherMorning by remember { mutableStateOf("nang") }
@@ -115,7 +118,59 @@ fun DailyInputScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            // Thẻ trạng thái báo cáo hôm nay (nếu đã tổng hợp)
+            if (dailyReport != null) {
+                val isApproved = dailyReport.status == "APPROVED" || dailyReport.status == "EXPORTED"
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isApproved) Color(0xFFDCFCE7) else Color(0xFFEFF6FF)
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isApproved) Color(0xFF86EFAC) else Color(0xFFBFDBFE)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            val badgeTitle = if (isApproved) "✓ Đã duyệt nhật ký" else "📑 Bản dự thảo sẵn sàng"
+                            Text(
+                                text = badgeTitle,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isApproved) Color(0xFF166534) else Color(0xFF1E40AF)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = if (isApproved) "Nhật ký đã được duyệt 1 lần duy nhất." else "Bấm để xem và duyệt trước khi xuất Doc.",
+                                fontSize = 12.sp,
+                                color = if (isApproved) Color(0xFF15803D) else Color(0xFF3B82F6)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { onViewReportClick?.invoke() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isApproved) Color(0xFF15803D) else Color(0xFF2563EB)
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(text = "Xem", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Thẻ 1: Thời tiết trong ngày
             Card(
@@ -301,8 +356,13 @@ fun DailyInputScreen(
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B))
             ) {
+                val btnText = if (dailyReport != null) {
+                    "🔄 " + stringResource(id = R.string.report_btn_resynthesize)
+                } else {
+                    "⚡ " + stringResource(id = R.string.btn_generate_report)
+                }
                 Text(
-                    text = "⚡ " + stringResource(id = R.string.btn_generate_report),
+                    text = btnText,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White

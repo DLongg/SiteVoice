@@ -1,8 +1,10 @@
 package com.sitevoice.app.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.NavigationBar
@@ -10,6 +12,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.sitevoice.app.R
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.ui.daily.DailyInputScreen
+import com.sitevoice.app.ui.daily.DailyReportPreviewScreen
 import com.sitevoice.app.ui.notes.NotesListScreen
 import com.sitevoice.app.ui.record.RecordScreen
 import com.sitevoice.app.ui.settings.SettingsDialog
@@ -35,11 +40,16 @@ fun MainScreen(
     viewModel: MainViewModel,
     securePreferences: SecurePreferences
 ) {
+    val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
     var showSettingsDialog by remember { mutableStateOf(false) }
+    var showReportPreview by remember { mutableStateOf(false) }
 
     val activeNotes by viewModel.activeNotes.collectAsState()
     val dailyInput by viewModel.dailyInput.collectAsState()
+    val dailyReport by viewModel.dailyReport.collectAsState()
+    val isSynthesizing by viewModel.isSynthesizing.collectAsState()
+    val synthesisError by viewModel.synthesisError.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -150,14 +160,43 @@ fun MainScreen(
                     onDeleteNote = { id -> viewModel.deleteNote(id) },
                     onRetryStt = { note -> viewModel.retryStt(note) }
                 )
-                2 -> DailyInputScreen(
-                    currentDate = viewModel.currentDate,
-                    initialDailyInput = dailyInput,
-                    onSaveDailyInput = { viewModel.saveDailyInput(it) },
-                    onGenerateReportClick = {
-                        // Chuẩn bị kích hoạt luồng tổng hợp LLM ở Task 2.2
+                2 -> {
+                    if (showReportPreview) {
+                        DailyReportPreviewScreen(
+                            currentDate = viewModel.currentDate,
+                            reportEntity = dailyReport,
+                            dailyInput = dailyInput,
+                            isSynthesizing = isSynthesizing,
+                            onApproveClick = {
+                                viewModel.approveDailyReport()
+                                Toast.makeText(context, "✓ Đã phê duyệt nhật ký thi công!", Toast.LENGTH_SHORT).show()
+                            },
+                            onResynthesizeClick = {
+                                viewModel.synthesizeDailyReport()
+                            },
+                            onBackToEditClick = {
+                                showReportPreview = false
+                            },
+                            onExportDocClick = {
+                                Toast.makeText(context, "Chức năng xuất Google Doc sẽ hoạt động ở Giai đoạn 3.", Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    } else {
+                        DailyInputScreen(
+                            currentDate = viewModel.currentDate,
+                            initialDailyInput = dailyInput,
+                            dailyReport = dailyReport,
+                            onSaveDailyInput = { viewModel.saveDailyInput(it) },
+                            onGenerateReportClick = {
+                                showReportPreview = true
+                                viewModel.synthesizeDailyReport()
+                            },
+                            onViewReportClick = {
+                                showReportPreview = true
+                            }
+                        )
                     }
-                )
+                }
             }
         }
 
@@ -169,6 +208,22 @@ fun MainScreen(
                     securePreferences.groqApiKey = newKey
                 },
                 onDismiss = { showSettingsDialog = false }
+            )
+        }
+
+        // Hộp thoại báo lỗi khi tổng hợp LLM thất bại
+        if (synthesisError != null) {
+            AlertDialog(
+                onDismissRequest = { viewModel.clearSynthesisError() },
+                title = { Text("Thông báo", fontWeight = FontWeight.Bold) },
+                text = { Text(synthesisError ?: "") },
+                confirmButton = {
+                    TextButton(
+                        onClick = { viewModel.clearSynthesisError() }
+                    ) {
+                        Text("Đóng")
+                    }
+                }
             )
         }
     }
