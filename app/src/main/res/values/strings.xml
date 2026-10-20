@@ -98,23 +98,11 @@
     <string name="report_export_success">Đã xuất Google Doc thành công!</string>
     <string name="report_export_login_required">Vui lòng đăng nhập Google trong Cài đặt để xuất Google Doc.</string>
 
-    <!-- Queue & Offline Status -->
+    <!-- Queue Status -->
     <string name="queue_status_waiting_network">Đang chờ mạng để chuyển văn bản...</string>
     <string name="queue_status_classifying">Đang phân loại nội dung bằng LLM...</string>
     <string name="queue_status_audio_saved_hint">Âm thanh gốc đã lưu an toàn trên máy. Tự động xử lý khi có mạng.</string>
     <string name="queue_badge_waiting">⏳ Chờ mạng</string>
     <string name="queue_badge_classifying">🤖 Đang phân loại</string>
     <string name="queue_badge_error">❌ Lỗi xử lý</string>
-
-    <!-- Whisper Offline Settings -->
-    <string name="settings_offline_stt_title">4. Nhận diện giọng nói ngoại tuyến (Whisper)</string>
-    <string name="settings_offline_stt_desc">Sử dụng mô hình whisper.cpp chạy trực tiếp trên thiết bị khi không có mạng.</string>
-    <string name="settings_offline_stt_switch">Bật STT offline khi mất mạng</string>
-    <string name="settings_offline_model_label">Mô hình Whisper on-device</string>
-    <string name="settings_offline_model_downloaded">Đã tải (%1$s)</string>
-    <string name="settings_offline_model_not_downloaded">Chưa tải</string>
-    <string name="settings_offline_btn_download">Tải mô hình</string>
-    <string name="settings_offline_btn_delete">Xóa</string>
-    <string name="settings_offline_downloading">Đang tải: %1$d%%</string>
-    <string name="settings_offline_no_model_warning">Chưa tải mô hình. Vui lòng bấm \'Tải mô hình\' trước khi bật offline.</string>
 </resources>

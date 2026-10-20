@@ -12,7 +12,6 @@ securityCrypto = "1.1.0-alpha06"
 okhttp = "4.12.0"
 junit = "4.13.2"
 playServicesAuth = "21.2.0"
-whisperAndroid = "1.0.0"
 
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -34,7 +33,6 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
-whisper-android = { group = "dev.ffmpegkit-maintained", name = "whisper-android", version.ref = "whisperAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

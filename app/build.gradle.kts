@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.okhttp)
     implementation(libs.play.services.auth)
-    implementation(libs.whisper.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.org.json)

@@ -20,10 +20,6 @@ class SecurePreferences(context: Context) {
         const val KEY_GOOGLE_ACCOUNT_EMAIL = "google_account_email"
         const val KEY_GOOGLE_ACCESS_TOKEN = "google_access_token"
 
-        const val KEY_OFFLINE_STT_ENABLED = "offline_stt_enabled"
-        const val KEY_SELECTED_OFFLINE_MODEL_ID = "selected_offline_model_id"
-        const val DEFAULT_OFFLINE_MODEL_ID = "base"
-
         fun extractDocId(input: String): String {
             val trimmed = input.trim()
             if (trimmed.isBlank()) return DEFAULT_DOC_TEMPLATE_ID
@@ -64,14 +60,6 @@ class SecurePreferences(context: Context) {
     var googleAccessToken: String?
         get() = sharedPreferences.getString(KEY_GOOGLE_ACCESS_TOKEN, null)
         set(value) = sharedPreferences.edit().putString(KEY_GOOGLE_ACCESS_TOKEN, value).apply()
-
-    var isOfflineSttEnabled: Boolean
-        get() = sharedPreferences.getBoolean(KEY_OFFLINE_STT_ENABLED, false)
-        set(value) = sharedPreferences.edit().putBoolean(KEY_OFFLINE_STT_ENABLED, value).apply()
-
-    var selectedOfflineModelId: String
-        get() = sharedPreferences.getString(KEY_SELECTED_OFFLINE_MODEL_ID, DEFAULT_OFFLINE_MODEL_ID) ?: DEFAULT_OFFLINE_MODEL_ID
-        set(value) = sharedPreferences.edit().putString(KEY_SELECTED_OFFLINE_MODEL_ID, value).apply()
 
     fun getString(key: String, defaultValue: String? = null): String? {
         return sharedPreferences.getString(key, defaultValue)
