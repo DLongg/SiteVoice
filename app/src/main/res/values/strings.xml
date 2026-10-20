@@ -56,4 +56,32 @@
     <string name="delete_dialog_title">Xác nhận xóa ghi chú</string>
     <string name="delete_dialog_message">Ghi chú này sẽ được ẩn khỏi danh sách tổng hợp. Tệp âm thanh gốc vẫn được giữ lại an toàn trong máy để đối chiếu.</string>
     <string name="btn_confirm_delete">Xác nhận xóa</string>
+
+    <!-- Daily Report Preview & Approval -->
+    <string name="report_preview_title">Xem trước nhật ký thi công</string>
+    <string name="report_status_draft">Bản dự thảo</string>
+    <string name="report_status_approved">Đã duyệt</string>
+    <string name="report_status_exported">Đã xuất Google Doc</string>
+    <string name="report_section_general">Thông tin hiện trường</string>
+    <string name="report_section_construction">1. Tình hình thi công</string>
+    <string name="report_section_inspection">2. Nghiệm thu công việc</string>
+    <string name="report_section_safety">3. An toàn &amp; Vệ sinh</string>
+    <string name="report_section_opinions">4. Ý kiến các bên</string>
+    <string name="report_opinion_cdt">Chủ đầu tư</string>
+    <string name="report_opinion_tvgs">Tư vấn giám sát</string>
+    <string name="report_opinion_contractor">Nhà thầu</string>
+    <string name="report_section_unclassified">Ghi chú chưa phân loại</string>
+    <string name="report_unclassified_hint">Các ghi chú này được lưu trên máy để theo dõi, không đưa vào báo cáo Google Doc.</string>
+    <string name="report_btn_approve">✓ Phê duyệt nhật ký này</string>
+    <string name="report_btn_resynthesize">Tổng hợp lại (AI)</string>
+    <string name="report_btn_back_to_edit">Sửa dữ liệu / ghi chú</string>
+    <string name="report_btn_export_doc">Xuất sang Google Doc</string>
+    <string name="report_synthesizing_loading">Đang tổng hợp nhật ký thi công bằng AI...</string>
+    <string name="report_synthesizing_budget_note">AI đang kiểm tra ngân sách dòng để đảm bảo vừa khít 2 trang A4...</string>
+    <string name="report_empty_notes_warning">Chưa có ghi chú nào hôm nay để tổng hợp báo cáo.</string>
+    <string name="report_approve_success">Đã duyệt nhật ký thành công</string>
+    <string name="report_approved_banner">Nhật ký hôm nay đã được phê duyệt và sẵn sàng xuất tài liệu.</string>
+    <string name="report_empty_field">(Không có phát sinh)</string>
+    <string name="report_view_preview">Xem bản tổng hợp</string>
+    <string name="report_edit_again">Mở lại dự thảo để sửa</string>
 </resources>
