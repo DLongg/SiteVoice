@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory(
+            applicationContext,
             noteRepository,
             dailyInputRepository,
             dailyReportRepository,

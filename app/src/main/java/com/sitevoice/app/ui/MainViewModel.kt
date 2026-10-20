@@ -16,6 +16,9 @@ import com.sitevoice.app.export.GoogleDocsExporter
 import com.sitevoice.app.llm.GroqLlmClient
 import com.sitevoice.app.llm.NoteClassifier
 import com.sitevoice.app.llm.ReportSynthesizer
+import com.sitevoice.app.queue.ClassifyWorker
+import com.sitevoice.app.queue.ExportWorker
+import com.sitevoice.app.queue.SttWorker
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.stt.GroqWhisper
 import com.sitevoice.app.template.DailyReportContent
@@ -40,6 +43,7 @@ sealed class CurrentSttStatus {
 }
 
 class MainViewModel(
+    private val appContext: Context,
     private val repository: NoteRepository,
     private val dailyInputRepository: DailyInputRepository,
     private val dailyReportRepository: DailyReportRepository,
@@ -94,6 +98,31 @@ class MainViewModel(
     private val _lastCreatedNoteId = MutableStateFlow<Long?>(null)
     val lastCreatedNoteId: StateFlow<Long?> = _lastCreatedNoteId.asStateFlow()
 
+    init {
+        // Đồng bộ trạng thái STT của bản ghi mới nhất từ Room database (hỗ trợ WorkManager chạy ngầm)
+        viewModelScope.launch {
+            activeNotes.collect { notes ->
+                val lastId = _lastCreatedNoteId.value ?: return@collect
+                val note = notes.find { it.id == lastId } ?: return@collect
+                when {
+                    note.error != null -> {
+                        _currentSttStatus.value = CurrentSttStatus.Error(note.error)
+                    }
+                    !note.text.isNullOrBlank() -> {
+                        _currentSttStatus.value = CurrentSttStatus.Success(note.text)
+                    }
+                    note.status == "RECORDED" -> {
+                        if (securePreferences.groqApiKey.isNullOrBlank()) {
+                            _currentSttStatus.value = CurrentSttStatus.NoApiKey
+                        } else {
+                            _currentSttStatus.value = CurrentSttStatus.Transcribing
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun onRecordFinished(audioFile: File, durationMs: Long) {
         val now = System.currentTimeMillis()
         val note = NoteEntity(
@@ -107,7 +136,12 @@ class MainViewModel(
         viewModelScope.launch {
             val noteId = repository.insertNote(note)
             _lastCreatedNoteId.value = noteId
-            triggerStt(noteId, audioFile)
+            if (securePreferences.groqApiKey.isNullOrBlank()) {
+                _currentSttStatus.value = CurrentSttStatus.NoApiKey
+            } else {
+                _currentSttStatus.value = CurrentSttStatus.Transcribing
+            }
+            SttWorker.enqueue(appContext, noteId, audioFile.absolutePath)
         }
     }
 
@@ -120,92 +154,30 @@ class MainViewModel(
             return
         }
         viewModelScope.launch {
-            repository.updateNote(note.copy(error = null))
-            triggerStt(note.id, file)
-        }
-    }
-
-    private suspend fun triggerStt(noteId: Long, audioFile: File) {
-        val apiKey = securePreferences.groqApiKey
-        if (apiKey.isNullOrBlank()) {
-            _currentSttStatus.value = CurrentSttStatus.NoApiKey
-            val currentNote = repository.getNoteById(noteId)
-            if (currentNote != null) {
-                repository.updateNote(currentNote.copy(error = "Chưa cài đặt API Key"))
+            repository.updateNote(note.copy(error = null, status = "RECORDED"))
+            _lastCreatedNoteId.value = note.id
+            if (securePreferences.groqApiKey.isNullOrBlank()) {
+                _currentSttStatus.value = CurrentSttStatus.NoApiKey
+            } else {
+                _currentSttStatus.value = CurrentSttStatus.Transcribing
             }
-            return
-        }
-
-        _currentSttStatus.value = CurrentSttStatus.Transcribing
-        val result = groqWhisper.transcribe(audioFile)
-
-        val currentNote = repository.getNoteById(noteId) ?: return
-
-        if (result.isSuccess) {
-            val text = result.getOrThrow()
-            _currentSttStatus.value = CurrentSttStatus.Success(text)
-            repository.updateNote(
-                currentNote.copy(
-                    text = text,
-                    sttSource = "groq",
-                    status = "TRANSCRIBED",
-                    error = null
-                )
-            )
-            // Tự động phân loại ghi chú bằng LLM sau khi STT xong
-            triggerClassification(noteId, text)
-        } else {
-            val errorMsg = result.exceptionOrNull()?.message ?: "Lỗi chuyển đổi giọng nói"
-            _currentSttStatus.value = CurrentSttStatus.Error(errorMsg)
-            repository.updateNote(
-                currentNote.copy(
-                    error = errorMsg
-                )
-            )
+            SttWorker.enqueue(appContext, note.id, note.audioPath)
         }
     }
 
     fun reclassifyNote(note: NoteEntity) {
         val text = note.text
         if (text.isNullOrBlank()) return
-        triggerClassification(note.id, text)
-    }
-
-    private fun triggerClassification(noteId: Long, text: String) {
         viewModelScope.launch {
-            android.util.Log.i("SiteVoiceVM", "Bắt đầu phân loại note $noteId: $text")
-            val classifyResult = classifier.classify(noteId, text)
-            val currentNote = repository.getNoteById(noteId) ?: return@launch
-
-            if (classifyResult.isSuccess) {
-                val label = classifyResult.getOrThrow().label
-                android.util.Log.i("SiteVoiceVM", "Phân loại thành công note $noteId -> label: $label")
-                repository.updateNote(
-                    currentNote.copy(
-                        label = label,
-                        labelSource = "auto",
-                        status = "LABELED"
-                    )
-                )
-            } else {
-                val err = classifyResult.exceptionOrNull()?.message
-                android.util.Log.e("SiteVoiceVM", "Phân loại thất bại note $noteId: $err")
-                // Fallback nếu LLM phân loại lỗi: gán nhãn chua_phan_loai
-                repository.updateNote(
-                    currentNote.copy(
-                        label = NoteClassifier.LABEL_CHUA_PHAN_LOAI,
-                        labelSource = "auto",
-                        status = "LABELED"
-                    )
-                )
-            }
+            repository.updateNote(note.copy(status = "TRANSCRIBED"))
+            ClassifyWorker.enqueue(appContext, note.id, text)
         }
     }
 
     fun updateNoteText(noteId: Long, newText: String) {
         viewModelScope.launch {
             repository.updateText(noteId, newText)
-            triggerClassification(noteId, newText)
+            ClassifyWorker.enqueue(appContext, noteId, newText)
         }
     }
 
@@ -294,6 +266,9 @@ class MainViewModel(
             return
         }
 
+        // Tự động xếp hàng qua ExportWorker để bảo đảm tự động retry khi mạng chập chờn
+        ExportWorker.enqueue(context, currentDate)
+
         viewModelScope.launch {
             _isExporting.value = true
             _exportError.value = null
@@ -347,6 +322,7 @@ class MainViewModel(
 }
 
 class MainViewModelFactory(
+    private val appContext: Context,
     private val repository: NoteRepository,
     private val dailyInputRepository: DailyInputRepository,
     private val dailyReportRepository: DailyReportRepository,
@@ -356,7 +332,7 @@ class MainViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(repository, dailyInputRepository, dailyReportRepository, securePreferences, templateSchema) as T
+            return MainViewModel(appContext, repository, dailyInputRepository, dailyReportRepository, securePreferences, templateSchema) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

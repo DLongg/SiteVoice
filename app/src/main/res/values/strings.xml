@@ -97,4 +97,12 @@
     <string name="report_exporting_loading">Đang sao chép bản mẫu và điền dữ liệu vào Google Doc...</string>
     <string name="report_export_success">Đã xuất Google Doc thành công!</string>
     <string name="report_export_login_required">Vui lòng đăng nhập Google trong Cài đặt để xuất Google Doc.</string>
+
+    <!-- Queue & Offline Status -->
+    <string name="queue_status_waiting_network">Đang chờ mạng để chuyển văn bản...</string>
+    <string name="queue_status_classifying">Đang phân loại nội dung bằng LLM...</string>
+    <string name="queue_status_audio_saved_hint">Âm thanh gốc đã lưu an toàn trên máy. Tự động xử lý khi có mạng.</string>
+    <string name="queue_badge_waiting">⏳ Chờ mạng</string>
+    <string name="queue_badge_classifying">🤖 Đang phân loại</string>
+    <string name="queue_badge_error">❌ Lỗi xử lý</string>
 </resources>

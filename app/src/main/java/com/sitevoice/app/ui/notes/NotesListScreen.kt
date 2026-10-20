@@ -237,7 +237,7 @@ fun NoteItemCard(
         border = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            // Header item: Giờ ghi + Label Badge (Bấm vào để đổi nhãn)
+            // Header item: Giờ ghi + Label Badge hoặc Queue Status Pill
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -250,57 +250,113 @@ fun NoteItemCard(
                     color = Color(0xFF475569)
                 )
 
-                // Nhãn mục có thể bấm để đổi
-                val currentCategory = CATEGORY_OPTIONS.find { it.key == note.label }
-                    ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), "❓")
-
-                val isUnclassified = note.label.isNullOrBlank() ||
-                        note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
-                        note.label == "unclassified"
-
-                val labelBg = if (isUnclassified) Color(0xFFF1F5F9) else Color(0xFFEFF6FF)
-                val labelColor = if (isUnclassified) Color(0xFF64748B) else Color(0xFF1D4ED8)
-
-                Box {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .background(labelBg, RoundedCornerShape(6.dp))
-                            .clickable { showLabelMenu = true }
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = "${currentCategory.icon} ${currentCategory.title}",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = labelColor
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "▾",
-                            fontSize = 10.sp,
-                            color = labelColor
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = showLabelMenu,
-                        onDismissRequest = { showLabelMenu = false }
-                    ) {
-                        CATEGORY_OPTIONS.forEach { option ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = "${option.icon} ${option.title}",
-                                        fontSize = 13.sp,
-                                        fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
-                                    )
-                                },
-                                onClick = {
-                                    onSelectLabel(option.key)
-                                    showLabelMenu = false
-                                }
+                when {
+                    note.error != null -> {
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFFEF2F2), RoundedCornerShape(6.dp))
+                                .border(1.dp, Color(0xFFFECACA), RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.queue_badge_error),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFFDC2626)
                             )
+                        }
+                    }
+                    note.status == "RECORDED" -> {
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFFEF3C7), RoundedCornerShape(6.dp))
+                                .border(1.dp, Color(0xFFFDE68A), RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.queue_badge_waiting),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFFB45309)
+                            )
+                        }
+                    }
+                    note.status == "TRANSCRIBED" -> {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(Color(0xFFEFF6FF), RoundedCornerShape(6.dp))
+                                .border(1.dp, Color(0xFFBFDBFE), RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(10.dp),
+                                strokeWidth = 1.5.dp,
+                                color = Color(0xFF2563EB)
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = stringResource(id = R.string.queue_badge_classifying),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF1D4ED8)
+                            )
+                        }
+                    }
+                    else -> {
+                        // Nhãn mục có thể bấm để đổi khi đã hoàn thành phân loại
+                        val currentCategory = CATEGORY_OPTIONS.find { it.key == note.label }
+                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), "❓")
+
+                        val isUnclassified = note.label.isNullOrBlank() ||
+                                note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
+                                note.label == "unclassified"
+
+                        val labelBg = if (isUnclassified) Color(0xFFF1F5F9) else Color(0xFFEFF6FF)
+                        val labelColor = if (isUnclassified) Color(0xFF64748B) else Color(0xFF1D4ED8)
+
+                        Box {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .background(labelBg, RoundedCornerShape(6.dp))
+                                    .clickable { showLabelMenu = true }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = "${currentCategory.icon} ${currentCategory.title}",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = labelColor
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "▾",
+                                    fontSize = 10.sp,
+                                    color = labelColor
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = showLabelMenu,
+                                onDismissRequest = { showLabelMenu = false }
+                            ) {
+                                CATEGORY_OPTIONS.forEach { option ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = "${option.icon} ${option.title}",
+                                                fontSize = 13.sp,
+                                                fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
+                                            )
+                                        },
+                                        onClick = {
+                                            onSelectLabel(option.key)
+                                            showLabelMenu = false
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -308,13 +364,14 @@ fun NoteItemCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Nội dung văn bản hoặc trạng thái STT
-            if (note.text.isNullOrBlank()) {
-                if (note.error != null) {
+            // Nội dung văn bản hoặc trạng thái STT / hàng đợi
+            when {
+                note.error != null -> {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color(0xFFFEF2F2), RoundedCornerShape(6.dp))
+                            .border(1.dp, Color(0xFFFCA5A5), RoundedCornerShape(6.dp))
                             .padding(10.dp)
                     ) {
                         Text(
@@ -334,34 +391,46 @@ fun NoteItemCard(
                             )
                         }
                     }
-                } else {
+                }
+                note.text.isNullOrBlank() -> {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color(0xFFF8FAFC), RoundedCornerShape(6.dp))
+                            .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(6.dp))
                             .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp,
-                            color = Color(0xFF3B82F6)
+                            color = Color(0xFF0284C7)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(id = R.string.notes_transcribing),
-                            fontSize = 13.sp,
-                            color = Color(0xFF64748B)
-                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = stringResource(id = R.string.queue_status_waiting_network),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF0369A1)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = stringResource(id = R.string.queue_status_audio_saved_hint),
+                                fontSize = 11.sp,
+                                color = Color(0xFF64748B)
+                            )
+                        }
                     }
                 }
-            } else {
-                Text(
-                    text = note.text,
-                    fontSize = 14.sp,
-                    color = Color(0xFF0F172A),
-                    lineHeight = 20.sp
-                )
+                else -> {
+                    Text(
+                        text = note.text,
+                        fontSize = 14.sp,
+                        color = Color(0xFF0F172A),
+                        lineHeight = 20.sp
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
