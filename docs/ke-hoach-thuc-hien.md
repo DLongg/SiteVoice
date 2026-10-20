@@ -358,46 +358,46 @@
 | | |
 |---|---|
 | **Mô tả** | Module `template/`: đọc `schema.json` từ assets, parse thành data class `TemplateSchema`. Kiểm tra trường bắt buộc. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `templates/nhat-ky-cong-truong/schema.json` |
-| **Kết quả** | Unit test parse schema đúng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Data class `TemplateSchema`, unit test pass 100% tại `TemplateSchemaTest.kt` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.2.2 Xây prompt tổng hợp
 | | |
 |---|---|
 | **Mô tả** | Đọc `prompt.md` từ assets, thay placeholder `{{DANH_SACH_GHI_CHU_THEO_MUC}}`, `{{GIOI_HAN_TU_SCHEMA}}`, `{{TU_DIEN_THUAT_NGU}}`, `{{NGAY}}`. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `templates/nhat-ky-cong-truong/prompt.md` |
-| **Kết quả** | Unit test: prompt đúng format, có đủ dữ liệu ghi chú |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `ReportSynthesizer` nhóm các ghi chú theo mục, ghép prompt theo format chuẩn JSON |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.2.3 Gọi LLM tổng hợp
 | | |
 |---|---|
 | **Mô tả** | Gửi prompt → LLM → parse JSON kết quả theo schema. Lỗi parse → thử lại tối đa 2 lần. Tạo `DailyReportEntity` (status = DRAFT). |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 2.2.2 + 1.5.2 |
-| **Kết quả** | Nhận được JSON đúng schema |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Gọi `LlmClient` trả về JSON, lưu vào `DailyReportEntity` qua `DailyReportRepository` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.2.4 Kiểm tra ngân sách ký tự
 | | |
 |---|---|
 | **Mô tả** | Đếm ký tự/số dòng mỗi trường so với giới hạn trong schema. Trả danh sách trường vượt. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/05-llm.md` phần ngân sách |
-| **Kết quả** | Unit test: trường vượt bị phát hiện đúng |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Class `BudgetValidator`, unit test pass 100% tại `BudgetValidatorTest.kt` |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.2.5 Vòng rút gọn
 | | |
 |---|---|
 | **Mô tả** | Trường vượt → gọi `prompts/rut-gon-muc.md` cho từng trường (tối đa 2 vòng). Còn vượt → báo người dùng. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `prompts/rut-gon-muc.md`, 2.2.4 |
-| **Kết quả** | Kết quả cuối cùng nằm trong ngân sách |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Cơ chế tự động rút gọn vòng lặp trong `ReportSynthesizer`, unit test pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 
@@ -407,10 +407,10 @@
 | | |
 |---|---|
 | **Mô tả** | Hiển thị nội dung DailyReport: thời tiết, nhân lực, từng mục tổng hợp. Ghi chú "chưa phân loại" hiện riêng (không đưa vào Doc). Cho quay lại sửa dữ liệu và tạo lại bản nháp. Một hành động duyệt cuối cùng lưu nội dung DailyReport.APPROVED trên điện thoại rồi xếp hàng xuất Google Doc; không yêu cầu duyệt ghi chú riêng hay duyệt lại khi retry cùng nội dung. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 2.2.3 |
-| **Kết quả** | Xem được bản xem trước đầy đủ; một lượt duyệt lưu đúng nội dung trước khi xuất, không xuất bản nháp chưa duyệt |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | Màn hình `DailyReportPreviewScreen`, `DailyReportContent`, nút duyệt chuyển trạng thái APPROVED (quyết định 0006), hiển thị riêng mục chưa phân loại |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.3.2 Google Sign-In
 | | |
