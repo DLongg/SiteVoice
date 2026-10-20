@@ -18,7 +18,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Đang triển khai và bàn giao
 
 - [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành Task 4.1.1, 4.1.2, 4.1.3 của Giai đoạn 4.
-- Đã hoàn thành cơ chế nạp động schema và prompt cho `ReportSynthesizer` theo Mẫu được chọn (Nhật ký công trường, Nhật ký cá nhân, Mẫu tự tạo). Thẻ TemplateSelector trên màn hình chuẩn bị báo cáo. Màn hình xem trước hiển thị linh hoạt theo từng mẫu. 30/30 unit tests pass 100%, APK build thành công.
+- Đã hoàn thành Thư viện Mẫu (`TemplateLibraryScreen`), Bộ tạo/căn chỉnh Mẫu (`TemplateEditorScreen`), nạp động Schema & Prompt cho LLM (`ReportSynthesizer`), màn hình xem trước đa mẫu (`DailyReportPreviewScreen`), chọn mẫu linh hoạt (`TemplateSelector`). Tích hợp sẵn 2 mẫu chuẩn: Nhật ký thi công công trường & Nhật ký hằng ngày cá nhân.
+- Kiểm thử: 30/30 unit tests pass 100%, build APK debug thành công. Git working tree sạch, đã push đồng bộ `origin/main`.
+- Việc cụ thể tiếp theo khi tiếp tục phiên mới: Triển khai Task 4.1.4 (Nâng cấp xuất Google Doc theo Mẫu tùy biến: nạp Google Doc ID và ánh xạ placeholder tương ứng của từng mẫu) rồi chuyển sang Nhóm 4.2 (Ảnh hiện trường kèm ghi chú).
 
 ## Quyết định phải giữ
 
