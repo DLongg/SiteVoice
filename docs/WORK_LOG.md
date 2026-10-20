@@ -335,3 +335,15 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
   + Toàn bộ 32 unit tests pass 100%, APK 11.94 MB đã cài đặt trên điện thoại thật `33c4f658`, git working tree sạch sẽ.
 - Cập nhật: `docs/07-lo-trinh.md`, `docs/08-cong-viec-tuong-lai.md`, `docs/ke-hoach-thuc-hien.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
 - Còn lại: Người dùng trải nghiệm và nghiệm thu thực tế trên điện thoại theo danh sách việc đã lọc (nợ). Sẵn sàng bàn giao phiên làm việc.
+
+## 2026-10-20 — Triển khai Bước 1: Thiết kế Model Harness & Xây dựng Golden Benchmark Dataset — Hoàn thành
+
+- Kết quả: Khởi động chiến lược nâng cao độ chính xác phân loại mà không phụ thuộc vào sức mạnh LLM (Model Harness & Benchmark):
+  + Soạn thảo tài liệu kiến trúc toàn diện `docs/10-do-chinh-xac.md`: Quy định nguyên lý đo lường trước, sơ đồ đường ống phân loại đa tầng (Priority Cascade Pipeline) từ chuẩn hóa từ điển, tách mệnh đề, tầng quy tắc tất định 0ms offline, khung giàn giáo LLM kèm few-shot cache, hậu kiểm guardrails và cơ chế ngưỡng không đối xứng.
+  + Cập nhật `docs/05-llm.md`: Bổ sung nguyên tắc Model Harness và tham chiếu tới tài liệu đo lường chất lượng.
+  + Xây dựng Bộ dữ liệu vàng `app/src/test/resources/golden_dataset.json`: Gồm 60 mẫu câu công trường thực tế chuẩn xác được phân loại thành 5 nhóm thử thách: `single_intent` (30 câu), `multi_intent` (15 câu), `dialect_and_typo` (5 câu), `context_dependent` (5 câu), và `ambiguous` (5 câu).
+  + Viết test suite kiểm chuẩn tự động `app/src/test/java/com/sitevoice/app/ClassificationBenchmarkTest.kt`: Tự động nạp bộ dữ liệu vàng, chạy kiểm thử, tính toán Accuracy tổng, Accuracy từng nhóm và sinh Ma trận nhầm lẫn (Confusion Matrix).
+  + Kết quả đo Baseline ban đầu: Đạt **81.67%** độ chính xác tổng (49/60 câu chính xác). Nhóm câu đơn ý đạt 91.7%, nhóm nói gộp đạt 73.3%, nhóm tiếng lóng/nghe nhầm đạt 60.0%, và nhóm phụ thuộc ngữ cảnh đạt 0.0% (minh chứng rõ ràng cho sự cần thiết của Sentence Splitting, Text Normalizer và Context Window). Toàn bộ 34/34 unit tests pass 100%.
+- Tạo: `docs/10-do-chinh-xac.md`, `app/src/test/resources/golden_dataset.json`, `app/src/test/java/com/sitevoice/app/ClassificationBenchmarkTest.kt`.
+- Cập nhật: `docs/05-llm.md`, `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Còn lại: Sẵn sàng triển khai Bước 2 trong lộ trình: Xây dựng `TextNormalizer` (chuẩn hóa từ điển) và `ClauseSplitter` (tách câu/mệnh đề) để nâng điểm benchmark nhóm `multi_intent` và `dialect_and_typo`.

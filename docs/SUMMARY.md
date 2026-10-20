@@ -17,9 +17,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành trọn vẹn 100% Nhóm 4.1 (Task 4.1.1 - 4.1.4) của Giai đoạn 4. Toàn bộ các nhóm mở rộng còn lại (4.2 Ảnh hiện trường, 4.3 To-do, 4.4 Tìm kiếm) đã được dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng để hoàn tất nghiệm thu phiên bản hiện tại.
-- Tổng kết: 46/46 task cam kết hoàn thành 100%; toàn bộ 32/32 unit tests pass; APK debug (11.94 MB) đã cài đặt và chạy mượt mà trên máy thật `33c4f658`.
-- Bàn giao phiên: Ứng dụng đã hoàn chỉnh từ lõi ghi âm, STT Groq Whisper, bóc tách đa mục, loại bỏ hallucination, hàng đợi ngoại tuyến WorkManager, chuẩn bị cuối ngày, tổng hợp LLM đa mẫu (Công trường & Cá nhân), xem trước duyệt 1 lần và xuất Google Doc tự động theo Mẫu.
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành trọn vẹn 100% Nhóm 4.1 (Task 4.1.1 - 4.1.4) của Giai đoạn 4. Toàn bộ các nhóm mở rộng (4.2, 4.3, 4.4) đã được dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng.
+- Nâng cao độ chính xác phân loại bằng Model Harness ([10-do-chinh-xac.md](10-do-chinh-xac.md)): Đã hoàn thành Bước 1: Tài liệu hóa kiến trúc giàn giáo phân loại đa tầng, cập nhật [05-llm.md](05-llm.md), xây dựng Bộ dữ liệu vàng 60 mẫu (`golden_dataset.json`), và thiết lập bộ kiểm chuẩn tự động `ClassificationBenchmarkTest.kt` đo điểm chuẩn ban đầu (Baseline: 81.67%).
+- Kiểm thử: 34/34 unit tests pass 100%; APK debug (11.94 MB) đã cài đặt và chạy ổn định trên máy thật `33c4f658`.
 
 ## Quyết định phải giữ
 
@@ -31,5 +31,5 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Người dùng thực hiện các việc còn nợ khi rảnh (kiểm thử thực tế ghi âm đa mục, thử offline, xuất Doc mẫu công trường).
-2. Khi người dùng nghiệm thu thực tế xong và có yêu cầu phát triển tiếp: Triển khai các mục tương lai trong `08-cong-viec-tuong-lai.md` (Ảnh hiện trường → To-do & chia sẻ Zalo → Tìm kiếm).
+1. Triển khai Bước 2 của Model Harness: Xây dựng `TextNormalizer.kt` (chuẩn hóa từ điển) và `ClauseSplitter.kt` (tách câu/mệnh đề công trường) để nâng điểm benchmark nhóm `multi_intent` và `dialect_and_typo`.
+2. Triển khai Bước 3: Tầng quy tắc tất định 0ms offline (`DeterministicRuleEngine.kt`) và hậu kiểm `SemanticGuardrails.kt`.

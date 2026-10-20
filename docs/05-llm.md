@@ -37,3 +37,12 @@ Nguồn sự thật là `templates/nhat-ky-cong-truong/schema.json`; bảng này
 
 ## Chi phí
 Ghi chú cả ngày chỉ vài nghìn token; dùng model rẻ cho phân loại, model tốt hơn cho tổng hợp nếu cần.
+
+## Khung bao bọc phân loại & Kiểm chuẩn độ chính xác (Model Harness)
+- Không dựa dẫm hoàn toàn vào LLM cho việc phân loại; bao bọc model bằng đường ống đa tầng:
+  1. Chuẩn hóa từ điển & tách mệnh đề trước khi gửi vào LLM.
+  2. Tầng quy tắc tất định (nhãn user, cue words, từ vựng mạnh) chạy 0ms offline, giải quyết các ca rõ ràng mà không cần gọi API.
+  3. Cửa sổ ngữ cảnh (context window ±2 câu) và dynamic few-shot từ các lần người dùng sửa nhãn.
+  4. Hậu kiểm Guardrails, ràng buộc schema Enum và kiểm tra chéo ngữ nghĩa; không chắc chắn thì hạ về `chua_phan_loai`.
+- Mọi tối ưu hóa prompt, quy tắc hoặc model đều phải đo lường bằng Bộ dữ liệu vàng (Golden Dataset) và script kiểm chuẩn tự động.
+- Chi tiết xem tại [docs/10-do-chinh-xac.md](10-do-chinh-xac.md).
