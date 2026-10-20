@@ -5,8 +5,8 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Tổng quan và trạng thái đã xác minh
 
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
-- Đã hoàn thành toàn bộ Giai đoạn 1 (Lõi ứng dụng chạy được: Task 1.1 - 1.5): Ghi âm nhấn giữ, STT Groq Whisper, Room Database bền vững, danh sách ghi chú hôm nay, sửa/xóa soft delete, phân loại tự động bằng Groq LLM và đổi nhãn thủ công.
-- Lệnh `.\gradlew.bat test assembleDebug` build thành công 100% (70 tasks pass, 13/13 unit tests pass, sinh file APK 11.5 MB). Sẵn sàng cho Giai đoạn 2 (Ra tài liệu).
+- Đã hoàn thành Giai đoạn 1 (Task 1.1 - 1.5) và Giai đoạn 2 Task 2.1: Ghi âm, STT Groq Whisper, phân loại tự động LLM, danh sách ghi chú, Room Database, dữ liệu cố định cuối ngày (kế thừa thời tiết/nhân lực hôm trước), NavigationBar 3 tab đã chạy mượt trên điện thoại thật.
+- Lệnh `.\gradlew.bat test assembleDebug` build thành công 100% (14/14 unit tests pass, đã cài đặt APK lên máy thật).
 - Giai đoạn 0 đã hoàn tất 100%: đã lưu link Google Doc mẫu tại `doc-mau.md`, môi trường Android SDK/JDK 17 sẵn sàng, kết nối điện thoại thật `33c4f658` và cài app thành công.
 
 ## Kiến trúc và công nghệ dự kiến
@@ -41,6 +41,6 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Ưu tiên tiếp theo
 
-1. Triển khai Giai đoạn 2 — Task 2.1: Entity & DAO cho DailyInput và Màn hình nhập dữ liệu cố định cuối ngày (thời tiết, nhân lực, thiết bị).
-2. Triển khai Giai đoạn 2 — Task 2.2: LLM tổng hợp báo cáo theo Mẫu nhật ký công trường và kiểm soát ngân sách dòng/ký tự.
-3. Triển khai Giai đoạn 2 — Task 2.3: Màn hình xem trước và duyệt báo cáo 1 lần duy nhất (quyết định 0006).
+1. Triển khai Giai đoạn 2 — Task 2.2: LLM tổng hợp báo cáo theo Mẫu nhật ký thi công và kiểm soát ngân sách dòng/ký tự.
+2. Triển khai Giai đoạn 2 — Task 2.3: Màn hình xem trước và duyệt báo cáo 1 lần duy nhất (quyết định 0006).
+3. Triển khai Giai đoạn 3: Hàng đợi mạng WorkManager và xuất bản sao Google Doc qua Google Docs API.

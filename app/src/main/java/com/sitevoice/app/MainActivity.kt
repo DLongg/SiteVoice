@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import com.sitevoice.app.data.AppDatabase
+import com.sitevoice.app.data.DefaultDailyInputRepository
 import com.sitevoice.app.data.DefaultNoteRepository
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.ui.MainScreen
@@ -16,10 +17,11 @@ class MainActivity : ComponentActivity() {
 
     private val securePreferences by lazy { SecurePreferences(applicationContext) }
     private val database by lazy { AppDatabase.getDatabase(applicationContext) }
-    private val repository by lazy { DefaultNoteRepository(database.noteDao()) }
+    private val noteRepository by lazy { DefaultNoteRepository(database.noteDao()) }
+    private val dailyInputRepository by lazy { DefaultDailyInputRepository(database.dailyInputDao()) }
 
     private val viewModel: MainViewModel by viewModels {
-        MainViewModelFactory(repository, securePreferences)
+        MainViewModelFactory(noteRepository, dailyInputRepository, securePreferences)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.sitevoice.app.audio.AudioPlayer
+import com.sitevoice.app.data.DailyInputEntity
+import com.sitevoice.app.data.DailyInputRepository
 import com.sitevoice.app.data.NoteEntity
 import com.sitevoice.app.data.NoteRepository
 import com.sitevoice.app.llm.GroqLlmClient
@@ -31,6 +33,7 @@ sealed class CurrentSttStatus {
 
 class MainViewModel(
     private val repository: NoteRepository,
+    private val dailyInputRepository: DailyInputRepository,
     private val securePreferences: SecurePreferences,
     private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
     private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }))
@@ -45,6 +48,13 @@ class MainViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
+        )
+
+    val dailyInput: StateFlow<DailyInputEntity?> = dailyInputRepository.getDailyInput(currentDate)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
         )
 
     private val _currentSttStatus = MutableStateFlow<CurrentSttStatus>(CurrentSttStatus.Idle)
@@ -180,6 +190,16 @@ class MainViewModel(
         }
     }
 
+    fun saveDailyInput(input: DailyInputEntity) {
+        viewModelScope.launch {
+            dailyInputRepository.saveDailyInput(input)
+        }
+    }
+
+    suspend fun getInitialDailyInput(): DailyInputEntity {
+        return dailyInputRepository.getDailyInputOrDefault(currentDate)
+    }
+
     override fun onCleared() {
         super.onCleared()
         audioPlayer.stop()
@@ -188,12 +208,13 @@ class MainViewModel(
 
 class MainViewModelFactory(
     private val repository: NoteRepository,
+    private val dailyInputRepository: DailyInputRepository,
     private val securePreferences: SecurePreferences
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(repository, securePreferences) as T
+            return MainViewModel(repository, dailyInputRepository, securePreferences) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

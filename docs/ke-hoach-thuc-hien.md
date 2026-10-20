@@ -318,37 +318,37 @@
 | | |
 |---|---|
 | **Mô tả** | Tạo `DailyInputEntity`, `DailyInputDao` theo `docs/04-du-lieu.md`. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `docs/04-du-lieu.md` |
-| **Kết quả** | Unit test CRUD |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `DailyInputEntity`, `DailyInputDao`, `DailyInputRepository` với unit test `DailyInputRepositoryTest` pass 100% |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.1.2 UI nhập thời tiết & nhân lực
 | | |
 |---|---|
 | **Mô tả** | Màn hình duyệt: phần trên nhập thời tiết (3 buổi, nắng/mưa), số ban chỉ huy, số công nhân, danh sách máy móc. Mặc định lấy từ ngày hôm qua. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | `templates/nhat-ky-cong-truong/schema.json` phần `nhap_tay` |
-| **Kết quả** | Nhập liệu, lưu vào Room, mở lại thấy dữ liệu cũ |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `DailyInputScreen` nhập thời tiết chip 3 buổi, nhân lực, máy móc, tự động kế thừa hôm trước |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.1.3 Danh sách ghi chú để chuẩn bị tổng hợp
 | | |
 |---|---|
 | **Mô tả** | Danh sách ghi chú (LABELED), gom theo nhãn. Cho sửa text, đổi nhãn, loại bỏ trước tổng hợp; không có nút duyệt ghi chú riêng và không chuyển Note sang APPROVED. Chỉ duyệt bản xem trước cuối cùng theo quyết định 0006. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | 1.4.4 + 1.5.4 |
-| **Kết quả** | Lưu được chỉnh sửa; ghi chú không bị loại dùng để tạo bản nháp mà không cần duyệt trước |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | `NotesListScreen` hiển thị badge số lượng, cho sửa text, đổi nhãn, soft-delete loại bỏ, sẵn sàng cho tổng hợp |
+| **Trạng thái** | ✅ Hoàn thành |
 
 #### 2.1.4 Navigation giữa các màn hình
 | | |
 |---|---|
 | **Mô tả** | Thiết lập Navigation: Ghi âm (home) ↔ Danh sách ↔ Duyệt cuối ngày ↔ Cài đặt. Bottom nav hoặc drawer. |
-| **Người làm** | |
+| **Người làm** | Agent |
 | **Đầu vào** | Các màn hình từ giai đoạn 1 + 2.1 |
-| **Kết quả** | Chuyển qua lại giữa các màn hình mượt |
-| **Trạng thái** | ⬜ Chưa làm |
+| **Kết quả** | NavigationBar Material 3 tích hợp 3 tab mượt mà kèm Dialog cài đặt API key |
+| **Trạng thái** | ✅ Hoàn thành |
 
 ---
 

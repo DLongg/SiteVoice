@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -20,13 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sitevoice.app.R
 import com.sitevoice.app.settings.SecurePreferences
+import com.sitevoice.app.ui.daily.DailyInputScreen
 import com.sitevoice.app.ui.notes.NotesListScreen
 import com.sitevoice.app.ui.record.RecordScreen
 import com.sitevoice.app.ui.settings.SettingsDialog
@@ -40,6 +39,7 @@ fun MainScreen(
     var showSettingsDialog by remember { mutableStateOf(false) }
 
     val activeNotes by viewModel.activeNotes.collectAsState()
+    val dailyInput by viewModel.dailyInput.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -47,7 +47,7 @@ fun MainScreen(
                 containerColor = Color.White,
                 tonalElevation = 4.dp
             ) {
-                // Tab Ghi âm
+                // Tab 0: Ghi âm
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
@@ -70,7 +70,7 @@ fun MainScreen(
                     )
                 )
 
-                // Tab Danh sách ghi chú hôm nay
+                // Tab 1: Danh sách ghi chú hôm nay
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
@@ -105,6 +105,29 @@ fun MainScreen(
                         indicatorColor = Color(0xFFE2E8F0)
                     )
                 )
+
+                // Tab 2: Nhật ký cuối ngày & Tạo báo cáo
+                NavigationBarItem(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    icon = {
+                        Text(
+                            text = "📑",
+                            fontSize = 18.sp
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.tab_report),
+                            fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedTextColor = Color(0xFF1E293B),
+                        selectedIconColor = Color(0xFF1E293B),
+                        indicatorColor = Color(0xFFE2E8F0)
+                    )
+                )
             }
         }
     ) { innerPadding ->
@@ -126,6 +149,14 @@ fun MainScreen(
                     onUpdateLabel = { id, label -> viewModel.updateNoteLabel(id, label, "user") },
                     onDeleteNote = { id -> viewModel.deleteNote(id) },
                     onRetryStt = { note -> viewModel.retryStt(note) }
+                )
+                2 -> DailyInputScreen(
+                    currentDate = viewModel.currentDate,
+                    initialDailyInput = dailyInput,
+                    onSaveDailyInput = { viewModel.saveDailyInput(it) },
+                    onGenerateReportClick = {
+                        // Chuẩn bị kích hoạt luồng tổng hợp LLM ở Task 2.2
+                    }
                 )
             }
         }

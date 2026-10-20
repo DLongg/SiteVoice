@@ -15,7 +15,26 @@
     <!-- Tab & Navigation -->
     <string name="tab_record">Ghi âm</string>
     <string name="tab_notes">Ghi chú hôm nay</string>
+    <string name="tab_report">Nhật ký cuối ngày</string>
     <string name="notes_count">%1$d ghi chú</string>
+
+    <!-- Daily Input -->
+    <string name="daily_input_title">Dữ liệu cố định cuối ngày</string>
+    <string name="weather_title">1. Tình hình thời tiết</string>
+    <string name="weather_morning">Sáng:</string>
+    <string name="weather_afternoon">Chiều:</string>
+    <string name="weather_evening">Tối:</string>
+    <string name="weather_sunny">Trời nắng</string>
+    <string name="weather_rainy">Trời mưa</string>
+    <string name="weather_normal">Bình thường</string>
+    <string name="staff_title">2. Lực lượng thi công</string>
+    <string name="staff_command">Ban chỉ huy công trường (người)</string>
+    <string name="staff_workers">Số lượng công nhân (người)</string>
+    <string name="equipment_title">Máy móc – thiết bị thi công chính</string>
+    <string name="equipment_hint">Nhập danh sách thiết bị (VD: 1 máy xúc Komatsu, 2 xe lu, 1 cẩu tháp...)</string>
+    <string name="btn_save_daily_input">Lưu thông tin ngày</string>
+    <string name="btn_generate_report">Tổng hợp nhật ký thi công</string>
+    <string name="daily_input_saved">Đã cập nhật dữ liệu cố định trong ngày</string>
 
     <!-- Notes List -->
     <string name="notes_title">Ghi chú hôm nay</string>

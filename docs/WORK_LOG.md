@@ -138,3 +138,13 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: Lệnh `adb devices` xác nhận thiết bị `33c4f658 device`; lệnh `adb install -r` trả về `Success`; lệnh `adb shell am start` khởi động ứng dụng thành công trên máy thật. Link Google Doc mẫu hợp lệ và đúng cấu trúc.
 - Vấn đề và xử lý: Tuân thủ quy tắc bảo mật API Key trong AGENTS.md (không commit API key vào Git hay lưu trong Room/file tài liệu).
 - Còn lại: Sẵn sàng triển khai Giai đoạn 2 (Ra tài liệu: DailyInput, Màn hình nhập dữ liệu cuối ngày, LLM tổng hợp theo mẫu, Màn hình xem trước và duyệt báo cáo 1 lần duy nhất).
+
+
+## 2026-10-20 — Triển khai Giai đoạn 2: Dữ liệu cố định cuối ngày & Điều hướng 3 Tab (Task 2.1) — Hoàn thành
+
+- Kết quả: Triển khai hoàn chỉnh toàn bộ mục Task 2.1 (Màn hình duyệt cuối ngày & dữ liệu cố định). Tạo `DailyInputEntity`, `DailyInputDao` và `DailyInputRepository` (`DefaultDailyInputRepository`) cho phép lưu trữ và tự động kế thừa thời tiết (sáng/chiều/tối), nhân lực (ban chỉ huy, công nhân), máy móc thi công từ ngày hôm trước nếu ngày hiện tại chưa nhập. Xây dựng giao diện Compose `DailyInputScreen.kt` theo chuẩn App Screens với chip thời tiết 3 buổi tương phản cao, ô nhập số nhân lực và danh sách thiết bị. Tích hợp thanh NavigationBar Material 3 với 3 tab hoàn chỉnh tại `MainScreen.kt` (Ghi âm, Ghi chú hôm nay kèm badge, và Nhật ký cuối ngày). Đã biên dịch, chạy pass 100% unit tests và cài đặt trực tiếp bản APK mới lên điện thoại thật.
+- Tạo: `app/src/main/java/com/sitevoice/app/data/DailyInputEntity.kt`, `app/src/main/java/com/sitevoice/app/data/DailyInputDao.kt`, `app/src/main/java/com/sitevoice/app/data/DailyInputRepository.kt`, `app/src/main/java/com/sitevoice/app/ui/daily/DailyInputScreen.kt`, `app/src/test/java/com/sitevoice/app/DailyInputRepositoryTest.kt`.
+- Cập nhật: `app/src/main/java/com/sitevoice/app/data/AppDatabase.kt` (nâng version 2, thêm dailyInputDao), `app/src/main/java/com/sitevoice/app/MainActivity.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/res/values/strings.xml`, `docs/ke-hoach-thuc-hien.md` (Task 2.1.1 - 2.1.4 hoàn thành), `docs/SUMMARY.md`, `docs/WORK_LOG.md`.
+- Kiểm tra: `DailyInputRepositoryTest.kt` và toàn bộ 14 unit tests chạy pass 100%; `.\gradlew.bat test assembleDebug` chạy thành công không lỗi (BUILD SUCCESSFUL); lệnh `adb install -r` cài đặt thành công lên máy thật và mở ứng dụng.
+- Vấn đề và xử lý: Đảm bảo logic kế thừa đúng quy tắc GEMINI/AGENTS: ngày mới tự động nạp dữ liệu cố định từ ngày gần nhất trước đó; giao diện tinh gọn, không gradient thừa.
+- Còn lại: Task 2.2 (LLM tổng hợp theo Mẫu nhật ký thi công) và Task 2.3 (Màn hình xem trước và duyệt báo cáo 1 lần duy nhất).
