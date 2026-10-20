@@ -1,26 +1,51 @@
-# Google Doc mẫu: Nhật ký thi công
+# Form nhật ký thi công: Mẫu mặc định
 
-Link Doc mẫu: https://docs.google.com/document/d/1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO/edit?usp=sharing (ID: `1qe5AOo45Q9N1XenU7gsdAQkbbmSZ5guO`)
+Link Doc mẫu đã có placeholder: (dán link vào đây)
 
-## File mẫu điện tử & File gốc tham chiếu
-
-- [Nhat_ky_thi_cong_mau.docx](Nhat_ky_thi_cong_mau.docx): Bản mẫu điện tử đã được tạo tự động từ file gốc, thay thế toàn bộ các dòng dấu chấm dài bằng các placeholder `{{...}}` chuẩn xác, giữ nguyên 100% căn lề, font chữ, bảng thời tiết và chữ ký 2 trang A4. Dùng file này tải lên Google Drive và "Mở bằng Google Docs" để tạo Doc mẫu.
-- [Nhat_ky_thi_cong.docx](Nhat_ky_thi_cong.docx): File Word gốc người dùng cung cấp (dùng để in ra viết tay với các dòng chấm dài).
-
-## Cấu trúc nội dung trong Doc mẫu
-
+## A. Form gốc (đầu vào cho bài kiểm tra chuẩn của bộ nhận diện)
+Form người dùng thực tế, có chấm và ô tích; app phải tự nhận ra 13 chỗ điền ở dưới.
 ```
-Hà Nội, ngày {{NGAY}} tháng {{THANG}} năm {{NAM}}
+Hà Nội, ngày ..... tháng ..... năm 2026
 
 1. Thời tiết:
-- Sáng:  trời nắng {{SANG_NANG}}   trời mưa {{SANG_MUA}}
-- Chiều: trời nắng {{CHIEU_NANG}}  trời mưa {{CHIEU_MUA}}
-- Tối:   Bình thường {{TOI_BINH_THUONG}}  trời mưa {{TOI_MUA}}
+- Sáng:  trời nắng    trời mưa
+- Chiều: trời nắng    trời mưa
+- Tối:   Bình thường  trời mưa
+
+2. Lực lượng thi công:
+* Nhân lực:  - Ban chỉ huy công trường: ............ người
+             - Công nhân: ............ người
+* Máy móc  thiết bị thi công chính:
+(đoạn trống hoặc dòng chấm)
+
+3. Công việc thi công trong ngày:
+(nhiều dòng chấm/đoạn trống)
+4. Công việc nghiệm thu trong ngày:
+(nhiều dòng chấm/đoạn trống)
+5. An toàn lao động và vệ sinh môi trường:
+(nhiều dòng chấm/đoạn trống)
+6. Ý kiến của các đơn vị:
+a. Chủ đầu tư:   (dòng chấm)
+b. Tư vấn giám sát:   (dòng chấm)
+c. Nhà thầu thi công:   (dòng chấm)
+
+ĐƠN VỊ THI CÔNG                TƯ VẤN GIÁM SÁT    khối chữ ký, KHÔNG phải chỗ điền
+```
+
+## B. Form đã đặt placeholder (kết quả mong đợi, 13 chỗ điền)
+```
+Hà Nội, {{NGAY_DAY_DU}}
+
+1. Thời tiết:
+- Sáng:  {{THOI_TIET_SANG}}
+- Chiều: {{THOI_TIET_CHIEU}}
+- Tối:   {{THOI_TIET_TOI}}
 
 2. Lực lượng thi công:
 * Nhân lực:  - Ban chỉ huy công trường: {{BAN_CHI_HUY}} người
              - Công nhân: {{CONG_NHAN}} người
-* Máy móc – thiết bị thi công chính: {{MAY_MOC}}
+* Máy móc  thiết bị thi công chính:
+{{MAY_MOC}}
 
 3. Công việc thi công trong ngày:
 {{CONG_VIEC_THI_CONG}}
@@ -42,22 +67,25 @@ c. Nhà thầu thi công:
 ĐƠN VỊ THI CÔNG                TƯ VẤN GIÁM SÁT
 ```
 
-## Bảng placeholder
-| Placeholder | Nguồn | Ghi chú |
-|---|---|---|
-| {{NGAY}} {{THANG}} {{NAM}} | nhap_tay.ngay | NGAY, THANG dạng 2 chữ số tùy ý; NAM 4 chữ số |
-| {{SANG_NANG}} {{SANG_MUA}} | thoi_tiet_sang | thay bằng ☑ hoặc ☐ |
-| {{CHIEU_NANG}} {{CHIEU_MUA}} | thoi_tiet_chieu | ☑ hoặc ☐ |
-| {{TOI_BINH_THUONG}} {{TOI_MUA}} | thoi_tiet_toi | ☑ hoặc ☐ |
-| {{BAN_CHI_HUY}} {{CONG_NHAN}} | nhan_luc_* | số |
-| {{MAY_MOC}} | may_moc | chuỗi |
-| {{CONG_VIEC_THI_CONG}} | cong_viec_thi_cong | mỗi dòng bắt đầu "- " |
-| {{NGHIEM_THU}} | nghiem_thu | mỗi dòng bắt đầu "- " |
-| {{AN_TOAN}} | an_toan | mỗi dòng bắt đầu "- " |
-| {{Y_KIEN_CDT}} {{Y_KIEN_TVGS}} {{Y_KIEN_NHA_THAU}} | y_kien_* | văn bản |
+## C. Bảng placeholder
+| Placeholder | Loại | Nguồn | Giá trị sinh ra |
+|---|---|---|---|
+| {{NGAY_DAY_DU}} | ngay | nhap_tay | `ngày 20 tháng 10 năm 2026` |
+| {{THOI_TIET_SANG}} | o_tich | nhap_tay | `trời nắng    trời mưa ` |
+| {{THOI_TIET_CHIEU}} | o_tich | nhap_tay | `trời nắng    trời mưa ` |
+| {{THOI_TIET_TOI}} | o_tich | nhap_tay | `Bình thường    trời mưa ` |
+| {{BAN_CHI_HUY}} | so | nhap_tay | `5` |
+| {{CONG_NHAN}} | so | nhap_tay | `30` |
+| {{MAY_MOC}} | van_ban | nhap_tay | danh sách máy móc mặc định |
+| {{CONG_VIEC_THI_CONG}} | danh_sach | thi_cong | mỗi dòng bắt đầu `- ` |
+| {{NGHIEM_THU}} | danh_sach | nghiem_thu | mỗi dòng bắt đầu `- ` |
+| {{AN_TOAN}} | danh_sach | an_toan | mỗi dòng bắt đầu `- ` |
+| {{Y_KIEN_CDT}} | van_ban | y_kien_cdt | văn bản |
+| {{Y_KIEN_TVGS}} | van_ban | y_kien_tvgs | văn bản |
+| {{Y_KIEN_NHA_THAU}} | van_ban | y_kien_nha_thau | văn bản |
 
-Trường `chua_phan_loai` không đưa vào Doc; chỉ hiển thị trong màn hình xem trước.
+Trường `chua_phan_loai` không có trong Doc; chỉ hiện ở màn hình xem trước.
 
-## Lưu ý định dạng
-- Giữ font, cỡ chữ, lề trong Doc mẫu để kiểm soát số trang (≤ 2).
-- Sau khi in thử, chỉnh `ky_tu_moi_dong` và `toi_da_dong` trong `schema.json` cho vừa.
+## D. Lưu ý
+- Giữ font, cỡ chữ, lề của form để kiểm soát số trang ( 2).
+- Khối chữ ký phải được nhận diện là `bo_qua`.

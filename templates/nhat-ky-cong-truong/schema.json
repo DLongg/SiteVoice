@@ -3,29 +3,166 @@
   "ten": "Nhật ký thi công hằng ngày",
   "gom_theo": "ngay",
   "gioi_han_trang": 2,
-  "nhap_tay": {
-    "ngay": { "kieu": "ngay" },
-    "thoi_tiet_sang": { "kieu": "chon", "lua_chon": ["nang", "mua"] },
-    "thoi_tiet_chieu": { "kieu": "chon", "lua_chon": ["nang", "mua"] },
-    "thoi_tiet_toi": { "kieu": "chon", "lua_chon": ["binh_thuong", "mua"] },
-    "nhan_luc_ban_chi_huy": { "kieu": "so", "mac_dinh": "hom_qua" },
-    "nhan_luc_cong_nhan": { "kieu": "so", "mac_dinh": "hom_qua" },
-    "may_moc": {
-      "kieu": "chuoi",
-      "mac_dinh": "Máy đục, máy cắt rãnh, máy khoan bê tông, máy mài góc, máy laser"
-    }
-  },
   "muc_ghi_chu": [
     "thi_cong", "nghiem_thu", "an_toan",
     "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau", "chua_phan_loai"
   ],
-  "truong_tong_hop": {
-    "cong_viec_thi_cong": { "kieu": "danh_sach", "toi_da_dong": 15, "ky_tu_moi_dong": 100, "muc_nguon": ["thi_cong"] },
-    "nghiem_thu": { "kieu": "danh_sach", "toi_da_dong": 6, "ky_tu_moi_dong": 100, "muc_nguon": ["nghiem_thu"] },
-    "an_toan": { "kieu": "danh_sach", "toi_da_dong": 3, "ky_tu_moi_dong": 100, "muc_nguon": ["an_toan"] },
-    "y_kien_cdt": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_cdt"] },
-    "y_kien_tvgs": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_tvgs"] },
-    "y_kien_nha_thau": { "kieu": "van_ban", "toi_da_ky_tu": 200, "muc_nguon": ["y_kien_nha_thau"] },
-    "chua_phan_loai": { "kieu": "danh_sach", "toi_da_dong": 10, "ky_tu_moi_dong": 160, "hien_trong_doc": false }
-  }
+  "cho_dien": [
+    {
+      "ma": "NGAY_DAY_DU",
+      "ten": "Ngày ghi nhật ký",
+      "loai": "ngay",
+      "nguon": "nhap_tay",
+      "tuy_chon": "ngày {d} tháng {m} năm {y}",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "THOI_TIET_SANG",
+      "ten": "Thời tiết sáng",
+      "loai": "o_tich",
+      "nguon": "nhap_tay",
+      "tuy_chon": [
+        { "ma": "nang", "nhan": "trời nắng" },
+        { "ma": "mua", "nhan": "trời mưa" }
+      ],
+      "hien_thi": "{nhan} {o}",
+      "noi_bang": "   ",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "THOI_TIET_CHIEU",
+      "ten": "Thời tiết chiều",
+      "loai": "o_tich",
+      "nguon": "nhap_tay",
+      "tuy_chon": [
+        { "ma": "nang", "nhan": "trời nắng" },
+        { "ma": "mua", "nhan": "trời mưa" }
+      ],
+      "hien_thi": "{nhan} {o}",
+      "noi_bang": "   ",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "THOI_TIET_TOI",
+      "ten": "Thời tiết tối",
+      "loai": "o_tich",
+      "nguon": "nhap_tay",
+      "tuy_chon": [
+        { "ma": "binh_thuong", "nhan": "Bình thường" },
+        { "ma": "mua", "nhan": "trời mưa" }
+      ],
+      "hien_thi": "{nhan} {o}",
+      "noi_bang": "   ",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "BAN_CHI_HUY",
+      "ten": "Số người Ban chỉ huy công trường",
+      "loai": "so",
+      "nguon": "nhap_tay",
+      "mac_dinh": "hom_qua",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "CONG_NHAN",
+      "ten": "Số công nhân",
+      "loai": "so",
+      "nguon": "nhap_tay",
+      "mac_dinh": "hom_qua",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "MAY_MOC",
+      "ten": "Máy móc, thiết bị thi công chính",
+      "loai": "van_ban",
+      "nguon": "nhap_tay",
+      "mac_dinh": "Máy đục, máy cắt rãnh, máy khoan bê tông, máy mài góc, máy laser",
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "CONG_VIEC_THI_CONG",
+      "ten": "Công việc thi công trong ngày",
+      "loai": "danh_sach",
+      "nguon": "thi_cong",
+      "gioi_han": { "toi_da_dong": 8, "ky_tu_moi_dong": 110 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "NGHIEM_THU",
+      "ten": "Công việc nghiệm thu trong ngày",
+      "loai": "danh_sach",
+      "nguon": "nghiem_thu",
+      "gioi_han": { "toi_da_dong": 4, "ky_tu_moi_dong": 120 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "AN_TOAN",
+      "ten": "An toàn lao động và vệ sinh môi trường",
+      "loai": "danh_sach",
+      "nguon": "an_toan",
+      "gioi_han": { "toi_da_dong": 3, "ky_tu_moi_dong": 100 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "Y_KIEN_CDT",
+      "ten": "Ý kiến Chủ đầu tư",
+      "loai": "van_ban",
+      "nguon": "y_kien_cdt",
+      "gioi_han": { "toi_da_ky_tu": 200 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "Y_KIEN_TVGS",
+      "ten": "Ý kiến Tư vấn giám sát",
+      "loai": "van_ban",
+      "nguon": "y_kien_tvgs",
+      "gioi_han": { "toi_da_ky_tu": 200 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "Y_KIEN_NHA_THAU",
+      "ten": "Ý kiến Nhà thầu thi công",
+      "loai": "van_ban",
+      "nguon": "y_kien_nha_thau",
+      "gioi_han": { "toi_da_ky_tu": 200 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    },
+    {
+      "ma": "CHUA_PHAN_LOAI",
+      "ten": "Chưa phân loại",
+      "loai": "danh_sach",
+      "nguon": "chua_phan_loai",
+      "hien_trong_doc": false,
+      "gioi_han": { "toi_da_dong": 10, "ky_tu_moi_dong": 160 },
+      "neo": null,
+      "do_tin_cay": 1,
+      "trang_thai": "da_duyet"
+    }
+  ]
 }

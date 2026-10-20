@@ -12,6 +12,7 @@ Quy tắc bắt buộc:
 - Gộp ý trùng, ưu tiên việc quan trọng (khối lượng hoàn thành, nghiệm thu, sự cố, yêu cầu của CĐT/TVGS).
 - Ghi chú thuộc "chua_phan_loai": KHÔNG tự gán vào mục khác, đưa vào trường "chua_phan_loai".
 - Tuân thủ giới hạn số dòng và ký tự trong schema. Mỗi dòng bắt đầu bằng động từ/danh từ, không đánh số.
+- Chỉ trả về các trường có nguon là mục ghi chú; KHÔNG trả về trường nhập tay (thời tiết, nhân lực, máy móc, ngày).
 - Trả về CHỈ JSON, không giải thích, không markdown.
 
 ## Từ điển thuật ngữ
