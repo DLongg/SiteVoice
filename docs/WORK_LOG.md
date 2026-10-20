@@ -210,3 +210,9 @@ Mỗi mục gồm ngày, task ID/tên và trạng thái; kết quả thực tế
 - Kiểm tra: Toàn bộ 27/27 unit tests chạy pass 100% (`AudioConverterTest`, `WhisperModelManagerTest`, `WorkRequestTest`...); lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công không lỗi (BUILD SUCCESSFUL in 5m 33s); sinh file APK `app-debug.apk` chứa đầy đủ native `libwhisper.so`.
 - Vấn đề và xử lý: Tận dụng thư viện AAR prebuilt tương thích Android SDK 35 / 16KB memory page để tích hợp whisper.cpp gọn gàng mà không phụ thuộc cài đặt NDK cục bộ cồng kềnh; giải mã M4A sang WAV bằng MediaCodec gốc của Android nhẹ và mượt mà.
 - Còn lại: Toàn bộ Giai đoạn 0, 1, 2, 3 đã hoàn thành 100%. Sẵn sàng thử nghiệm thực tế toàn diện trên điện thoại và chuẩn bị cho Giai đoạn 4 (Mở rộng).
+
+## 2026-10-20 — Cài đặt APK Giai đoạn 3 lên máy thật & Khởi chạy thành công — Hoàn thành
+
+- Kết quả: Đã cài đặt thành công bản APK `app-debug.apk` mới nhất (chứa đầy đủ WorkManager hàng đợi ngoại tuyến và thư viện native `libwhisper.so`) lên điện thoại thật `33c4f658` thông qua `adb install -r`. Khởi chạy `MainActivity` thành công, không phát sinh lỗi hay crash.
+- Kiểm tra: Lệnh `adb devices` xác nhận thiết bị `33c4f658 device`; lệnh `adb install -r` trả về `Success`; lệnh `adb shell am start` khởi động ứng dụng thành công; logcat sạch, không có exception.
+- Còn lại: Người dùng kiểm tra trải nghiệm tải mô hình Whisper trong Cài đặt và thử nghiệm ghi âm ngoại tuyến khi bật Chế độ máy bay.
