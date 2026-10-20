@@ -17,6 +17,9 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
+- Yêu cầu thay đổi 01 (2026-10-20): chỉ tài liệu/cấu hình cho thiết lập form Google Doc/DOCX; CHƯA hoàn tất toàn bộ yêu cầu. Đã thêm [đặc tả](10-thiet-lap-form.md), hai quyết định mới, prompt nhận diện, khuôn schema; cập nhật kiến trúc/dữ liệu/LLM/xuất/lộ trình và Mẫu mặc định sang 13 chỗ điền trong Doc + 1 trường ẩn. Không sửa Android, assets hay DOCX; chức năng thiết lập/đo trang chưa được triển khai/xác minh.
+- Đang chờ người dùng chốt: repo thiếu `CLAUDE.md` (không có quy tắc 1–9 để bảo toàn); F11 và mục H đã có nội dung khác. Chưa thêm hai chức năng vào `02-yeu-cau.md`, chưa sửa `08-cong-viec-tuong-lai.md`. Đã hỏi phương án tạo CLAUDE từ AGENTS, dùng F12/F13 và thay H cũ bằng tham chiếu rồi thêm H/I mới; chưa nhận trả lời.
+- Kiểm tra thay đổi 01: Python xác nhận JSON hợp lệ, giữ metadata/nhãn, 13 mã ở phần B/C khớp schema, prompt khớp trường ghi chú; `git diff --check` đạt. Checklist bỏ placeholder cũ toàn repo chưa đạt: còn trong code/test/assets/DOCX, mẫu cá nhân, prompt đầu vào và lịch sử ngoài phạm vi. Chờ chốt ngoại lệ; không sửa lịch sử hoặc mã Android. Chi tiết [WORK_LOG](WORK_LOG.md). Bước tiếp: nhận câu trả lời, hoàn tất CLAUDE/F mới/H-I, chạy lại checklist rồi commit/push; không chạy build/test Android cho task tài liệu.
 - [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành trọn vẹn 100% Nhóm 4.1 (Task 4.1.1 - 4.1.4) của Giai đoạn 4. Toàn bộ các nhóm mở rộng (4.2, 4.3, 4.4) đã được dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng.
 - Model Harness & Benchmark ([10-do-chinh-xac.md](10-do-chinh-xac.md)): Đã hoàn thành Bước 1, 2 và 3: Xây dựng `TextNormalizer` (sửa lỗi nghe/viết tắt), `ClauseSplitter` (tách câu/mệnh đề), `DeterministicRuleEngine` (tầng quy tắc tất định 0ms offline), `SemanticGuardrails` (hậu kiểm enum và chống mâu thuẫn) và `HybridClassificationPipeline`. Tích hợp trực tiếp vào `ClassifyWorker`.
 - Kết quả kiểm chuẩn tự động ([ClassificationBenchmarkTest.kt](../app/src/test/java/com/sitevoice/app/ClassificationBenchmarkTest.kt)): Độ chính xác tổng tăng vọt từ **81.67% lên đúng 95.00%** (57/60 câu chuẩn xác). Nhóm viết tắt/nghe nhầm đạt 100%, nhóm ngữ cảnh đạt 100%, nhóm câu đơn ý đạt 97.2%.
@@ -28,6 +31,7 @@ Cập nhật: 2026-10-20. Đây là trạng thái hiện tại; quy tắc ở [A
 - [0003](quyet-dinh/0003-xuat-doc-bang-mau.md): xuất bằng bản sao Doc mẫu; [0004](quyet-dinh/0004-kotlin-compose-chi-android.md): Kotlin/Compose, chỉ Android; [0005](quyet-dinh/0005-kien-truc-theo-mau.md): lõi theo Mẫu, không viết cứng nghiệp vụ công trường.
 - [0006](quyet-dinh/0006-mot-luot-duyet.md): chỉ một lượt duyệt ở bản xem trước cuối cùng; không duyệt Note riêng; điện thoại giữ nguyên âm thanh gốc và dữ liệu.
 - [0007](quyet-dinh/0007-bo-stt-offline-cho-mang.md): bỏ STT offline on-device, lưu speech ngoại tuyến và chờ mạng gọi API online.
+- Thay đổi 01 thêm [0006-tu-dat-placeholder](quyet-dinh/0006-tu-dat-placeholder.md) và [0007-dau-vao-gdoc-va-docx](quyet-dinh/0007-dau-vao-gdoc-va-docx.md); giữ tên file theo yêu cầu, không thay hai quyết định cũ trùng số. Các tham chiếu mới cần dùng tên đầy đủ để phân biệt.
 - Luôn commit và push chi tiết từng bước lên GitHub `origin/main`.
 
 ## Ưu tiên tiếp theo
