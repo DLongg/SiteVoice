@@ -87,25 +87,19 @@ Quy tắc bắt buộc:
             groupedNotes.put(cat, list)
         }
 
+        val dateParts = date.split("-")
+        val year = dateParts.getOrNull(0) ?: ""
+        val month = dateParts.getOrNull(1) ?: ""
+        val day = dateParts.getOrNull(2) ?: ""
+
         val userPrompt = """Dữ liệu vào:
-Ngày báo cáo: $date
+Ngày: $day - Tháng: $month - Năm: $year (Ngày đầy đủ: $date)
 
 Danh sách toàn bộ các bản ghi âm/ghi chú nguyên văn trong ngày (lưu ý: mỗi ghi chú có thể chứa nhiều ý gộp):
 $allNotesList
 
 Phân nhóm sơ bộ tham khảo:
-${groupedNotes.toString(2)}
-
-Yêu cầu định dạng JSON trả về:
-{
-  "cong_viec_thi_cong": ["..."],
-  "nghiem_thu": ["..."],
-  "an_toan": ["..."],
-  "y_kien_cdt": "...",
-  "y_kien_tvgs": "...",
-  "y_kien_nha_thau": "...",
-  "chua_phan_loai": ["..."]
-}"""
+${groupedNotes.toString(2)}"""
 
         val effectiveSystemPrompt = customSystemPrompt?.ifBlank { DEFAULT_SYSTEM_PROMPT } ?: DEFAULT_SYSTEM_PROMPT
         val messages = listOf(
@@ -113,7 +107,7 @@ Yêu cầu định dạng JSON trả về:
             LlmMessage(role = "user", content = userPrompt)
         )
 
-        val chatResult = llmClient.chat(messages, temperature = 0.1f, responseJson = true)
+        val chatResult = llmClient.chat(messages, temperature = 0.0f, responseJson = true)
         if (chatResult.isFailure) {
             return Result.failure(chatResult.exceptionOrNull() ?: Exception("Lỗi gọi LLM tổng hợp"))
         }

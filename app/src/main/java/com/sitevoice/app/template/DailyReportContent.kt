@@ -21,21 +21,24 @@ data class DailyReportContent(
                 val json = JSONObject(jsonStr)
 
                 // Backward-compatible fields cho mẫu công trường
-                val congViecThiCong = json.optJSONArray("cong_viec_thi_cong")?.let { arr ->
+                val congViecThiCong = (json.optJSONArray("cong_viec_thi_cong")
+                    ?: json.optJSONArray("thi_cong_trong_ngay"))?.let { arr ->
                     (0 until arr.length()).map { arr.getString(it) }
                 } ?: emptyList()
 
-                val nghiemThu = json.optJSONArray("nghiem_thu")?.let { arr ->
+                val nghiemThu = (json.optJSONArray("nghiem_thu")
+                    ?: json.optJSONArray("nghiem_thu_trong_ngay"))?.let { arr ->
                     (0 until arr.length()).map { arr.getString(it) }
                 } ?: emptyList()
 
-                val anToan = json.optJSONArray("an_toan")?.let { arr ->
+                val anToan = (json.optJSONArray("an_toan")
+                    ?: json.optJSONArray("an_toan_vs"))?.let { arr ->
                     (0 until arr.length()).map { arr.getString(it) }
                 } ?: emptyList()
 
-                val yKienCdt = json.optString("y_kien_cdt", "")
-                val yKienTvgs = json.optString("y_kien_tvgs", "")
-                val yKienNhaThau = json.optString("y_kien_nha_thau", "")
+                val yKienCdt = if (json.has("y_kien_cdt")) json.optString("y_kien_cdt", "") else json.optString("yk_cdt", "")
+                val yKienTvgs = if (json.has("y_kien_tvgs")) json.optString("y_kien_tvgs", "") else json.optString("yk_tvgs", "")
+                val yKienNhaThau = if (json.has("y_kien_nha_thau")) json.optString("y_kien_nha_thau", "") else json.optString("yk_nha_thau", "")
 
                 val chuaPhanLoai = json.optJSONArray("chua_phan_loai")?.let { arr ->
                     (0 until arr.length()).map { arr.getString(it) }
@@ -50,10 +53,12 @@ data class DailyReportContent(
                     if (value is JSONArray) {
                         val list = (0 until value.length()).map { value.getString(it) }
                         dynamicMap[key] = list
+                    } else if (value is Boolean) {
+                        dynamicMap[key] = value
                     } else if (value is String) {
                         dynamicMap[key] = value
                     } else {
-                        dynamicMap[key] = value.toString()
+                        dynamicMap[key] = value
                     }
                 }
 
