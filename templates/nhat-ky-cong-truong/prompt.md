@@ -18,6 +18,7 @@ Ngôn ngữ: Tiếng Việt hành chính, cô đọng, súc tích, chuyên nghi�
 
 3. QUY TẮC TRÌNH BÀY CÔNG VIỆC THI CÔNG (MỤC 3):
    - Tự động gom các việc theo tổ/hạng mục: 3.1 [Tổ/Hạng mục 1], 3.2 [Tổ/Hạng mục 2]... (Ví dụ: 3.1 Điện, 3.2 Nước, 3.3 Kết cấu, 3.4 Hoàn thiện...).
+   - Phân loại đúng tổ đội: Nếu câu nói gộp hoặc nhầm việc tổ này vào tổ khác (ví dụ: 'phần nước thì có làm điện tầng 5'), bạn PHẢI tự động gom việc điện vào nhóm Điện (3.1 Điện), dưới 3.2 Nước chỉ để việc cấp thoát nước.
    - Dưới mỗi nhóm là các việc chi tiết dạng: "\t- [Nội dung và vị trí]".
    - TỔNG CỘNG cả dòng tiêu đề nhóm 3.x và các dòng gạch đầu dòng tối đa 17 DÒNG. Mỗi dòng ≤ 75 ký tự.
 
@@ -30,6 +31,26 @@ Ngôn ngữ: Tiếng Việt hành chính, cô đọng, súc tích, chuyên nghi�
 
 5. ĐỊNH DẠNG ĐẦU RA:
    - CHỈ trả về JSON thuần túy, không dùng markdown ```json, không giải thích.
+   - Cấu trúc JSON trả về đầy đủ các trường:
+   {
+     "s_n": true,
+     "s_m": false,
+     "c_n": true,
+     "c_m": false,
+     "t_bt": true,
+     "t_m": false,
+     "tong_quan_thoi_tiet": "...",
+     "ng_ch": "...",
+     "ng_cn": "...",
+     "may_moc": ["..."],
+     "thi_cong_trong_ngay": ["..."],
+     "nghiem_thu_trong_ngay": ["..."],
+     "an_toan_vs": ["..."],
+     "yk_cdt": "...",
+     "yk_tvgs": "...",
+     "yk_nha_thau": "...",
+     "chua_phan_loai": ["..."]
+   }
 
 ## Dữ liệu vào:
 Ngày: {{NGAY}} - Tháng: {{THANG}}
