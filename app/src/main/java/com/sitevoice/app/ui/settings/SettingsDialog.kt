@@ -231,7 +231,7 @@ fun SettingsDialog(
 
                 // Phần 4: Google Account & Web Client ID
                 Text(
-                    text = "4. " + stringResource(id = R.string.settings_google_section),
+                    text = stringResource(id = R.string.settings_google_section),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1E293B)

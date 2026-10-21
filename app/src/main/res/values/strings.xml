@@ -86,7 +86,7 @@
     <string name="report_edit_again">Mở lại dự thảo để sửa</string>
 
     <!-- Google Sign-In & Export -->
-    <string name="settings_google_section">3. Tài khoản Google (Xuất Doc)</string>
+    <string name="settings_google_section">4. Tài khoản Google (Xuất Doc)</string>
     <string name="settings_google_client_id">Web Client ID (từ Cloud Console)</string>
     <string name="settings_google_client_id_hint">xxxxxxxx.apps.googleusercontent.com</string>
     <string name="settings_google_account">Tài khoản Google:</string>
