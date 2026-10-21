@@ -44,23 +44,30 @@ data class DailyReportContent(
                     (0 until arr.length()).map { arr.getString(it) }
                 } ?: emptyList()
 
-                // Thu thập tất cả các trường động
+                // Thu thập tất cả các trường động (làm phẳng các JSONObject lồng nhau)
                 val dynamicMap = mutableMapOf<String, Any>()
-                val keys = json.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    val value = json.get(key)
-                    if (value is JSONArray) {
-                        val list = (0 until value.length()).map { value.getString(it) }
-                        dynamicMap[key] = list
-                    } else if (value is Boolean) {
-                        dynamicMap[key] = value
-                    } else if (value is String) {
-                        dynamicMap[key] = value
-                    } else {
-                        dynamicMap[key] = value
+                fun extractFields(obj: JSONObject) {
+                    val itKeys = obj.keys()
+                    while (itKeys.hasNext()) {
+                        val key = itKeys.next()
+                        val value = obj.get(key)
+                        when (value) {
+                            is JSONObject -> {
+                                dynamicMap[key] = value.toString()
+                                extractFields(value) // Đệ quy làm phẳng
+                            }
+                            is JSONArray -> {
+                                val list = (0 until value.length()).map { value.getString(it) }
+                                dynamicMap[key] = list
+                            }
+                            is Boolean -> dynamicMap[key] = value
+                            is Number -> dynamicMap[key] = value.toString()
+                            is String -> dynamicMap[key] = value
+                            else -> dynamicMap[key] = value
+                        }
                     }
                 }
+                extractFields(json)
 
                 DailyReportContent(
                     congViecThiCong = congViecThiCong,

@@ -52,4 +52,54 @@ class DailyReportContentTest {
         assertTrue(malformedContent.congViecThiCong.isEmpty())
         assertTrue(malformedContent.yKienCdt.isEmpty())
     }
+
+    @Test
+    fun testFlattenNestedWeatherAndManpower() {
+        val json = """
+            {
+              "thoi_tiet": {
+                "s_n": true,
+                "s_m": false,
+                "c_n": false,
+                "c_m": true,
+                "t_bt": true,
+                "t_m": false,
+                "tong_quan_thoi_tiet": "Sáng trời nắng, chiều trời mưa, tối bình thường."
+              },
+              "nhan_luc": {
+                "ng_ch": "8",
+                "ng_cn": "10"
+              },
+              "may_moc": [
+                "- Máy cắt",
+                "- Máy đục"
+              ],
+              "cong_viec_thi_cong": [
+                "3.1 Điện",
+                "\t- Thi công hệ thống điện tại tầng 8.",
+                "\t- Thi công hệ thống điện tại tầng 5.",
+                "3.2 Nước",
+                "\t- Thi công trục thoát nước số 11."
+              ]
+            }
+        """.trimIndent()
+
+        val content = DailyReportContent.fromJson(json)
+
+        assertEquals(true, content.allFields["s_n"])
+        assertEquals(false, content.allFields["s_m"])
+        assertEquals(false, content.allFields["c_n"])
+        assertEquals(true, content.allFields["c_m"])
+        assertEquals(true, content.allFields["t_bt"])
+        assertEquals(false, content.allFields["t_m"])
+        assertEquals("Sáng trời nắng, chiều trời mưa, tối bình thường.", content.allFields["tong_quan_thoi_tiet"])
+        assertEquals("8", content.allFields["ng_ch"])
+        assertEquals("10", content.allFields["ng_cn"])
+
+        val mayMoc = content.allFields["may_moc"] as List<*>
+        assertEquals(2, mayMoc.size)
+
+        assertEquals(5, content.congViecThiCong.size)
+        assertEquals("3.1 Điện", content.congViecThiCong[0])
+    }
 }
