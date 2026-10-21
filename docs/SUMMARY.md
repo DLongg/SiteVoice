@@ -12,11 +12,11 @@ Cập nhật: 2026-10-21. Đây là trạng thái hiện tại; quy tắc ở [A
 
 - Kotlin + Jetpack Compose, Room, WorkManager, EncryptedSharedPreferences, OkHttp; các module: `ui`, `audio`, `stt`, `llm`, `template`, `export`, `data`, `queue`, `settings`. Xem [kiến trúc](03-kien-truc.md), [dữ liệu](04-du-lieu.md).
 - Giao diện UI: Chuẩn hóa theo skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), tuân thủ quy tắc App Screens (tinh gọn, tương phản cao, thẻ trạng thái hàng đợi `⏳ Chờ mạng` trực quan).
-- STT online qua Groq Whisper (`whisper-large-v3-turbo`); LLM Groq `qwen/qwen3.8-27b` ổn định. Xuất Google Doc: Google Drive API v3 copy file và Google Docs API v1 batchUpdate thay placeholder.
+- STT online qua Groq Whisper (`whisper-large-v3-turbo`); API Phân loại & LLM độc lập: Gemini 3.8 Flash (`acc/gemini-3.8-flash` qua Vilao AI), fallback Groq. Xuất Google Doc: Google Drive API v3 copy file và Google Docs API v1 batchUpdate thay placeholder.
 
 ## Đang triển khai và bàn giao
 
-- Khắc phục lỗi LLM tổng hợp thiếu trường & sai tổ đội (2026-10-21): Đã hoàn thành và xác minh 100% trên thiết bị thật Xiaomi.
+- Tách riêng API STT (Groq Whisper) và API Phân loại/LLM (Gemini 3.8 Flash qua Vilao AI): Thêm ô cấu hình riêng trong Cài đặt, nạp sẵn key an toàn, hỗ trợ endpoint tùy biến và kiểm thử đạt 100%.
 - Thiết lập CI/CD phát hành tự động qua GitHub Releases (`.github/workflows/build-apk.yml`): Tự động build và gắn file APK mới nhất vào Releases để người dùng có thể tải về trực tiếp từ điện thoại khi ở ngoài công trường mà không cần cáp USB.
 
 ## Quyết định phải giữ

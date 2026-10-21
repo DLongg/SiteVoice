@@ -163,14 +163,24 @@ fun RecordScreen(
                     )
                 }
 
+                val hasStt = !securePreferences.groqApiKey.isNullOrBlank()
+                val hasClassify = !securePreferences.geminiApiKey.isNullOrBlank()
+                val (statusText, statusColor) = when {
+                    hasStt && hasClassify -> "STT ✓ | Gemini ✓" to Color(0xFF16A34A)
+                    hasStt -> "STT ✓ | Phân loại: Groq" to Color(0xFF16A34A)
+                    hasClassify -> "Thiếu STT Key" to Color(0xFFD97706)
+                    else -> "Cài API Key" to Color(0xFFDC2626)
+                }
+
                 OutlinedButton(
                     onClick = onOpenSettings,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = if (securePreferences.groqApiKey.isNullOrBlank()) "Cài API Key" else "API Key ✓",
-                        fontSize = 12.sp,
-                        color = if (securePreferences.groqApiKey.isNullOrBlank()) Color(0xFFDC2626) else Color(0xFF16A34A)
+                        text = statusText,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = statusColor
                     )
                 }
             }

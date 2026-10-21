@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -17,6 +19,19 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProps = Properties()
+        val localPropsFile = rootProject.file("local.properties")
+        if (localPropsFile.exists()) {
+            localPropsFile.inputStream().use { localProps.load(it) }
+        }
+        val defaultClassifyApiKey = localProps.getProperty("CLASSIFY_API_KEY", "")
+        val defaultClassifyBaseUrl = localProps.getProperty("CLASSIFY_BASE_URL", "https://api.vilao.ai/v1")
+        val defaultClassifyModel = localProps.getProperty("CLASSIFY_MODEL", "acc/gemini-3.8-flash")
+
+        buildConfigField("String", "DEFAULT_CLASSIFY_API_KEY", "\"$defaultClassifyApiKey\"")
+        buildConfigField("String", "DEFAULT_CLASSIFY_BASE_URL", "\"$defaultClassifyBaseUrl\"")
+        buildConfigField("String", "DEFAULT_CLASSIFY_MODEL", "\"$defaultClassifyModel\"")
     }
 
     buildTypes {
@@ -37,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

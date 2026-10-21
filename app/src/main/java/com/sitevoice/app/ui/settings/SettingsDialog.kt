@@ -43,7 +43,10 @@ import org.json.JSONObject
 
 @Composable
 fun SettingsDialog(
-    currentApiKey: String?,
+    currentSttApiKey: String?,
+    currentClassifyApiKey: String?,
+    currentClassifyBaseUrl: String = "https://api.vilao.ai/v1",
+    currentClassifyModel: String = "acc/gemini-3.8-flash",
     currentDocTemplateId: String = SecurePreferences.DEFAULT_DOC_TEMPLATE_ID,
     currentGoogleWebClientId: String? = null,
     currentGoogleAccountEmail: String? = null,
@@ -56,12 +59,22 @@ fun SettingsDialog(
     onResetPrompt: (templateId: String) -> Unit = {},
     onOpenTemplateLibrary: () -> Unit = {},
     onAutoSetupFormClick: (docUrlOrId: String) -> Unit = {},
-    onSaveSettings: (apiKey: String, docTemplateId: String, webClientId: String) -> Unit,
+    onSaveSettings: (
+        sttApiKey: String,
+        classifyApiKey: String,
+        classifyBaseUrl: String,
+        classifyModel: String,
+        docTemplateId: String,
+        webClientId: String
+    ) -> Unit,
     onSignInGoogleClick: () -> Unit,
     onSignOutGoogleClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    var inputKey by remember { mutableStateOf(currentApiKey ?: "") }
+    var inputSttKey by remember { mutableStateOf(currentSttApiKey ?: "") }
+    var inputClassifyKey by remember { mutableStateOf(currentClassifyApiKey ?: "") }
+    var inputClassifyBaseUrl by remember { mutableStateOf(currentClassifyBaseUrl) }
+    var inputClassifyModel by remember { mutableStateOf(currentClassifyModel) }
     var inputDocId by remember { mutableStateOf(currentDocTemplateId) }
     var inputWebClientId by remember { mutableStateOf(currentGoogleWebClientId ?: "") }
 
@@ -101,17 +114,23 @@ fun SettingsDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Phần 1: Groq API Key
+                // Phần 1: Groq API Key (STT)
                 Text(
-                    text = "1. Groq API Key (STT & LLM)",
+                    text = "1. API Chuyển giọng nói STT (Groq Whisper)",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1E293B)
                 )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Nhận diện âm thanh nói ngoài công trường thành văn bản.",
+                    fontSize = 11.sp,
+                    color = Color(0xFF64748B)
+                )
                 Spacer(modifier = Modifier.height(6.dp))
                 OutlinedTextField(
-                    value = inputKey,
-                    onValueChange = { inputKey = it },
+                    value = inputSttKey,
+                    onValueChange = { inputSttKey = it },
                     placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx", fontSize = 12.sp) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -120,9 +139,59 @@ fun SettingsDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Phần 2: Link Google Doc mẫu
+                // Phần 2: Gemini API Phân loại (Vilao AI)
                 Text(
-                    text = "2. Google Doc mẫu (A4 ≤ 2 trang)",
+                    text = "2. API Gemini Phân loại (Vilao AI / Gemini)",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF1E293B)
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Đọc hiểu và phân loại các ghi chú vào đúng các mục nhật ký thi công.",
+                    fontSize = 11.sp,
+                    color = Color(0xFF64748B)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = inputClassifyKey,
+                    onValueChange = { inputClassifyKey = it },
+                    label = { Text("Gemini API Key phân loại", fontSize = 12.sp) },
+                    placeholder = { Text("sk-xxxxxxxxxxxxxxxxxxxx", fontSize = 12.sp) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = inputClassifyBaseUrl,
+                        onValueChange = { inputClassifyBaseUrl = it },
+                        label = { Text("Endpoint", fontSize = 11.sp) },
+                        singleLine = true,
+                        modifier = Modifier.weight(1.3f),
+                        shape = RoundedCornerShape(8.dp),
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                    )
+                    OutlinedTextField(
+                        value = inputClassifyModel,
+                        onValueChange = { inputClassifyModel = it },
+                        label = { Text("Model", fontSize = 11.sp) },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Phần 3: Link Google Doc mẫu
+                Text(
+                    text = "3. Google Doc mẫu (A4 ≤ 2 trang)",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1E293B)
@@ -160,9 +229,9 @@ fun SettingsDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Phần 3: Google Account & Web Client ID
+                // Phần 4: Google Account & Web Client ID
                 Text(
-                    text = stringResource(id = R.string.settings_google_section),
+                    text = "4. " + stringResource(id = R.string.settings_google_section),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1E293B)
@@ -230,9 +299,9 @@ fun SettingsDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Phần 4: Thư viện Mẫu
+                // Phần 5: Thư viện Mẫu
                 Text(
-                    text = "4. Thư viện Mẫu Báo cáo",
+                    text = "5. Thư viện Mẫu Báo cáo",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1E293B)
@@ -263,7 +332,7 @@ fun SettingsDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Phần 5: Chế độ Nhà phát triển (Developer Mode)
+                // Phần 6: Chế độ Nhà phát triển (Developer Mode)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -279,7 +348,7 @@ fun SettingsDialog(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "5. Chế độ Nhà phát triển (Developer Mode)",
+                                    text = "6. Chế độ Nhà phát triển (Developer Mode)",
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = Color(0xFF1E293B)
@@ -413,7 +482,10 @@ fun SettingsDialog(
                     Button(
                         onClick = {
                             onSaveSettings(
-                                inputKey.trim(),
+                                inputSttKey.trim(),
+                                inputClassifyKey.trim(),
+                                inputClassifyBaseUrl.trim(),
+                                inputClassifyModel.trim(),
                                 inputDocId.trim(),
                                 inputWebClientId.trim()
                             )

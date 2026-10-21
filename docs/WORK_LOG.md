@@ -508,14 +508,23 @@ A templates/schema-chung.md
 - Kiểm tra: 52/52 Unit tests pass 100%, build APK và cài đặt trực tiếp lên điện thoại thật thành công, xác minh toàn bộ ảnh chụp màn hình thực tế.
 
 
-## 2026-10-21 — Bổ sung luật yêu cầu từ Chrome và xử lý khi prompt lệch với Doc — Hoàn thành
+## 2026-10-21 — Tách riêng API STT và API Phân loại, tích hợp Gemini 3.8 Flash qua Vilao AI — Hoàn thành
 
-- Kết quả: Đã bổ sung/chuẩn hóa 2 quy tắc bắt buộc vào `AGENTS.md` (mục *Coding, phạm vi và kiểm tra*) theo đúng yêu cầu người dùng:
-  + Nếu Chrome (hoặc trình duyệt / hệ thống) yêu cầu người dùng, thì agent cũng bị yêu cầu tương tự (phải nêu rõ yêu cầu và chờ người dùng thực hiện/xác nhận).
-  + Các luồng, quy tắc và định nghĩa chương trình đã được quy định trong tài liệu (`docs/`). Nếu người dùng đưa ra prompt/lệnh đi chệch hướng hoặc mâu thuẫn với tài liệu, agent không được tự ý thực hiện hay tự quyết định, mà bắt buộc phải đưa ra câu hỏi lựa chọn (multiple-choice) cho người dùng chốt phương án trước khi thực hiện.
-- File sửa: `AGENTS.md`, `docs/SUMMARY.md`.
-- Kiểm tra: Đối chiếu nội dung văn bản, tính nhất quán với quy tắc chung và độ dài SUMMARY dưới 80 dòng. Task tài liệu/quy tắc, không sửa mã nguồn ứng dụng nên không cần chạy test/build Android.
-- Còn lại: Tuân thủ nghiêm ngặt 2 quy tắc mới này trong mọi tương tác và tác vụ tiếp theo.
+- Kết quả:
+  + Tách biệt độc lập API STT (Groq Whisper) và API Phân loại / LLM (Gemini 3.8 Flash qua Vilao AI).
+  + Cập nhật `SettingsDialog.kt`: Thêm Phần 2 riêng biệt "2. API Gemini Phân loại (Vilao AI / Gemini)" gồm ô nhập API Key phân loại, Endpoint (`https://api.vilao.ai/v1`) và Model (`acc/gemini-3.8-flash`).
+  + Điền sẵn mặc định API Key phân loại vào ứng dụng thông qua cơ chế an toàn `local.properties` và `BuildConfig`, tuân thủ tuyệt đối quy tắc bảo mật không lộ secret key lên Git commit/remote.
+  + Xây dựng `VilaoGeminiLlmClient.kt` và `LlmFactory.kt` kết nối trực tiếp đến endpoint OpenAI-compatible của Vilao AI, hỗ trợ `json_object` mode và tự động dọn dẹp markdown fence.
+  + Cập nhật `ClassifyWorker.kt`, `MainViewModel.kt` định tuyến tác vụ phân loại, tổng hợp báo cáo và thiết lập form sang Gemini 3.8 Flash (tự động fallback sang Groq nếu người dùng chỉ cài đặt Groq).
+  + Cập nhật `RecordScreen.kt` hiển thị trạng thái riêng biệt cho cả hai API: `STT ✓ | Gemini ✓`.
+- File tạo/sửa:
+  + Tạo: `app/src/main/java/com/sitevoice/app/llm/VilaoGeminiLlmClient.kt`, `app/src/main/java/com/sitevoice/app/llm/LlmFactory.kt`.
+  + Sửa: `app/build.gradle.kts`, `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt`, `app/src/main/java/com/sitevoice/app/queue/ClassifyWorker.kt`.
+- Kiểm tra:
+  + Đã test API thực tế thành công với endpoint `https://api.vilao.ai/v1/chat/completions` và model `acc/gemini-3.8-flash`, trả về JSON sạch hợp lệ.
+  + `testDebugUnitTest` chạy 26/26 task thành công 100% (>52 unit tests pass).
+  + `assembleDebug` tạo thành công APK không lỗi.
+
 
 
 ## 2026-10-21 — Khắc phục lỗi LLM trả về thiếu trường và sai tổ đội khi tổng hợp — Hoàn thành

@@ -78,10 +78,10 @@ class ClassifyWorker(
         }
 
         val securePreferences = SecurePreferences(applicationContext)
-        val apiKey = securePreferences.groqApiKey
+        val hasClassificationKey = !securePreferences.geminiApiKey.isNullOrBlank() || !securePreferences.groqApiKey.isNullOrBlank()
 
-        val classifier = if (!apiKey.isNullOrBlank()) {
-            NoteClassifier(GroqLlmClient(apiKeyProvider = { apiKey }))
+        val classifier = if (hasClassificationKey) {
+            NoteClassifier(com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences))
         } else {
             null
         }

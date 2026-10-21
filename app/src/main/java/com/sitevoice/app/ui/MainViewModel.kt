@@ -61,8 +61,8 @@ class MainViewModel(
     private val templateSchema: TemplateSchema,
     val templateRepository: TemplateRepository = DefaultTemplateRepository(appContext, AppDatabase.getDatabase(appContext).templateDao()),
     private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
-    private val classifier: NoteClassifier = NoteClassifier(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey })),
-    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }), templateSchema),
+    private val classifier: NoteClassifier = NoteClassifier(com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences)),
+    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences), templateSchema),
     private val exporter: GoogleDocsExporter = GoogleDocsExporter()
 ) : ViewModel() {
 
@@ -131,7 +131,7 @@ class MainViewModel(
     val lastCreatedNoteId: StateFlow<Long?> = _lastCreatedNoteId.asStateFlow()
 
     private val formSetupService by lazy {
-        FormSetupService(llmClient = GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }))
+        FormSetupService(llmClient = com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences))
     }
 
     private val _formSetupAnalysis = MutableStateFlow<FormSetupAnalysis?>(null)
@@ -252,9 +252,9 @@ class MainViewModel(
     }
 
     fun synthesizeDailyReport(onSuccess: (() -> Unit)? = null) {
-        val apiKey = securePreferences.groqApiKey
-        if (apiKey.isNullOrBlank()) {
-            _synthesisError.value = "Chưa cài đặt Groq API Key trong Cài đặt."
+        val hasKey = !securePreferences.geminiApiKey.isNullOrBlank() || !securePreferences.groqApiKey.isNullOrBlank()
+        if (!hasKey) {
+            _synthesisError.value = "Chưa cài đặt API Key phân loại / LLM trong Cài đặt."
             return
         }
 
@@ -281,7 +281,7 @@ class MainViewModel(
                 val promptToUse = currentTemplate?.systemPrompt
 
                 val dynamicSynthesizer = ReportSynthesizer(
-                    llmClient = GroqLlmClient(apiKeyProvider = { securePreferences.groqApiKey }),
+                    llmClient = com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences),
                     schema = currentSchema,
                     customSystemPrompt = promptToUse
                 )

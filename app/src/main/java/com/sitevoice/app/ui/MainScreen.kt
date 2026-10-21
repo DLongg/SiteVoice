@@ -288,7 +288,10 @@ fun MainScreen(
         // Hộp thoại cài đặt API key, Doc mẫu & Google Sign-In
         if (showSettingsDialog) {
             SettingsDialog(
-                currentApiKey = securePreferences.groqApiKey,
+                currentSttApiKey = securePreferences.groqApiKey,
+                currentClassifyApiKey = securePreferences.geminiApiKey,
+                currentClassifyBaseUrl = securePreferences.geminiBaseUrl,
+                currentClassifyModel = securePreferences.geminiModel,
                 currentDocTemplateId = securePreferences.docTemplateId,
                 currentGoogleWebClientId = securePreferences.googleWebClientId,
                 currentGoogleAccountEmail = securePreferences.googleAccountEmail,
@@ -308,8 +311,11 @@ fun MainScreen(
                     showFormSetupDialog = true
                     viewModel.startFormSetup(context, docUrlOrId)
                 },
-                onSaveSettings = { newKey, newDocId, newClientId ->
-                    securePreferences.groqApiKey = newKey
+                onSaveSettings = { newSttKey, newClassifyKey, newBaseUrl, newModel, newDocId, newClientId ->
+                    securePreferences.groqApiKey = newSttKey
+                    securePreferences.geminiApiKey = newClassifyKey
+                    securePreferences.geminiBaseUrl = newBaseUrl
+                    securePreferences.geminiModel = newModel
                     securePreferences.docTemplateId = newDocId
                     securePreferences.googleWebClientId = newClientId
                 },
