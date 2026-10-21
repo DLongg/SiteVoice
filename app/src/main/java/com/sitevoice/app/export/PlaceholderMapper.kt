@@ -111,7 +111,12 @@ object PlaceholderMapper {
         for ((key, value) in reportContent.allFields) {
             val formattedValue = when (value) {
                 is List<*> -> formatList(value.map { it?.toString() ?: "" })
-                is String -> value.trim()
+                is Boolean -> if (value) "☑" else "☐"
+                is String -> {
+                    if (value.equals("true", ignoreCase = true)) "☑"
+                    else if (value.equals("false", ignoreCase = true)) "☐"
+                    else value.trim()
+                }
                 else -> value.toString()
             }
             map["{{$key}}"] = formattedValue

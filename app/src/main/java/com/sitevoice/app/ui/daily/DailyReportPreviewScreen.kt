@@ -223,20 +223,32 @@ fun DailyReportPreviewScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         val weatherText = buildString {
-                            val morning = if (dailyInput?.weatherMorning == "mua") "🌧️ Mưa" else "☀️ Nắng"
-                            val afternoon = if (dailyInput?.weatherAfternoon == "mua") "🌧️ Mưa" else "☀️ Nắng"
-                            val evening = if (dailyInput?.weatherEvening == "mua") "🌧️ Mưa" else "🌙 Bình thường"
+                            val tq = content.allFields["tong_quan_thoi_tiet"]?.toString()?.trim()
+                            val isMorningRain = content.allFields["s_m"] == true || content.allFields["s_m"] == "true" || dailyInput?.weatherMorning == "mua"
+                            val isAfternoonRain = content.allFields["c_m"] == true || content.allFields["c_m"] == "true" || dailyInput?.weatherAfternoon == "mua"
+                            val isEveningRain = content.allFields["t_m"] == true || content.allFields["t_m"] == "true" || dailyInput?.weatherEvening == "mua"
+
+                            val morning = if (isMorningRain) "🌧️ Mưa" else "☀️ Nắng"
+                            val afternoon = if (isAfternoonRain) "🌧️ Mưa" else "☀️ Nắng"
+                            val evening = if (isEveningRain) "🌧️ Mưa" else "🌙 Bình thường"
+
                             append("Sáng: $morning  •  Chiều: $afternoon  •  Tối: $evening")
+                            if (!tq.isNullOrBlank() && tq != "...") {
+                                append(" ($tq)")
+                            }
                         }
                         Text(text = "Thời tiết: $weatherText", fontSize = 13.sp, color = Color(0xFF334155))
 
                         Spacer(modifier = Modifier.height(4.dp))
-                        val bch = dailyInput?.commandStaffCount ?: 0
-                        val cn = dailyInput?.workerCount ?: 0
+                        val bch = content.allFields["ng_ch"]?.toString()?.toIntOrNull() ?: dailyInput?.commandStaffCount ?: 0
+                        val cn = content.allFields["ng_cn"]?.toString()?.toIntOrNull() ?: dailyInput?.workerCount ?: 0
                         Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = 13.sp, color = Color(0xFF334155))
 
                         Spacer(modifier = Modifier.height(4.dp))
-                        val eq = dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính"
+                        val mayMocFromLlm = content.allFields["may_moc"]?.let {
+                            if (it is List<*>) it.filterNotNull().joinToString(", ") else it.toString()
+                        }
+                        val eq = if (!mayMocFromLlm.isNullOrBlank()) mayMocFromLlm else (dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính")
                         Text(text = "Thiết bị: $eq", fontSize = 13.sp, color = Color(0xFF334155))
                     }
                 }
