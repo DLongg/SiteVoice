@@ -16,9 +16,8 @@ Cập nhật: 2026-10-21. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- Khắc phục lỗi LLM tổng hợp thiếu trường & sai tổ đội (2026-10-21): Loại bỏ hoàn toàn JSON schema hardcode 7 trường trong `ReportSynthesizer`, set `temperature=0.0`, cập nhật prompt template đầy đủ trường JSON (`s_n`, `s_m`, `c_n`, `c_m`, `t_bt`, `t_m`, `tong_quan_thoi_tiet`, `ng_ch`, `ng_cn`, `may_moc`...) và quy tắc nắn chỉnh gom việc tổ đội nhầm. Cập nhật `PlaceholderMapper` (hỗ trợ boolean sang `☑`/`☐`) và `DailyReportPreviewScreen` đọc trực tiếp từ `allFields`.
-- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (APK 11.94 MB đã cài đặt trực tiếp lên thiết bị thật Xiaomi `33c4f658`).
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành Giai đoạn 0-3 và Nhóm 4.1. Đang kiểm thử trực tiếp luồng tổng hợp và xuất Doc trên thiết bị thật.
+- Khắc phục lỗi LLM tổng hợp thiếu trường & sai tổ đội (2026-10-21): Đã hoàn thành và xác minh 100% trên thiết bị thật Xiaomi.
+- Thiết lập CI/CD phát hành tự động qua GitHub Releases (`.github/workflows/build-apk.yml`): Tự động build và gắn file APK mới nhất vào Releases để người dùng có thể tải về trực tiếp từ điện thoại khi ở ngoài công trường mà không cần cáp USB.
 
 ## Quyết định phải giữ
 

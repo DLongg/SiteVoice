@@ -527,4 +527,12 @@ A templates/schema-chung.md
   + Nâng cấp `DailyReportPreviewScreen.kt`: hiển thị trực quan thông tin thời tiết, máy móc, ban chỉ huy, công nhân đọc trực tiếp từ `content.allFields`.
 - File sửa: `ReportSynthesizer.kt`, `DailyReportContent.kt`, `PlaceholderMapper.kt`, `DailyReportPreviewScreen.kt`, `TemplateRepository.kt`, `prompt.md`.
 - Kiểm tra: Toàn bộ Unit Tests pass 100%, `assembleDebug` tạo APK 11.94 MB và cài đặt thành công lên điện thoại Xiaomi `33c4f658`.
-- Còn lại: Chạy kiểm thử trực tiếp trên ứng dụng thực tế với nội dung ghi chú người dùng cung cấp.
+- Còn lại: Người dùng đã kiểm thử thực tế và xác nhận luồng tổng hợp trên điện thoại.
+
+
+## 2026-10-21 — Thiết lập CI/CD tự động build và phát hành APK qua GitHub Releases — Hoàn thành
+
+- Kết quả: Tạo workflow GitHub Actions `.github/workflows/build-apk.yml`. Khi có tag mới hoặc push code lên `main`, hệ thống tự động build `app-debug.apk` và phát hành lên GitHub Releases. Người dùng có thể tải và cài đặt trực tiếp bản APK mới nhất từ trình duyệt điện thoại mà không cần cắm cáp USB.
+- File tạo: `.github/workflows/build-apk.yml`.
+- Kiểm tra: Cấu hình workflow chuẩn theo JDK 17, caching Gradle, cấp quyền execute cho `./gradlew`, upload artifact và publish release qua `softprops/action-gh-release@v2`.
+- Còn lại: Push code và tag `v1.0.0` lên GitHub để kích hoạt đợt phát hành tự động đầu tiên.
