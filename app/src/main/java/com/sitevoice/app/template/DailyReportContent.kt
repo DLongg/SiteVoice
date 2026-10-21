@@ -20,29 +20,42 @@ data class DailyReportContent(
             return try {
                 val json = JSONObject(jsonStr)
 
-                // Backward-compatible fields cho mẫu công trường
-                val congViecThiCong = (json.optJSONArray("cong_viec_thi_cong")
-                    ?: json.optJSONArray("thi_cong_trong_ngay"))?.let { arr ->
-                    (0 until arr.length()).map { arr.getString(it) }
-                } ?: emptyList()
+                // Backward-compatible fields cho mẫu công trường (hỗ trợ cả JSONArray lẫn multiline String)
+                val congViecThiCong = extractList(
+                    json,
+                    "cong_viec_thi_cong",
+                    "thi_cong_trong_ngay",
+                    "thi_cong",
+                    "cong_viec",
+                    "work_done",
+                    "CONG_VIEC_THI_CONG",
+                    "THI_CONG_TRONG_NGAY"
+                )
 
-                val nghiemThu = (json.optJSONArray("nghiem_thu")
-                    ?: json.optJSONArray("nghiem_thu_trong_ngay"))?.let { arr ->
-                    (0 until arr.length()).map { arr.getString(it) }
-                } ?: emptyList()
+                val nghiemThu = extractList(
+                    json,
+                    "nghiem_thu",
+                    "nghiem_thu_trong_ngay",
+                    "nghiem_thu_cong_viec",
+                    "NGHIEM_THU",
+                    "NGHIEM_THU_TRONG_NGAY"
+                )
 
-                val anToan = (json.optJSONArray("an_toan")
-                    ?: json.optJSONArray("an_toan_vs"))?.let { arr ->
-                    (0 until arr.length()).map { arr.getString(it) }
-                } ?: emptyList()
+                val anToan = extractList(
+                    json,
+                    "an_toan",
+                    "an_toan_vs",
+                    "an_toan_lao_dong",
+                    "an_toan_ve_sinh",
+                    "AN_TOAN",
+                    "AN_TOAN_LAO_DONG"
+                )
 
-                val yKienCdt = if (json.has("y_kien_cdt")) json.optString("y_kien_cdt", "") else json.optString("yk_cdt", "")
-                val yKienTvgs = if (json.has("y_kien_tvgs")) json.optString("y_kien_tvgs", "") else json.optString("yk_tvgs", "")
-                val yKienNhaThau = if (json.has("y_kien_nha_thau")) json.optString("y_kien_nha_thau", "") else json.optString("yk_nha_thau", "")
+                val yKienCdt = extractString(json, "y_kien_cdt", "yk_cdt", "chu_dau_tu", "y_kien_chu_dau_tu", "Y_KIEN_CDT")
+                val yKienTvgs = extractString(json, "y_kien_tvgs", "yk_tvgs", "tu_van_giam_sat", "y_kien_tu_van_giam_sat", "Y_KIEN_TVGS")
+                val yKienNhaThau = extractString(json, "y_kien_nha_thau", "yk_nha_thau", "nha_thau", "y_kien_ban_chi_huy", "Y_KIEN_NHA_THAU")
 
-                val chuaPhanLoai = json.optJSONArray("chua_phan_loai")?.let { arr ->
-                    (0 until arr.length()).map { arr.getString(it) }
-                } ?: emptyList()
+                val chuaPhanLoai = extractList(json, "chua_phan_loai", "unclassified", "ghi_chu_khac", "CHUA_PHAN_LOAI")
 
                 // Thu thập tất cả các trường động (làm phẳng các JSONObject lồng nhau)
                 val dynamicMap = mutableMapOf<String, Any>()
@@ -83,6 +96,59 @@ data class DailyReportContent(
             } catch (e: Exception) {
                 DailyReportContent()
             }
+        }
+
+        private fun extractList(json: JSONObject, vararg keys: String): List<String> {
+            for (key in keys) {
+                if (!json.has(key)) continue
+                val value = json.opt(key) ?: continue
+                when (value) {
+                    is JSONArray -> {
+                        val list = mutableListOf<String>()
+                        for (i in 0 until value.length()) {
+                            val item = value.optString(i, "")
+                            if (item.isNotBlank()) {
+                                if (item.contains("\n")) {
+                                    list.addAll(item.split("\n").map { it.trimEnd() }.filter { it.isNotBlank() })
+                                } else {
+                                    list.add(item.trimEnd())
+                                }
+                            }
+                        }
+                        if (list.isNotEmpty()) return list
+                    }
+                    is String -> {
+                        val trimmed = value.trim()
+                        if (trimmed.isNotBlank()) {
+                            val lines = trimmed.split("\n").map { it.trimEnd() }.filter { it.isNotBlank() }
+                            if (lines.isNotEmpty()) return lines
+                        }
+                    }
+                    else -> {}
+                }
+            }
+            return emptyList()
+        }
+
+        private fun extractString(json: JSONObject, vararg keys: String): String {
+            for (key in keys) {
+                if (!json.has(key)) continue
+                val value = json.opt(key) ?: continue
+                when (value) {
+                    is String -> {
+                        if (value.isNotBlank()) return value.trim()
+                    }
+                    is JSONArray -> {
+                        val list = (0 until value.length()).map { value.optString(it, "").trim() }.filter { it.isNotBlank() }
+                        if (list.isNotEmpty()) return list.joinToString("\n")
+                    }
+                    else -> {
+                        val str = value.toString().trim()
+                        if (str.isNotBlank()) return str
+                    }
+                }
+            }
+            return ""
         }
     }
 }

@@ -545,3 +545,24 @@ A templates/schema-chung.md
 - File tạo: `.github/workflows/build-apk.yml`.
 - Kiểm tra: Cấu hình workflow chuẩn theo JDK 17, caching Gradle, cấp quyền execute cho `./gradlew`, upload artifact và publish release qua `softprops/action-gh-release@v2`.
 - Còn lại: Push code và tag `v1.0.0` lên GitHub để kích hoạt đợt phát hành tự động đầu tiên.
+
+## 2026-10-21 — Sửa lỗi xuất Google Doc thiếu mục Công việc thi công trong ngày & Chuẩn hóa định dạng phân nhóm — Hoàn thành
+
+- Kết quả:
+  + Phát hiện và xử lý triệt để nguyên nhân khi xuất Google Doc bị mất phần "Công việc thi công trong ngày":
+    1. `DailyReportContent.kt` trước đây chỉ dùng `optJSONArray`, dẫn đến khi LLM (Gemini 3.8 Flash) trả về `cong_viec_thi_cong` dạng chuỗi multiline (`String`), hàm parse nhận kết quả rỗng `emptyList()`. Đã bổ sung `extractList` và `extractString` hỗ trợ phân giải linh hoạt cả `JSONArray` lẫn multiline `String` (tách theo `\n`), kiểm tra đa dạng khóa (`cong_viec_thi_cong`, `thi_cong_trong_ngay`, `thi_cong`, `cong_viec`...).
+    2. `PlaceholderMapper.kt`: Mở rộng cơ chế cross-alias toàn diện giữa `cong_viec_thi_cong`, `thi_cong_trong_ngay`, `thi_cong`, `cong_viec` (cả hoa lẫn thường). Đồng thời hỗ trợ phân tích cả `summary_fields` (từ FormSetupService) lẫn `summaryFields`, và sinh các biến thể khoảng trắng `{{ thi_cong_trong_ngay }}`, `{{thi_cong_trong_ngay }}`... để tương thích tối đa với mọi kiểu đặt placeholder trong Google Doc của người dùng.
+    3. Chuẩn hóa `formatList` trong `PlaceholderMapper.kt`: Tự động nhận diện tiêu đề phân nhóm (`3.1 Điện`, `3.2 Nước`...) để giữ nguyên không chèn gạch đầu dòng `- `, đồng thời tự động thụt lề bằng tab (`\t- `) cho các ý con bên dưới.
+    4. `MainViewModel.kt`: Truyền đối tượng `template = activeTemplate.value` vào `exporter.exportReport`, ưu tiên lấy ID tài liệu mẫu từ `template.docTemplateUrl` của mẫu đang chọn.
+    5. `ReportSynthesizer.kt`: Bổ sung hướng dẫn chi tiết và ví dụ định dạng nhóm 3.1 & 3.2 cùng cấu trúc JSON mong muốn vào `DEFAULT_SYSTEM_PROMPT` và `userPrompt`.
+- File sửa:
+  + `app/src/main/java/com/sitevoice/app/template/DailyReportContent.kt`
+  + `app/src/main/java/com/sitevoice/app/export/PlaceholderMapper.kt`
+  + `app/src/main/java/com/sitevoice/app/llm/ReportSynthesizer.kt`
+  + `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`
+  + `app/src/test/java/com/sitevoice/app/DailyReportContentTest.kt`
+  + `app/src/test/java/com/sitevoice/app/PlaceholderMapperTest.kt`
+- Kiểm tra:
+  + Chạy `.\gradlew.bat testDebugUnitTest` vượt qua 100% (toàn bộ unit tests pass, bổ sung test phân giải multiline string và test format sub-header).
+  + Build `.\gradlew.bat assembleDebug` thành công 100%.
+  + Cài đặt APK trực tiếp lên điện thoại thật Xiaomi (`33c4f658`), xác minh giao diện ứng dụng, màn hình Xem trước và chức năng xuất lại Google Doc.

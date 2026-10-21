@@ -133,4 +133,32 @@ class PlaceholderMapperTest {
         assertEquals("", map["{{Y_KIEN_TVGS}}"])
         assertEquals("", map["{{Y_KIEN_NHA_THAU}}"])
     }
+
+    @Test
+    fun testSectionFormattingAndAliases() {
+        val content = DailyReportContent(
+            congViecThiCong = listOf(
+                "3.1 Điện",
+                "lắp đặt ống điện âm tường tầng 8",
+                "Chôn đế , tủ điện tầng 8",
+                "3.2 Nước",
+                "- Thi công trục thoát nước 10,  11 (lô gia)",
+                "- Thăm ống, bể tự hoại tầng 1"
+            )
+        )
+
+        val map = PlaceholderMapper.buildPlaceholderMap("2026-10-21", null, content)
+
+        val expected = """3.1 Điện
+	- lắp đặt ống điện âm tường tầng 8
+	- Chôn đế , tủ điện tầng 8
+3.2 Nước
+	- Thi công trục thoát nước 10,  11 (lô gia)
+	- Thăm ống, bể tự hoại tầng 1"""
+
+        assertEquals(expected, map["{{CONG_VIEC_THI_CONG}}"])
+        assertEquals(expected, map["{{thi_cong_trong_ngay}}"])
+        assertEquals(expected, map["{{ thi_cong_trong_ngay }}"])
+        assertEquals(expected, map["{{cong_viec}}"])
+    }
 }

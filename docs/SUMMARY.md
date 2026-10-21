@@ -17,6 +17,7 @@ Cập nhật: 2026-10-21. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Đang triển khai và bàn giao
 
 - Tách riêng API STT (Groq Whisper) và API Phân loại/LLM (Gemini 3.8 Flash qua Vilao AI): Thêm ô cấu hình riêng trong Cài đặt, nạp sẵn key an toàn, hỗ trợ endpoint tùy biến và kiểm thử đạt 100%.
+- Sửa lỗi xuất Google Doc thiếu mục Công việc thi công trong ngày: Phân giải linh hoạt cả multiline String lẫn JSONArray trong `DailyReportContent.kt`, mở rộng cross-alias (`cong_viec_thi_cong` ↔ `thi_cong_trong_ngay` ↔ `thi_cong`...), chuẩn hóa `formatList` giữ nguyên tiêu đề phân nhóm (3.1 Điện, 3.2 Nước...) và thụt tab `\t- ` các ý con, hỗ trợ biến thể khoảng trắng `{{ thi_cong_trong_ngay }}`.
 - Thiết lập CI/CD phát hành tự động qua GitHub Releases (`.github/workflows/build-apk.yml`): Tự động build và gắn file APK mới nhất vào Releases để người dùng có thể tải về trực tiếp từ điện thoại khi ở ngoài công trường mà không cần cáp USB.
 
 ## Quyết định phải giữ

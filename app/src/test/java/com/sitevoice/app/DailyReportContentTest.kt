@@ -102,4 +102,29 @@ class DailyReportContentTest {
         assertEquals(5, content.congViecThiCong.size)
         assertEquals("3.1 Điện", content.congViecThiCong[0])
     }
+
+    @Test
+    fun testParseMultilineStringFields() {
+        val json = """
+            {
+              "cong_viec_thi_cong": "3.1 Điện\n\t- Thi công hệ thống điện tại tầng 8.\n3.2 Nước\n\t- Thi công trục thoát nước 11.",
+              "nghiem_thu": "- Nghiệm thu cốp pha sàn",
+              "an_toan": "- Vệ sinh mặt sàn",
+              "y_kien_cdt": "Đẩy nhanh tiến độ"
+            }
+        """.trimIndent()
+
+        val content = DailyReportContent.fromJson(json)
+
+        assertEquals(4, content.congViecThiCong.size)
+        assertEquals("3.1 Điện", content.congViecThiCong[0])
+        assertEquals("\t- Thi công hệ thống điện tại tầng 8.", content.congViecThiCong[1])
+        assertEquals("3.2 Nước", content.congViecThiCong[2])
+        assertEquals("\t- Thi công trục thoát nước 11.", content.congViecThiCong[3])
+
+        assertEquals(1, content.nghiemThu.size)
+        assertEquals("- Nghiệm thu cốp pha sàn", content.nghiemThu[0])
+        assertEquals(1, content.anToan.size)
+        assertEquals("Đẩy nhanh tiến độ", content.yKienCdt)
+    }
 }

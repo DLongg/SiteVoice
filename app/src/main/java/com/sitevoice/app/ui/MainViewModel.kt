@@ -358,14 +358,17 @@ class MainViewModel(
                 val token = tokenResult.getOrThrow()
                 val currentDailyInput = dailyInput.value
                 val reportContent = DailyReportContent.fromJson(report.contentJson)
-                val templateId = securePreferences.docTemplateId
+                val template = activeTemplate.value
+                val templateId = template?.docTemplateUrl?.let { PlaceholderMapper.extractDocId(it) }?.ifBlank { null }
+                    ?: securePreferences.docTemplateId
 
                 val exportResult = exporter.exportReport(
                     date = currentDate,
                     dailyInput = currentDailyInput,
                     reportContent = reportContent,
                     templateDocId = templateId,
-                    accessToken = token
+                    accessToken = token,
+                    template = template
                 )
 
                 if (exportResult.isSuccess) {

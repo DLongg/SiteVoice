@@ -35,7 +35,16 @@ Quy tắc bắt buộc:
 4. Mục nào không có dữ liệu: trả về mảng rỗng [] hoặc chuỗi rỗng "".
 5. Gộp các ý trùng lặp, ưu tiên việc quan trọng (khối lượng hoàn thành, nghiệm thu, sự cố, an toàn, yêu cầu CĐT/TVGS).
 6. Tuân thủ nghiêm ngặt giới hạn số dòng và số ký tự:
-   - "cong_viec_thi_cong": mảng các dòng (tối đa 15 dòng, mỗi dòng ≤ 100 ký tự)
+   - "cong_viec_thi_cong": mảng các dòng (tối đa 17 dòng, mỗi dòng ≤ 100 ký tự). Trình bày gom theo nhóm 3.1 [Tổ/Hạng mục 1], 3.2 [Tổ/Hạng mục 2]... Dưới mỗi nhóm là các gạch đầu dòng dạng "\t- [Nội dung và vị trí]".
+     Ví dụ:
+     [
+       "3.1 Điện",
+       "\t- Lắp đặt ống điện âm tường tầng 8.",
+       "\t- Chôn đế, tủ điện tầng 8.",
+       "3.2 Nước",
+       "\t- Thi công trục thoát nước 10, 11 (lô gia).",
+       "\t- Thăm ống, bể tự hoại tầng 1."
+     ]
    - "nghiem_thu": mảng các dòng (tối đa 6 dòng, mỗi dòng ≤ 100 ký tự)
    - "an_toan": mảng các dòng (tối đa 3 dòng, mỗi dòng ≤ 100 ký tự)
    - "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau": chuỗi văn bản (mỗi trường ≤ 200 ký tự)
@@ -99,7 +108,23 @@ Danh sách toàn bộ các bản ghi âm/ghi chú nguyên văn trong ngày (lưu
 $allNotesList
 
 Phân nhóm sơ bộ tham khảo:
-${groupedNotes.toString(2)}"""
+${groupedNotes.toString(2)}
+
+Cấu trúc JSON mong muốn:
+{
+  "cong_viec_thi_cong": [
+    "3.1 Điện",
+    "\t- [Nội dung và vị trí]",
+    "3.2 Nước",
+    "\t- [Nội dung và vị trí]"
+  ],
+  "nghiem_thu": [],
+  "an_toan": [],
+  "y_kien_cdt": "",
+  "y_kien_tvgs": "",
+  "y_kien_nha_thau": "",
+  "chua_phan_loai": []
+}"""
 
         val effectiveSystemPrompt = customSystemPrompt?.ifBlank { DEFAULT_SYSTEM_PROMPT } ?: DEFAULT_SYSTEM_PROMPT
         val messages = listOf(
