@@ -16,13 +16,9 @@ Cập nhật: 2026-10-21. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- Yêu cầu thay đổi 01 (2026-10-20): đã cập nhật đủ phần tài liệu/cấu hình cho thiết lập form Google Doc/DOCX: [đặc tả](10-thiet-lap-form.md), hai quyết định mới, prompt nhận diện, khuôn schema, kiến trúc/dữ liệu/LLM/xuất/lộ trình và Mẫu mặc định 13 chỗ điền trong Doc + 1 trường ẩn. Đây là đặc tả; Android/assets/DOCX không đổi, chức năng thiết lập/đo trang chưa được triển khai/xác minh.
-- Người dùng đã chốt: dùng `GEMINI.md` hoặc `AGENTS.md` thay CLAUDE và F12/F13. Đã giữ GEMINI làm điểm dẫn tới docs/10, bổ sung quy tắc Mẫu/code tìm vị trí/bảo vệ bản gốc ở AGENTS, giữ F11 backup, thêm F12/F13; H/I mô tả mở rộng/dự phòng, phần thiết lập cơ bản dẫn tới docs/10. Không còn vướng thiếu CLAUDE hoặc trùng F11.
-- Kiểm tra thay đổi 01: Python xác nhận 5 file mới, JSON/metadata/giới hạn, 13 mã B/C khớp schema, prompt/luật/link/F12-F13 đúng; `git diff --check` đạt. Checklist loại mã cũ toàn repo vẫn CHƯA ĐẠT (13 file code/test/assets/DOCX, mẫu cá nhân, prompt đầu vào và lịch sử). Đã giải thích ngoại lệ là giữ phạm vi tài liệu, không coi người dùng đã phê duyệt đổi checklist hoặc mở rộng sửa mã. Danh sách file/kết quả ở [WORK_LOG](WORK_LOG.md). Các câu hỏi sản phẩm/ký tự thiếu giữ trong docs/10; bước 8b và chuẩn bị bài kiểm tra chuẩn vẫn chưa làm. Không chạy build/test Android cho task tài liệu.
-- [Lộ trình](07-lo-trinh.md): Đã hoàn thành 100% Giai đoạn 0, 1, 2, 3 và hoàn thành trọn vẹn 100% Nhóm 4.1 (Task 4.1.1 - 4.1.4) của Giai đoạn 4. Toàn bộ các nhóm mở rộng (4.2, 4.3, 4.4) đã được dời sang [08-cong-viec-tuong-lai.md](08-cong-viec-tuong-lai.md) theo yêu cầu người dùng.
-- Model Harness & Benchmark ([10-do-chinh-xac.md](10-do-chinh-xac.md)): Đã hoàn thành Bước 1, 2 và 3: Xây dựng `TextNormalizer` (sửa lỗi nghe/viết tắt), `ClauseSplitter` (tách câu/mệnh đề), `DeterministicRuleEngine` (tầng quy tắc tất định 0ms offline), `SemanticGuardrails` (hậu kiểm enum và chống mâu thuẫn) và `HybridClassificationPipeline`. Tích hợp trực tiếp vào `ClassifyWorker`.
-- Kết quả kiểm chuẩn tự động ([ClassificationBenchmarkTest.kt](../app/src/test/java/com/sitevoice/app/ClassificationBenchmarkTest.kt)): Độ chính xác tổng tăng vọt từ **81.67% lên đúng 95.00%** (57/60 câu chuẩn xác). Nhóm viết tắt/nghe nhầm đạt 100%, nhóm ngữ cảnh đạt 100%, nhóm câu đơn ý đạt 97.2%.
-- Kiểm thử: Toàn bộ 17 test suites (> 45 unit tests) pass 100%; APK debug (11.94 MB) build thành công.
+- Khắc phục lỗi LLM tổng hợp thiếu trường & sai tổ đội (2026-10-21): Loại bỏ hoàn toàn JSON schema hardcode 7 trường trong `ReportSynthesizer`, set `temperature=0.0`, cập nhật prompt template đầy đủ trường JSON (`s_n`, `s_m`, `c_n`, `c_m`, `t_bt`, `t_m`, `tong_quan_thoi_tiet`, `ng_ch`, `ng_cn`, `may_moc`...) và quy tắc nắn chỉnh gom việc tổ đội nhầm. Cập nhật `PlaceholderMapper` (hỗ trợ boolean sang `☑`/`☐`) và `DailyReportPreviewScreen` đọc trực tiếp từ `allFields`.
+- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (APK 11.94 MB đã cài đặt trực tiếp lên thiết bị thật Xiaomi `33c4f658`).
+- [Lộ trình](07-lo-trinh.md): Đã hoàn thành Giai đoạn 0-3 và Nhóm 4.1. Đang kiểm thử trực tiếp luồng tổng hợp và xuất Doc trên thiết bị thật.
 
 ## Quyết định phải giữ
 
@@ -32,7 +28,7 @@ Cập nhật: 2026-10-21. Đây là trạng thái hiện tại; quy tắc ở [A
 - [0007](quyet-dinh/0007-bo-stt-offline-cho-mang.md): bỏ STT offline on-device, lưu speech ngoại tuyến và chờ mạng gọi API online.
 - Thay đổi 01 thêm [0006-tu-dat-placeholder](quyet-dinh/0006-tu-dat-placeholder.md) và [0007-dau-vao-gdoc-va-docx](quyet-dinh/0007-dau-vao-gdoc-va-docx.md); giữ tên file theo yêu cầu, không thay hai quyết định cũ trùng số. Các tham chiếu mới cần dùng tên đầy đủ để phân biệt.
 - Luôn commit và push chi tiết từng bước lên GitHub `origin/main`.
-- Quy tắc làm việc: Nếu Chrome/trình duyệt/hệ thống yêu cầu người dùng thì agent cũng bị yêu cầu tương tự (hỏi và chờ xác nhận); nếu xung đột giữa luật và Doc thì bắt buộc hỏi người dùng để chốt, tuyệt đối không tự ý quyết định.
+- Quy tắc làm việc: Nếu Chrome/hệ thống yêu cầu người dùng thì agent cũng bị yêu cầu (hỏi và chờ xác nhận); nếu prompt của người dùng đi chệch hướng với luồng/luật/định nghĩa trong tài liệu (Doc) thì agent phải đưa ra câu hỏi lựa chọn để người dùng chốt trước khi làm.
 
 ## Ưu tiên tiếp theo
 

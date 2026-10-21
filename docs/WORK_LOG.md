@@ -508,11 +508,23 @@ A templates/schema-chung.md
 - Kiểm tra: 52/52 Unit tests pass 100%, build APK và cài đặt trực tiếp lên điện thoại thật thành công, xác minh toàn bộ ảnh chụp màn hình thực tế.
 
 
-## 2026-10-21 — Bổ sung luật yêu cầu từ Chrome và xử lý xung đột với Doc — Hoàn thành
+## 2026-10-21 — Bổ sung luật yêu cầu từ Chrome và xử lý khi prompt lệch với Doc — Hoàn thành
 
-- Kết quả: Đã bổ sung 2 quy tắc bắt buộc vào `AGENTS.md` (mục *Coding, phạm vi và kiểm tra*) theo đúng yêu cầu người dùng:
+- Kết quả: Đã bổ sung/chuẩn hóa 2 quy tắc bắt buộc vào `AGENTS.md` (mục *Coding, phạm vi và kiểm tra*) theo đúng yêu cầu người dùng:
   + Nếu Chrome (hoặc trình duyệt / hệ thống) yêu cầu người dùng, thì agent cũng bị yêu cầu tương tự (phải nêu rõ yêu cầu và chờ người dùng thực hiện/xác nhận).
-  + Nếu có xung đột (conflict) giữa luật (quy tắc làm việc) và hướng dẫn trong tài liệu (Doc), bắt buộc phải hỏi lại người dùng để làm rõ và chốt phương án trước khi thực hiện; tuyệt đối không tự ý quyết định hay tự chọn phương án.
-- File sửa: `AGENTS.md`.
+  + Các luồng, quy tắc và định nghĩa chương trình đã được quy định trong tài liệu (`docs/`). Nếu người dùng đưa ra prompt/lệnh đi chệch hướng hoặc mâu thuẫn với tài liệu, agent không được tự ý thực hiện hay tự quyết định, mà bắt buộc phải đưa ra câu hỏi lựa chọn (multiple-choice) cho người dùng chốt phương án trước khi thực hiện.
+- File sửa: `AGENTS.md`, `docs/SUMMARY.md`.
 - Kiểm tra: Đối chiếu nội dung văn bản, tính nhất quán với quy tắc chung và độ dài SUMMARY dưới 80 dòng. Task tài liệu/quy tắc, không sửa mã nguồn ứng dụng nên không cần chạy test/build Android.
 - Còn lại: Tuân thủ nghiêm ngặt 2 quy tắc mới này trong mọi tương tác và tác vụ tiếp theo.
+
+
+## 2026-10-21 — Khắc phục lỗi LLM trả về thiếu trường và sai tổ đội khi tổng hợp — Hoàn thành
+
+- Kết quả:
+  + Loại bỏ hoàn toàn định dạng JSON 7 trường hardcode trong `ReportSynthesizer.kt`, chuyển `temperature = 0.0f` để tuân thủ tuyệt đối chỉ thị prompt.
+  + Chuẩn hóa prompt mẫu (`templates/nhat-ky-cong-truong/prompt.md`, `app/src/main/assets/templates/nhat-ky-cong-truong/prompt.md`, `TemplateRepository.kt`): bổ sung cấu trúc JSON mẫu đầy đủ (thời tiết `s_n`, `s_m`, `c_n`, `c_m`, `t_bt`, `t_m`, `tong_quan_thoi_tiet`, nhân lực `ng_ch`, `ng_cn`, thiết bị `may_moc`, công việc `thi_cong_trong_ngay`...) và quy tắc nắn chỉnh gom việc tổ đội nhầm (tự động gom việc điện vào 3.1 Điện dù người dùng nói lẫn vào phần nước).
+  + Nâng cấp `DailyReportContent.kt` & `PlaceholderMapper.kt`: phân giải động toàn bộ `allFields`, tự động chuyển kiểu Boolean sang ký tự ô tích `☑` / `☐`, danh sách sang gạch đầu dòng `- `.
+  + Nâng cấp `DailyReportPreviewScreen.kt`: hiển thị trực quan thông tin thời tiết, máy móc, ban chỉ huy, công nhân đọc trực tiếp từ `content.allFields`.
+- File sửa: `ReportSynthesizer.kt`, `DailyReportContent.kt`, `PlaceholderMapper.kt`, `DailyReportPreviewScreen.kt`, `TemplateRepository.kt`, `prompt.md`.
+- Kiểm tra: Toàn bộ Unit Tests pass 100%, `assembleDebug` tạo APK 11.94 MB và cài đặt thành công lên điện thoại Xiaomi `33c4f658`.
+- Còn lại: Chạy kiểm thử trực tiếp trên ứng dụng thực tế với nội dung ghi chú người dùng cung cấp.
