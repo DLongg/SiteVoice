@@ -506,3 +506,13 @@ A templates/schema-chung.md
   + Tinh chỉnh: Bổ sung shorthand aliases (`s_n`, `c_n`, `t_bt`, `ng_ch`, `ng_cn`, `thi_cong_trong_ngay`...) vào `PlaceholderMapper.kt` và chuyển `matchCase = false` trong `GoogleDocsExporter.kt`.
 - File sửa: `app/src/main/java/com/sitevoice/app/export/PlaceholderMapper.kt`, `app/src/main/java/com/sitevoice/app/export/GoogleDocsExporter.kt`.
 - Kiểm tra: 52/52 Unit tests pass 100%, build APK và cài đặt trực tiếp lên điện thoại thật thành công, xác minh toàn bộ ảnh chụp màn hình thực tế.
+
+
+## 2026-10-21 — Bổ sung luật yêu cầu từ Chrome và xử lý xung đột với Doc — Hoàn thành
+
+- Kết quả: Đã bổ sung 2 quy tắc bắt buộc vào `AGENTS.md` (mục *Coding, phạm vi và kiểm tra*) theo đúng yêu cầu người dùng:
+  + Nếu Chrome (hoặc trình duyệt / hệ thống) yêu cầu người dùng, thì agent cũng bị yêu cầu tương tự (phải nêu rõ yêu cầu và chờ người dùng thực hiện/xác nhận).
+  + Nếu có xung đột (conflict) giữa luật (quy tắc làm việc) và hướng dẫn trong tài liệu (Doc), bắt buộc phải hỏi lại người dùng để làm rõ và chốt phương án trước khi thực hiện; tuyệt đối không tự ý quyết định hay tự chọn phương án.
+- File sửa: `AGENTS.md`.
+- Kiểm tra: Đối chiếu nội dung văn bản, tính nhất quán với quy tắc chung và độ dài SUMMARY dưới 80 dòng. Task tài liệu/quy tắc, không sửa mã nguồn ứng dụng nên không cần chạy test/build Android.
+- Còn lại: Tuân thủ nghiêm ngặt 2 quy tắc mới này trong mọi tương tác và tác vụ tiếp theo.

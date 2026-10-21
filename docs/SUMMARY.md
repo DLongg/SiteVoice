@@ -32,6 +32,7 @@ Cập nhật: 2026-10-21. Đây là trạng thái hiện tại; quy tắc ở [A
 - [0007](quyet-dinh/0007-bo-stt-offline-cho-mang.md): bỏ STT offline on-device, lưu speech ngoại tuyến và chờ mạng gọi API online.
 - Thay đổi 01 thêm [0006-tu-dat-placeholder](quyet-dinh/0006-tu-dat-placeholder.md) và [0007-dau-vao-gdoc-va-docx](quyet-dinh/0007-dau-vao-gdoc-va-docx.md); giữ tên file theo yêu cầu, không thay hai quyết định cũ trùng số. Các tham chiếu mới cần dùng tên đầy đủ để phân biệt.
 - Luôn commit và push chi tiết từng bước lên GitHub `origin/main`.
+- Quy tắc làm việc: Nếu Chrome/trình duyệt/hệ thống yêu cầu người dùng thì agent cũng bị yêu cầu tương tự (hỏi và chờ xác nhận); nếu xung đột giữa luật và Doc thì bắt buộc hỏi người dùng để chốt, tuyệt đối không tự ý quyết định.
 
 ## Ưu tiên tiếp theo
 
