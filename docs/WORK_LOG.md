@@ -566,3 +566,14 @@ A templates/schema-chung.md
   + Chạy `.\gradlew.bat testDebugUnitTest` vượt qua 100% (toàn bộ unit tests pass, bổ sung test phân giải multiline string và test format sub-header).
   + Build `.\gradlew.bat assembleDebug` thành công 100%.
   + Cài đặt APK trực tiếp lên điện thoại thật Xiaomi (`33c4f658`), xác minh giao diện ứng dụng, màn hình Xem trước và chức năng xuất lại Google Doc.
+
+## 2026-10-23 — Khắc phục lỗi GitHub Actions CI/CD build APK thất bại do đường dẫn JDK cứng — Hoàn thành
+
+- Kết quả:
+  + Phát hiện nguyên nhân 3 lần chạy workflow `Build & Release Debug APK` trên GitHub Actions bị lỗi (`failure` ở bước `Build Debug APK`): trong `gradle.properties` có dòng cấu hình cứng đường dẫn JDK máy cá nhân Windows (`org.gradle.java.home=D:\\app\\jdk-17`), không tồn tại trên máy chủ Linux (`ubuntu-latest`) của GitHub Actions.
+  + Xóa dòng `org.gradle.java.home=D:\\app\\jdk-17` khỏi `gradle.properties` (trên máy local vẫn nhận đúng `JAVA_HOME`, trên GitHub Actions nhận đúng JDK 17 do `actions/setup-java@v4` cấp).
+  + Đẩy bản sửa lên `origin/main` và xác minh workflow run `39896710931` vượt qua toàn bộ các bước (`Build Debug APK`, `Upload APK Artifact`, `Create or Update GitHub Release`) thành công 100%, phát hành bản `latest` (`app-debug.apk`) tại `https://github.com/DLongg/SiteVoice/releases/tag/latest`.
+- File sửa: `gradle.properties`.
+- Kiểm tra:
+  + Local: `.\gradlew.bat testDebugUnitTest assembleDebug` thành công 100%.
+  + GitHub Actions: Run `39896710931` hoàn tất `completed / success`, tạo thành công GitHub Release và đính kèm `app-debug.apk`.
