@@ -17,13 +17,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.sitevoice.app.R
 import com.sitevoice.app.formsetup.FormCandidate
+import com.sitevoice.app.formsetup.FormLlmDescriber
 import com.sitevoice.app.formsetup.FormSetupAnalysis
+import com.sitevoice.app.settings.SecurePreferences
+import java.util.Locale
 
 private val LOAI_OPTIONS = listOf(
     "danh_sach" to "Danh sách",
@@ -55,16 +61,25 @@ private fun formatNguonLabel(nguon: String): String {
     return NGUON_OPTIONS.firstOrNull { it.first.equals(nguon, ignoreCase = true) }?.second ?: nguon.ifBlank { "Chung" }
 }
 
+enum class FormSetupStep {
+    STEP_1_TAGS,
+    STEP_2_PROMPT_CONFIG
+}
+
 @Composable
 fun FormSetupDialog(
     analysis: FormSetupAnalysis?,
     isLoading: Boolean,
     errorMessage: String?,
-    onConfirmSetup: (templateName: String, approvedCandidates: List<FormCandidate>) -> Unit,
+    onConfirmSetup: (templateName: String, approvedCandidates: List<FormCandidate>, systemPrompt: String, temperature: Float) -> Unit,
     onRescan: () -> Unit = {},
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    initialTemperature: Float? = null
 ) {
     val context = LocalContext.current
+    val securePrefs = remember(context) { SecurePreferences(context) }
+
+    var currentStep by remember { mutableStateOf(FormSetupStep.STEP_1_TAGS) }
     var templateName by remember(analysis) {
         mutableStateOf(analysis?.originalDocTitle?.replace("[SiteVoice Mẫu] ", "") ?: "Mẫu tự động")
     }
@@ -76,6 +91,14 @@ fun FormSetupDialog(
 
     // ID của candidate đang được mở rộng chỉnh sửa (null nếu không có)
     var editingCandidateId by remember { mutableStateOf<Int?>(null) }
+
+    // Prompt thống nhất do AI sinh từ các thẻ neo
+    var promptText by remember { mutableStateOf("") }
+
+    // Nhiệt độ biên tập (0.0f .. 0.8f)
+    var temperature by remember {
+        mutableStateOf(initialTemperature ?: securePrefs.llmTemperature)
+    }
 
     Dialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
@@ -102,13 +125,13 @@ fun FormSetupDialog(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Thiết lập Form Tự động",
+                            text = stringResource(R.string.form_setup_dialog_title),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF0F172A)
                         )
                         Text(
-                            text = "Nhận diện chỗ điền & cho phép tinh chỉnh trực tiếp",
+                            text = stringResource(R.string.form_setup_dialog_subtitle),
                             fontSize = 12.sp,
                             color = Color(0xFF64748B)
                         )
@@ -118,7 +141,7 @@ fun FormSetupDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Trạng thái đang phân tích
                 if (isLoading) {
@@ -135,13 +158,13 @@ fun FormSetupDialog(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Đang quét cấu trúc & nhận diện chỗ điền...",
+                                text = stringResource(R.string.form_setup_loading_title),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color(0xFF334155)
                             )
                             Text(
-                                text = "Tạo bản sao an toàn trên Drive và phân loại vị trí",
+                                text = stringResource(R.string.form_setup_loading_subtitle),
                                 fontSize = 12.sp,
                                 color = Color(0xFF64748B)
                             )
@@ -162,7 +185,7 @@ fun FormSetupDialog(
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    text = "Không thể phân tích form:",
+                                    text = stringResource(R.string.form_setup_error_title),
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFFB91C1C)
                                 )
@@ -172,87 +195,325 @@ fun FormSetupDialog(
                         }
                     }
                 } else if (analysis != null) {
-                    // Danh sách kết quả phân tích
-                    Text(
-                        text = "1. Tên Mẫu hiển thị:",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1E293B)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    OutlinedTextField(
-                        value = templateName,
-                        onValueChange = { templateName = it },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                    // Thanh Stepper Indicator 2 bước chuẩn App Screens
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFFF1F5F9),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = if (currentStep == FormSetupStep.STEP_1_TAGS) {
+                                    stringResource(R.string.form_setup_step1_indicator)
+                                } else {
+                                    stringResource(R.string.form_setup_step2_indicator)
+                                },
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B)
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    shape = RoundedCornerShape(2.dp),
+                                    color = if (currentStep == FormSetupStep.STEP_1_TAGS) Color(0xFF2563EB) else Color(0xFF94A3B8),
+                                    modifier = Modifier.size(width = 24.dp, height = 4.dp)
+                                ) {}
+                                Surface(
+                                    shape = RoundedCornerShape(2.dp),
+                                    color = if (currentStep == FormSetupStep.STEP_2_PROMPT_CONFIG) Color(0xFF2563EB) else Color(0xFFCBD5E1),
+                                    modifier = Modifier.size(width = 24.dp, height = 4.dp)
+                                ) {}
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Khối Bản sao an toàn & Mở Google Docs gõ sửa
-                    Card(
-                        shape = RoundedCornerShape(10.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
+                    if (currentStep == FormSetupStep.STEP_1_TAGS) {
+                        // ==================== BƯỚC 1: DUYỆT THẺ NEO ====================
+                        Text(
+                            text = stringResource(R.string.form_setup_template_name_label),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF1E293B)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        OutlinedTextField(
+                            value = templateName,
+                            onValueChange = { templateName = it },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Khối Bản sao an toàn & Mở Google Docs gõ sửa
+                        Card(
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = stringResource(R.string.form_setup_safe_copy_label),
+                                            fontSize = 11.sp,
+                                            color = Color(0xFF64748B)
+                                        )
+                                        Text(
+                                            text = analysis.originalDocTitle,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF0F172A),
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(analysis.workingDocUrl))
+                                            context.startActivity(intent)
+                                        },
+                                        modifier = Modifier.weight(1.3f),
+                                        shape = RoundedCornerShape(6.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E40AF)),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.form_setup_open_in_docs),
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
+                                    }
+
+                                    OutlinedButton(
+                                        onClick = onRescan,
+                                        enabled = !isLoading,
+                                        modifier = Modifier.weight(0.7f),
+                                        shape = RoundedCornerShape(6.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.form_setup_rescan),
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF1E293B)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(R.string.form_setup_rescan_hint),
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        val activeCount = candidateList.count { !it.boQua }
+                        val skippedCount = candidateList.size - activeCount
+
+                        Text(
+                            text = stringResource(R.string.form_setup_candidates_header, activeCount, skippedCount),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF1E293B)
+                        )
+
+                        Text(
+                            text = stringResource(R.string.form_setup_candidates_hint),
+                            fontSize = 11.sp,
+                            color = Color(0xFF64748B),
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
+                                .padding(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(candidateList, key = { it.id }) { item ->
+                                val isExpanded = (editingCandidateId == item.id)
+
+                                CandidateCard(
+                                    candidate = item,
+                                    isExpanded = isExpanded,
+                                    onToggleExpand = {
+                                        editingCandidateId = if (isExpanded) null else item.id
+                                    },
+                                    onUpdate = { updated ->
+                                        candidateList = candidateList.map {
+                                            if (it.id == updated.id) updated else it
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Navigation Bar Bước 1
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = onDismiss,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Hủy", color = Color(0xFF475569))
+                            }
+
+                            Button(
+                                onClick = {
+                                    if (promptText.isBlank()) {
+                                        promptText = FormLlmDescriber.generateUnifiedPrompt(candidateList, templateName)
+                                    }
+                                    currentStep = FormSetupStep.STEP_2_PROMPT_CONFIG
+                                },
+                                modifier = Modifier.weight(2f),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB))
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.form_setup_step1_continue),
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    } else {
+                        // ==================== BƯỚC 2: DUYỆT PROMPT & NHIỆT ĐỘ ====================
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        ) {
+                            // 1. Khối thanh trượt Nhiệt độ biên tập (Temperature)
+                            Card(
+                                shape = RoundedCornerShape(10.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.form_setup_temperature_title),
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF1E293B)
+                                        )
+
+                                        Surface(
+                                            shape = RoundedCornerShape(4.dp),
+                                            color = Color(0xFFEFF6FF),
+                                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE))
+                                        ) {
+                                            Text(
+                                                text = String.format(Locale.US, "%.2f", temperature),
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color(0xFF1D4ED8),
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = stringResource(R.string.form_setup_temperature_desc),
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Slider(
+                                        value = temperature,
+                                        onValueChange = { newTemp ->
+                                            temperature = (Math.round(newTemp * 100) / 100f).coerceIn(0.0f, 0.8f)
+                                        },
+                                        valueRange = 0.0f..0.8f,
+                                        steps = 15,
+                                        colors = SliderDefaults.colors(
+                                            thumbColor = Color(0xFF2563EB),
+                                            activeTrackColor = Color(0xFF2563EB),
+                                            inactiveTrackColor = Color(0xFFE2E8F0)
+                                        ),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+
+                                    Text(
+                                        text = stringResource(R.string.form_setup_temperature_hint),
+                                        fontSize = 10.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // 2. Khối soạn thảo Prompt thống nhất
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Bản sao an toàn trên Google Drive:",
-                                        fontSize = 11.sp,
-                                        color = Color(0xFF64748B)
-                                    )
-                                    Text(
-                                        text = analysis.originalDocTitle,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF0F172A),
-                                        maxLines = 1
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Button(
-                                    onClick = {
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(analysis.workingDocUrl))
-                                        context.startActivity(intent)
-                                    },
-                                    modifier = Modifier.weight(1.3f),
-                                    shape = RoundedCornerShape(6.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E40AF)),
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
-                                ) {
-                                    Text(
-                                        text = "📄 Mở & gõ sửa trên Docs ↗",
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color.White
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(R.string.form_setup_prompt_label),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF1E293B),
+                                    modifier = Modifier.weight(1f)
+                                )
 
                                 OutlinedButton(
-                                    onClick = onRescan,
-                                    enabled = !isLoading,
-                                    modifier = Modifier.weight(0.7f),
+                                    onClick = {
+                                        promptText = FormLlmDescriber.generateUnifiedPrompt(candidateList, templateName)
+                                    },
                                     shape = RoundedCornerShape(6.dp),
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
                                     Text(
-                                        text = "🔄 Quét lại",
+                                        text = stringResource(R.string.form_setup_step2_regenerate),
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = Color(0xFF1E293B)
@@ -260,96 +521,96 @@ fun FormSetupDialog(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "💡 File gốc giữ nguyên. Bạn có thể mở bản sao để gõ sửa tùy ý trên Google Docs rồi bấm 'Quét lại' để cập nhật.",
-                                fontSize = 10.sp,
+                                text = stringResource(R.string.form_setup_prompt_hint),
+                                fontSize = 11.sp,
                                 color = Color(0xFF64748B)
                             )
-                        }
-                    }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
 
-                    val activeCount = candidateList.count { !it.boQua }
-                    val skippedCount = candidateList.size - activeCount
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "2. Chỗ điền phát hiện ($activeCount chèn, $skippedCount bỏ qua):",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF1E293B)
-                        )
-                    }
-
-                    Text(
-                        text = "Chạm vào thẻ hoặc nút 'Sửa' để chỉnh sửa tay mã thẻ, tên, loại và nguồn.",
-                        fontSize = 11.sp,
-                        color = Color(0xFF64748B),
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
-                            .padding(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(candidateList, key = { it.id }) { item ->
-                            val isExpanded = (editingCandidateId == item.id)
-
-                            CandidateCard(
-                                candidate = item,
-                                isExpanded = isExpanded,
-                                onToggleExpand = {
-                                    editingCandidateId = if (isExpanded) null else item.id
-                                },
-                                onUpdate = { updated ->
-                                    candidateList = candidateList.map {
-                                        if (it.id == updated.id) updated else it
-                                    }
-                                }
+                            OutlinedTextField(
+                                value = promptText,
+                                onValueChange = { promptText = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                minLines = 8,
+                                maxLines = 16,
+                                shape = RoundedCornerShape(8.dp),
+                                textStyle = TextStyle(
+                                    fontSize = 11.sp,
+                                    lineHeight = 16.sp,
+                                    color = Color(0xFF0F172A)
+                                )
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    // Buttons
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(8.dp)
+                        // Navigation Bar Bước 2
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Text("Hủy", color = Color(0xFF475569))
-                        }
+                            OutlinedButton(
+                                onClick = { currentStep = FormSetupStep.STEP_1_TAGS },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.form_setup_step2_back),
+                                    color = Color(0xFF475569),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
 
-                        Button(
-                            onClick = {
-                                onConfirmSetup(templateName, candidateList)
-                            },
-                            modifier = Modifier.weight(2f),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB))
-                        ) {
-                            Text("✓ Chèn thẻ & Tạo Mẫu", fontWeight = FontWeight.Bold, color = Color.White)
+                            Button(
+                                onClick = {
+                                    onConfirmSetup(templateName, candidateList, promptText, temperature)
+                                },
+                                modifier = Modifier.weight(2f),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB))
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.form_setup_step2_complete),
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun FormSetupDialog(
+    analysis: FormSetupAnalysis?,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onConfirmSetup: (templateName: String, approvedCandidates: List<FormCandidate>) -> Unit,
+    onRescan: () -> Unit = {},
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val securePrefs = remember(context) { SecurePreferences(context) }
+    FormSetupDialog(
+        analysis = analysis,
+        isLoading = isLoading,
+        errorMessage = errorMessage,
+        onConfirmSetup = { templateName, candidates, prompt, temp ->
+            securePrefs.llmTemperature = temp
+            securePrefs.setString("pending_setup_prompt", prompt)
+            onConfirmSetup(templateName, candidates)
+        },
+        onRescan = onRescan,
+        onDismiss = onDismiss,
+        initialTemperature = securePrefs.llmTemperature
+    )
 }
 
 @Composable
