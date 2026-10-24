@@ -4,6 +4,8 @@ import com.sitevoice.app.formsetup.FormCandidateScanner
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -48,12 +50,6 @@ class FormCandidateScannerTest {
 
         val candidates = FormCandidateScanner.scanDocument(sampleDoc)
 
-        // Phải phát hiện:
-        // - 2 chỗ chấm ngày/tháng
-        // - 2 ô tích thời tiết (☐ và ☑)
-        // - 1 chỗ chấm nhân lực
-        // - 1 khối đoạn trống gộp dưới mục 3 thi công
-        // - 1 khối đoạn trống gộp dưới mục 4 nghiệm thu
         assertTrue("Cần tìm thấy các ứng viên", candidates.size >= 5)
 
         val dateCandidates = candidates.filter { it.loaiGoiY == "ngay" }
@@ -64,12 +60,187 @@ class FormCandidateScannerTest {
 
         val emptyBlockCandidates = candidates.filter { it.tinHieu == "doan_trong" }
         assertEquals(2, emptyBlockCandidates.size)
-        // Đoạn trống dưới mục 3 phải được gộp từ 3 dòng trống liên tiếp
         val thiCongCandidate = emptyBlockCandidates.find { it.tieuDeGanNhat.contains("thi công", ignoreCase = true) }
         assertTrue(thiCongCandidate != null)
         assertEquals(3, thiCongCandidate?.soDongLienTiep)
         assertEquals(166, thiCongCandidate?.startIndex)
         assertEquals(169, thiCongCandidate?.endIndex)
+    }
+
+    @Test
+    fun testHeadingPatternRecognition() {
+        // Số La Mã
+        assertTrue(FormCandidateScanner.isHeading("I. THÔNG TIN CHUNG"))
+        assertTrue(FormCandidateScanner.isHeading("II. TÌNH HÌNH THI CÔNG:"))
+        assertTrue(FormCandidateScanner.isHeading("III) NỘI DUNG THI CÔNG"))
+        assertTrue(FormCandidateScanner.isHeading("IV. CÔNG TÁC NGHIỆM THU"))
+        assertTrue(FormCandidateScanner.isHeading("X. PHỤ LỤC HỒ SƠ"))
+
+        // Chữ cái
+        assertTrue(FormCandidateScanner.isHeading("A. CHỦ ĐẦU TƯ"))
+        assertTrue(FormCandidateScanner.isHeading("B. TƯ VẤN GIÁM SÁT:"))
+        assertTrue(FormCandidateScanner.isHeading("a. Đơn vị thi công xây dựng"))
+        assertTrue(FormCandidateScanner.isHeading("b) Danh mục thiết bị"))
+
+        // Số và mục con phân cấp
+        assertTrue(FormCandidateScanner.isHeading("1. Thời tiết:"))
+        assertTrue(FormCandidateScanner.isHeading("2. Lực lượng thi công"))
+        assertTrue(FormCandidateScanner.isHeading("3) Vật tư chính"))
+        assertTrue(FormCandidateScanner.isHeading("1.1 Ban chỉ huy:"))
+        assertTrue(FormCandidateScanner.isHeading("3.1 Công việc thi công trong ngày:"))
+        assertTrue(FormCandidateScanner.isHeading("1.2.3 Kiểm tra an toàn lao động"))
+
+        // Dòng kết thúc bằng dấu : lên tới 150 ký tự
+        assertTrue(FormCandidateScanner.isHeading("5. Công tác an toàn lao động và vệ sinh môi trường trên toàn bộ công trường:"))
+        assertTrue(FormCandidateScanner.isHeading("Chủ đầu tư:"))
+        assertTrue(FormCandidateScanner.isHeading("Ý kiến chỉ đạo của Tư vấn giám sát tại hiện trường:"))
+
+        // Phủ định: Không phải heading
+        assertFalse(FormCandidateScanner.isHeading("................................"))
+        assertFalse(FormCandidateScanner.isHeading("________________________________"))
+        assertFalse(FormCandidateScanner.isHeading(""))
+        assertFalse(FormCandidateScanner.isHeading("   "))
+        assertFalse(FormCandidateScanner.isHeading("Hà Nội, ngày ..... tháng ..... năm 2026\n"))
+        assertFalse(FormCandidateScanner.isHeading("- Ban chỉ huy công trường: ..... người"))
+    }
+
+    @Test
+    fun testTableScanningPreservesLeftLabelForEmptyAndDottedCells() {
+        val tableElement = createTableElement(
+            listOf(
+                // Row 0: Ô trái là nhãn "Chủ đầu tư:", Ô phải rỗng
+                listOf(
+                    listOf(Pair(10, "Chủ đầu tư:\n")),
+                    listOf(Pair(25, "\n"))
+                ),
+                // Row 1: Ô trái là "Ban chỉ huy:", Ô phải chứa chấm "..... người"
+                listOf(
+                    listOf(Pair(30, "Ban chỉ huy:\n")),
+                    listOf(Pair(50, "..... người\n"))
+                ),
+                // Row 2: Ô trái là "3. Công việc thi công:", Ô phải chứa 3 dòng chấm liên tiếp
+                listOf(
+                    listOf(Pair(70, "3. Công việc thi công:\n")),
+                    listOf(
+                        Pair(100, "................................\n"),
+                        Pair(140, "................................\n"),
+                        Pair(180, "................................\n")
+                    )
+                )
+            )
+        )
+
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    put(tableElement)
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        assertEquals(3, candidates.size)
+
+        // Candidate 1: Ô trống bên phải kế thừa nhãn "Chủ đầu tư:"
+        val c0 = candidates[0]
+        assertEquals("o_bang", c0.tinHieu)
+        assertEquals("Chủ đầu tư:", c0.truoc)
+        assertEquals("Chủ đầu tư:", c0.tieuDeGanNhat)
+        assertEquals("van_ban", c0.loaiGoiY)
+        assertEquals(1, c0.soDongLienTiep)
+
+        // Candidate 2: Ô chấm bên phải kế thừa nhãn "Ban chỉ huy:", nhận diện loại số
+        val c1 = candidates[1]
+        assertEquals("o_bang", c1.tinHieu)
+        assertEquals("Ban chỉ huy:", c1.truoc)
+        assertEquals("người", c1.sau)
+        assertEquals("Ban chỉ huy:", c1.tieuDeGanNhat)
+        assertEquals("so", c1.loaiGoiY)
+
+        // Candidate 3: 3 dòng chấm liên tiếp gộp thành 1 chỗ điền danh_sach
+        val c2 = candidates[2]
+        assertEquals("o_bang", c2.tinHieu)
+        assertEquals("3. Công việc thi công:", c2.truoc)
+        assertEquals("3. Công việc thi công:", c2.tieuDeGanNhat)
+        assertEquals(3, c2.soDongLienTiep)
+        assertEquals("danh_sach", c2.loaiGoiY)
+        assertEquals(100, c2.startIndex)
+        assertEquals(213, c2.endIndex) // 180 + "................................\n".length = 180 + 33 = 213
+    }
+
+    @Test
+    fun testConsecutiveDotLinesMergingUnderHeading() {
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    // Đề mục
+                    put(createParagraphElement(1, 35, "3. Công việc thi công trong ngày:\n"))
+                    // 4 dòng chấm liên tiếp
+                    put(createParagraphElement(36, 70, "................................\n"))
+                    put(createParagraphElement(71, 105, "................................\n"))
+                    put(createParagraphElement(106, 140, "................................\n"))
+                    put(createParagraphElement(141, 175, "................................\n"))
+                    // Đề mục tiếp theo
+                    put(createParagraphElement(176, 210, "4. Công việc nghiệm thu trong ngày:\n"))
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        assertEquals(1, candidates.size)
+
+        val merged = candidates[0]
+        assertEquals("dong_cham", merged.tinHieu)
+        assertEquals(4, merged.soDongLienTiep)
+        assertEquals("danh_sach", merged.loaiGoiY)
+        assertEquals(36, merged.startIndex)
+        assertEquals(175, merged.endIndex)
+        assertTrue(merged.tieuDeGanNhat.contains("thi công"))
+    }
+
+    @Test
+    fun testSingleDotLineUnderHeadingProducesVanBan() {
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    put(createParagraphElement(1, 20, "2. Ghi chú chung:\n"))
+                    put(createParagraphElement(21, 55, "................................\n"))
+                    put(createParagraphElement(56, 80, "3. Đề mục tiếp theo:\n"))
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        assertEquals(1, candidates.size)
+
+        val single = candidates[0]
+        assertEquals("dong_cham", single.tinHieu)
+        assertEquals(1, single.soDongLienTiep)
+        assertEquals("van_ban", single.loaiGoiY)
+        assertEquals(21, single.startIndex)
+        assertEquals(55, single.endIndex)
+    }
+
+    @Test
+    fun testInlineDotsMaintainSeparation() {
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    put(createParagraphElement(1, 40, "Hà Nội, ngày ..... tháng ..... năm 2026\n"))
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        // Phải tách thành 2 ứng viên riêng biệt (ngày và tháng), không được gộp thành danh_sach
+        assertEquals(2, candidates.size)
+        assertEquals("ngay", candidates[0].loaiGoiY)
+        assertEquals(1, candidates[0].soDongLienTiep)
+        assertTrue(candidates[0].truoc.contains("ngày"))
+
+        assertEquals("ngay", candidates[1].loaiGoiY)
+        assertEquals(1, candidates[1].soDongLienTiep)
+        assertTrue(candidates[1].truoc.contains("tháng"))
     }
 
     private fun createParagraphElement(start: Int, end: Int, text: String): JSONObject {
@@ -88,5 +259,32 @@ class FormCandidateScannerTest {
                 })
             })
         }
+    }
+
+    private fun createTableElement(rows: List<List<List<Pair<Int, String>>>>): JSONObject {
+        val tableObj = JSONObject()
+        val tableRowsArray = JSONArray()
+
+        for (rowCells in rows) {
+            val rowObj = JSONObject()
+            val cellsArray = JSONArray()
+
+            for (cellParagraphs in rowCells) {
+                val cellObj = JSONObject()
+                val contentArray = JSONArray()
+
+                for ((start, text) in cellParagraphs) {
+                    val end = start + text.length
+                    contentArray.put(createParagraphElement(start, end, text))
+                }
+                cellObj.put("content", contentArray)
+                cellsArray.put(cellObj)
+            }
+            rowObj.put("tableCells", cellsArray)
+            tableRowsArray.put(rowObj)
+        }
+
+        tableObj.put("tableRows", tableRowsArray)
+        return JSONObject().apply { put("table", tableObj) }
     }
 }
