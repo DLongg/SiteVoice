@@ -21,6 +21,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,6 +44,7 @@ import com.sitevoice.app.R
 import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.settings.SecurePreferences
 import org.json.JSONObject
+import java.util.Locale
 
 @Composable
 fun SettingsDialog(
@@ -54,6 +59,8 @@ fun SettingsDialog(
     activeTemplate: TemplateItemEntity? = null,
     latestReportJson: String? = null,
     isDeveloperMode: Boolean = false,
+    currentLlmTemperature: Float? = null,
+    onTemperatureChange: ((Float) -> Unit)? = null,
     onToggleDeveloperMode: (Boolean) -> Unit = {},
     onSavePrompt: (templateId: String, newPrompt: String) -> Unit = { _, _ -> },
     onResetPrompt: (templateId: String) -> Unit = {},
@@ -71,6 +78,10 @@ fun SettingsDialog(
     onSignOutGoogleClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val securePrefs = remember(context) { SecurePreferences(context) }
+    var temperature by remember { mutableStateOf(currentLlmTemperature ?: securePrefs.llmTemperature) }
+
     var inputSttKey by remember { mutableStateOf(currentSttApiKey ?: "") }
     var inputClassifyKey by remember { mutableStateOf(currentClassifyApiKey ?: "") }
     var inputClassifyBaseUrl by remember { mutableStateOf(currentClassifyBaseUrl) }
@@ -184,6 +195,78 @@ fun SettingsDialog(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
                         textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Nhiệt độ biên tập (Temperature)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_temperature_title),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF1E293B)
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = Color(0xFFEFF6FF),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE))
+                    ) {
+                        Text(
+                            text = String.format(Locale.US, "%.2f", temperature),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1D4ED8),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.settings_temperature_subtitle),
+                    fontSize = 11.sp,
+                    color = Color(0xFF64748B)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Slider(
+                    value = temperature,
+                    onValueChange = { newTemp ->
+                        val rounded = (Math.round(newTemp * 100) / 100f).coerceIn(0.0f, 0.8f)
+                        temperature = rounded
+                        securePrefs.llmTemperature = rounded
+                        onTemperatureChange?.invoke(rounded)
+                    },
+                    valueRange = 0.0f..0.8f,
+                    steps = 15,
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color(0xFF2563EB),
+                        activeTrackColor = Color(0xFF2563EB),
+                        inactiveTrackColor = Color(0xFFE2E8F0)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "0.0: Bám sát nguyên văn",
+                        fontSize = 10.sp,
+                        color = Color(0xFF64748B)
+                    )
+                    Text(
+                        text = "0.8: Viết lại mượt mà",
+                        fontSize = 10.sp,
+                        color = Color(0xFF64748B)
                     )
                 }
 
@@ -481,6 +564,8 @@ fun SettingsDialog(
 
                     Button(
                         onClick = {
+                            securePrefs.llmTemperature = temperature
+                            onTemperatureChange?.invoke(temperature)
                             onSaveSettings(
                                 inputSttKey.trim(),
                                 inputClassifyKey.trim(),
