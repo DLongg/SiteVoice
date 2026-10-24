@@ -21,58 +21,183 @@ data class TemplateSchema(
 ) {
     companion object {
         fun fromJson(jsonStr: String): TemplateSchema {
-            val json = JSONObject(jsonStr)
-            val id = json.getString("id")
-            val name = json.getString("ten")
-            val groupByType = json.optString("gom_theo", "ngay")
-            val maxPages = json.optInt("gioi_han_trang", 2)
-
-            val categoriesArray = json.optJSONArray("muc_ghi_chu")
-            val categories = mutableListOf<String>()
-            if (categoriesArray != null) {
-                for (i in 0 until categoriesArray.length()) {
-                    categories.add(categoriesArray.getString(i))
+            return try {
+                val json = JSONObject(jsonStr)
+                val id = json.optString("id", "custom_${System.currentTimeMillis()}")
+                val name = json.optString("ten").ifBlank {
+                    json.optString("name", "Mẫu tùy chỉnh")
                 }
-            }
-
-            val summaryFieldsObj = json.optJSONObject("truong_tong_hop")
-            val summaryFields = mutableMapOf<String, SummaryFieldConfig>()
-            if (summaryFieldsObj != null) {
-                for (key in summaryFieldsObj.keys()) {
-                    val fieldObj = summaryFieldsObj.getJSONObject(key)
-                    val type = fieldObj.optString("kieu", "danh_sach")
-                    val maxLines = fieldObj.optInt("toi_da_dong", 0)
-                    val maxCharsPerLine = fieldObj.optInt("ky_tu_moi_dong", 100)
-                    val maxChars = fieldObj.optInt("toi_da_ky_tu", 0)
-                    val showInDoc = fieldObj.optBoolean("hien_trong_doc", true)
-
-                    val sourcesArray = fieldObj.optJSONArray("muc_nguon")
-                    val sources = mutableListOf<String>()
-                    if (sourcesArray != null) {
-                        for (i in 0 until sourcesArray.length()) {
-                            sources.add(sourcesArray.getString(i))
-                        }
+                val groupByType = json.optString("gom_theo").ifBlank {
+                    json.optString("group_by").ifBlank {
+                        json.optString("groupByType", json.optString("groupBy", "ngay"))
                     }
-
-                    summaryFields[key] = SummaryFieldConfig(
-                        type = type,
-                        maxLines = maxLines,
-                        maxCharsPerLine = maxCharsPerLine,
-                        maxChars = maxChars,
-                        sourceCategories = sources,
-                        showInDoc = showInDoc
-                    )
                 }
-            }
+                val maxPages = when {
+                    json.has("gioi_han_trang") -> json.optInt("gioi_han_trang", 2)
+                    json.has("max_pages") -> json.optInt("max_pages", 2)
+                    json.has("maxPages") -> json.optInt("maxPages", 2)
+                    else -> 2
+                }
 
-            return TemplateSchema(
-                id = id,
-                name = name,
-                groupByType = groupByType,
-                maxPages = maxPages,
-                noteCategories = categories,
-                summaryFields = summaryFields
-            )
+                val categoriesArray = json.optJSONArray("muc_ghi_chu")
+                    ?: json.optJSONArray("note_categories")
+                    ?: json.optJSONArray("noteCategories")
+                val categories = mutableListOf<String>()
+                if (categoriesArray != null) {
+                    for (i in 0 until categoriesArray.length()) {
+                        val cat = categoriesArray.optString(i)
+                        if (cat.isNotBlank()) categories.add(cat)
+                    }
+                }
+
+                val summaryFields = mutableMapOf<String, SummaryFieldConfig>()
+
+                // 1. Kiểm tra nếu các trường được khai báo dạng JSONObject (Map)
+                val summaryFieldsObj = json.optJSONObject("truong_tong_hop")
+                    ?: json.optJSONObject("summary_fields")
+                    ?: json.optJSONObject("summaryFields")
+
+                if (summaryFieldsObj != null) {
+                    for (key in summaryFieldsObj.keys()) {
+                        val fieldObj = summaryFieldsObj.optJSONObject(key) ?: continue
+                        val type = fieldObj.optString("kieu").ifBlank {
+                            fieldObj.optString("type", "danh_sach")
+                        }
+                        val maxLines = when {
+                            fieldObj.has("toi_da_dong") -> fieldObj.optInt("toi_da_dong", 0)
+                            fieldObj.has("max_lines") -> fieldObj.optInt("max_lines", 0)
+                            fieldObj.has("maxLines") -> fieldObj.optInt("maxLines", 0)
+                            else -> 0
+                        }
+                        val maxCharsPerLine = when {
+                            fieldObj.has("ky_tu_moi_dong") -> fieldObj.optInt("ky_tu_moi_dong", 100)
+                            fieldObj.has("max_chars_per_line") -> fieldObj.optInt("max_chars_per_line", 100)
+                            fieldObj.has("maxCharsPerLine") -> fieldObj.optInt("maxCharsPerLine", 100)
+                            else -> 100
+                        }
+                        val maxChars = when {
+                            fieldObj.has("toi_da_ky_tu") -> fieldObj.optInt("toi_da_ky_tu", 0)
+                            fieldObj.has("max_chars") -> fieldObj.optInt("max_chars", 0)
+                            fieldObj.has("maxChars") -> fieldObj.optInt("maxChars", 0)
+                            else -> 0
+                        }
+                        val showInDoc = when {
+                            fieldObj.has("hien_trong_doc") -> fieldObj.optBoolean("hien_trong_doc", true)
+                            fieldObj.has("show_in_doc") -> fieldObj.optBoolean("show_in_doc", true)
+                            fieldObj.has("showInDoc") -> fieldObj.optBoolean("showInDoc", true)
+                            else -> true
+                        }
+
+                        val sources = mutableListOf<String>()
+                        val sourcesArray = fieldObj.optJSONArray("muc_nguon")
+                            ?: fieldObj.optJSONArray("source_categories")
+                            ?: fieldObj.optJSONArray("sourceCategories")
+                        if (sourcesArray != null) {
+                            for (i in 0 until sourcesArray.length()) {
+                                sources.add(sourcesArray.optString(i))
+                            }
+                        } else {
+                            val singleSource = fieldObj.optString("source").ifBlank { fieldObj.optString("nguon") }
+                            if (singleSource.isNotBlank()) sources.add(singleSource)
+                        }
+
+                        summaryFields[key] = SummaryFieldConfig(
+                            type = type,
+                            maxLines = maxLines,
+                            maxCharsPerLine = maxCharsPerLine,
+                            maxChars = maxChars,
+                            sourceCategories = sources,
+                            showInDoc = showInDoc
+                        )
+                    }
+                }
+
+                // 2. Kiểm tra nếu các trường được khai báo dạng JSONArray (List)
+                val summaryArray = json.optJSONArray("summary_fields")
+                    ?: json.optJSONArray("summaryFields")
+                    ?: json.optJSONArray("truong_tong_hop")
+                if (summaryArray != null) {
+                    for (i in 0 until summaryArray.length()) {
+                        val fieldObj = summaryArray.optJSONObject(i) ?: continue
+                        val key = fieldObj.optString("key").ifBlank {
+                            fieldObj.optString("name").ifBlank {
+                                fieldObj.optString("ma")
+                            }
+                        }.lowercase()
+                        if (key.isBlank()) continue
+
+                        if (summaryFields.containsKey(key)) continue
+
+                        val type = fieldObj.optString("type").ifBlank {
+                            fieldObj.optString("kieu", "danh_sach")
+                        }
+                        val maxLines = when {
+                            fieldObj.has("max_lines") -> fieldObj.optInt("max_lines", 0)
+                            fieldObj.has("maxLines") -> fieldObj.optInt("maxLines", 0)
+                            fieldObj.has("toi_da_dong") -> fieldObj.optInt("toi_da_dong", 0)
+                            else -> 0
+                        }
+                        val maxCharsPerLine = when {
+                            fieldObj.has("max_chars_per_line") -> fieldObj.optInt("max_chars_per_line", 100)
+                            fieldObj.has("maxCharsPerLine") -> fieldObj.optInt("maxCharsPerLine", 100)
+                            fieldObj.has("ky_tu_moi_dong") -> fieldObj.optInt("ky_tu_moi_dong", 100)
+                            else -> 100
+                        }
+                        val maxChars = when {
+                            fieldObj.has("max_chars") -> fieldObj.optInt("max_chars", 0)
+                            fieldObj.has("maxChars") -> fieldObj.optInt("maxChars", 0)
+                            fieldObj.has("toi_da_ky_tu") -> fieldObj.optInt("toi_da_ky_tu", 0)
+                            else -> 0
+                        }
+                        val showInDoc = when {
+                            fieldObj.has("show_in_doc") -> fieldObj.optBoolean("show_in_doc", true)
+                            fieldObj.has("showInDoc") -> fieldObj.optBoolean("showInDoc", true)
+                            fieldObj.has("hien_trong_doc") -> fieldObj.optBoolean("hien_trong_doc", true)
+                            else -> true
+                        }
+
+                        val sources = mutableListOf<String>()
+                        val sourcesArray = fieldObj.optJSONArray("source_categories")
+                            ?: fieldObj.optJSONArray("sourceCategories")
+                            ?: fieldObj.optJSONArray("muc_nguon")
+                        if (sourcesArray != null) {
+                            for (j in 0 until sourcesArray.length()) {
+                                sources.add(sourcesArray.optString(j))
+                            }
+                        } else {
+                            val singleSource = fieldObj.optString("source").ifBlank { fieldObj.optString("nguon") }
+                            if (singleSource.isNotBlank()) sources.add(singleSource)
+                        }
+
+                        summaryFields[key] = SummaryFieldConfig(
+                            type = type,
+                            maxLines = maxLines,
+                            maxCharsPerLine = maxCharsPerLine,
+                            maxChars = maxChars,
+                            sourceCategories = sources,
+                            showInDoc = showInDoc
+                        )
+                    }
+                }
+
+                TemplateSchema(
+                    id = id,
+                    name = name,
+                    groupByType = groupByType,
+                    maxPages = maxPages,
+                    noteCategories = categories,
+                    summaryFields = summaryFields
+                )
+            } catch (_: Exception) {
+                TemplateSchema(
+                    id = "fallback",
+                    name = "Mẫu tùy chỉnh",
+                    groupByType = "ngay",
+                    maxPages = 2,
+                    noteCategories = emptyList(),
+                    summaryFields = emptyMap()
+                )
+            }
         }
     }
 }
