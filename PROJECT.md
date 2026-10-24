@@ -41,9 +41,9 @@ This project enhances:
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
 | M1 | Architecture & Design Documentation Sync | Synchronize docs/10-thiet-lap-form.md, docs/05-llm.md, docs/06-google-doc-mau.md, docs/SUMMARY.md | none | COMPLETED |
-| M2 | Scanner & Prompt Generator Upgrade | FormCandidateScanner, FormLlmDescriber, FormSetupService, TemplateSchema | M1 | PLANNED |
-| M3 | Dynamic Synthesis & Temperature Config | SecurePreferences, ReportSynthesizer, MainViewModel | M2 | PLANNED |
-| M4 | Two-Pass Clean Google Doc Export | PlaceholderMapper, GoogleDocsExporter | M2 | PLANNED |
+| M2 | Scanner & Prompt Generator Upgrade | FormCandidateScanner, FormLlmDescriber, FormSetupService, TemplateSchema | M1 | DONE |
+| M3 | Dynamic Synthesis & Temperature Config | SecurePreferences, ReportSynthesizer, MainViewModel | M2 | DONE |
+| M4 | Two-Pass Clean Google Doc Export | PlaceholderMapper, GoogleDocsExporter | M2 | DONE |
 | M5 | 2-Step FormSetupDialog UI & Settings | FormSetupDialog, SettingsDialog, MainViewModel, strings.xml | M2, M3 | PLANNED |
 | M6 | Full Verification & Git Deployment | testDebugUnitTest, assembleDebug, WORK_LOG.md, SUMMARY.md, Git push | M1, M2, M3, M4, M5 | PLANNED |
 
