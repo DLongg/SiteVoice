@@ -12,7 +12,8 @@ class ReportSynthesizer(
     private val llmClient: LlmClient,
     private val schema: TemplateSchema,
     private val validator: BudgetValidator = BudgetValidator(schema),
-    private val customSystemPrompt: String? = null
+    private val customSystemPrompt: String? = null,
+    val temperature: Float = 0.2f
 ) {
     companion object {
         private const val TAG = "ReportSynthesizer"
@@ -52,7 +53,67 @@ Quy tắc bắt buộc:
 7. Trả về CHỈ JSON theo đúng định dạng được yêu cầu, không kèm giải thích hay bọc markdown."""
     }
 
-    suspend fun synthesizeReport(date: String, notes: List<NoteEntity>): Result<String> {
+    private fun buildTargetJsonStructure(): String {
+        val defaultStandard7Json = """{
+  "cong_viec_thi_cong": [
+    "3.1 Điện",
+    "\t- [Nội dung và vị trí]",
+    "3.2 Nước",
+    "\t- [Nội dung và vị trí]"
+  ],
+  "nghiem_thu": [],
+  "an_toan": [],
+  "y_kien_cdt": "",
+  "y_kien_tvgs": "",
+  "y_kien_nha_thau": "",
+  "chua_phan_loai": []
+}"""
+
+        val summaryFields = schema.summaryFields
+        if (summaryFields.isEmpty()) {
+            return defaultStandard7Json
+        }
+
+        val eligible = summaryFields.filter { (_, config) ->
+            !config.sourceCategories.any {
+                it.equals("nhap_tay", ignoreCase = true) || it.equals("thoi_tiet", ignoreCase = true)
+            }
+        }
+
+        if (eligible.isEmpty()) {
+            return defaultStandard7Json
+        }
+
+        // Kế thừa mẫu mặc định cho "Nhật ký công trường" khi chứa đầy đủ các trường chuẩn
+        if (schema.id == "nhat-ky-cong-truong" && eligible.keys.containsAll(listOf("cong_viec_thi_cong", "nghiem_thu", "an_toan", "y_kien_cdt", "y_kien_tvgs", "y_kien_nha_thau"))) {
+            return defaultStandard7Json
+        }
+
+        val lines = mutableListOf<String>()
+        for ((key, config) in eligible) {
+            if (key == "cong_viec_thi_cong") {
+                lines.add("""  "cong_viec_thi_cong": [
+    "3.1 Điện",
+    "\t- [Nội dung và vị trí]",
+    "3.2 Nước",
+    "\t- [Nội dung và vị trí]"
+  ]""")
+            } else if (config.type.equals("danh_sach", ignoreCase = true) || config.type.equals("list", ignoreCase = true)) {
+                lines.add("""  "$key": []""")
+            } else {
+                lines.add("""  "$key": """"")
+            }
+        }
+
+        return "{\n" + lines.joinToString(",\n") + "\n}"
+    }
+
+    suspend fun synthesizeReport(
+        date: String,
+        notes: List<NoteEntity>,
+        temperature: Float? = null
+    ): Result<String> {
+        val effectiveTemperature = temperature ?: this.temperature
         val activeNotes = notes.filter { it.status != "DISCARDED" }.sortedBy { it.createdAt }
 
         // 1. Gom danh sách nguyên văn tất cả các ghi chú trong ngày
@@ -67,15 +128,23 @@ Quy tắc bắt buộc:
 
         // 2. Gom theo danh mục tham khảo
         val groupedNotes = JSONObject()
-        val categories = listOf(
-            NoteClassifier.LABEL_THI_CONG,
-            NoteClassifier.LABEL_NGHIEM_THU,
-            NoteClassifier.LABEL_AN_TOAN,
-            NoteClassifier.LABEL_Y_KIEN_CDT,
-            NoteClassifier.LABEL_Y_KIEN_TVGS,
-            NoteClassifier.LABEL_Y_KIEN_NHA_THAU,
-            NoteClassifier.LABEL_CHUA_PHAN_LOAI
-        )
+        val categories = if (schema.noteCategories.isNotEmpty()) {
+            val list = schema.noteCategories.toMutableList()
+            if (!list.contains(NoteClassifier.LABEL_CHUA_PHAN_LOAI)) {
+                list.add(NoteClassifier.LABEL_CHUA_PHAN_LOAI)
+            }
+            list
+        } else {
+            listOf(
+                NoteClassifier.LABEL_THI_CONG,
+                NoteClassifier.LABEL_NGHIEM_THU,
+                NoteClassifier.LABEL_AN_TOAN,
+                NoteClassifier.LABEL_Y_KIEN_CDT,
+                NoteClassifier.LABEL_Y_KIEN_TVGS,
+                NoteClassifier.LABEL_Y_KIEN_NHA_THAU,
+                NoteClassifier.LABEL_CHUA_PHAN_LOAI
+            )
+        }
 
         for (cat in categories) {
             val list = JSONArray()
@@ -111,20 +180,7 @@ Phân nhóm sơ bộ tham khảo:
 ${groupedNotes.toString(2)}
 
 Cấu trúc JSON mong muốn:
-{
-  "cong_viec_thi_cong": [
-    "3.1 Điện",
-    "\t- [Nội dung và vị trí]",
-    "3.2 Nước",
-    "\t- [Nội dung và vị trí]"
-  ],
-  "nghiem_thu": [],
-  "an_toan": [],
-  "y_kien_cdt": "",
-  "y_kien_tvgs": "",
-  "y_kien_nha_thau": "",
-  "chua_phan_loai": []
-}"""
+${buildTargetJsonStructure()}"""
 
         val effectiveSystemPrompt = customSystemPrompt?.ifBlank { DEFAULT_SYSTEM_PROMPT } ?: DEFAULT_SYSTEM_PROMPT
         val messages = listOf(
@@ -132,7 +188,7 @@ Cấu trúc JSON mong muốn:
             LlmMessage(role = "user", content = userPrompt)
         )
 
-        val chatResult = llmClient.chat(messages, temperature = 0.0f, responseJson = true)
+        val chatResult = llmClient.chat(messages, temperature = effectiveTemperature, responseJson = true)
         if (chatResult.isFailure) {
             return Result.failure(chatResult.exceptionOrNull() ?: Exception("Lỗi gọi LLM tổng hợp"))
         }

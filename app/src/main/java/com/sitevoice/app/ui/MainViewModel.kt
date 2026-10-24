@@ -62,7 +62,11 @@ class MainViewModel(
     val templateRepository: TemplateRepository = DefaultTemplateRepository(appContext, AppDatabase.getDatabase(appContext).templateDao()),
     private val groqWhisper: GroqWhisper = GroqWhisper(apiKeyProvider = { securePreferences.groqApiKey }),
     private val classifier: NoteClassifier = NoteClassifier(com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences)),
-    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences), templateSchema),
+    private val reportSynthesizer: ReportSynthesizer = ReportSynthesizer(
+        llmClient = com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences),
+        schema = templateSchema,
+        temperature = securePreferences.llmTemperature
+    ),
     private val exporter: GoogleDocsExporter = GoogleDocsExporter()
 ) : ViewModel() {
 
@@ -283,10 +287,15 @@ class MainViewModel(
                 val dynamicSynthesizer = ReportSynthesizer(
                     llmClient = com.sitevoice.app.llm.LlmFactory.createClassificationClient(securePreferences),
                     schema = currentSchema,
-                    customSystemPrompt = promptToUse
+                    customSystemPrompt = promptToUse,
+                    temperature = securePreferences.llmTemperature
                 )
 
-                val result = dynamicSynthesizer.synthesizeReport(currentDate, notes)
+                val result = dynamicSynthesizer.synthesizeReport(
+                    date = currentDate,
+                    notes = notes,
+                    temperature = securePreferences.llmTemperature
+                )
                 if (result.isSuccess) {
                     val json = result.getOrThrow()
                     val reportEntity = DailyReportEntity(
