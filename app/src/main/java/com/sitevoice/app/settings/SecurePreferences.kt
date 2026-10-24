@@ -6,9 +6,14 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.sitevoice.app.BuildConfig
 
-class SecurePreferences(context: Context) {
+class SecurePreferences(private val sharedPreferences: SharedPreferences) {
+
+    constructor(context: Context) : this(createEncryptedPreferences(context))
 
     companion object {
+        const val KEY_LLM_TEMPERATURE = "llm_temperature"
+        const val DEFAULT_LLM_TEMPERATURE = 0.2f
+
         const val KEY_GROQ_API_KEY = "groq_api_key"
         const val KEY_OPENAI_API_KEY = "openai_api_key"
         const val KEY_ANTHROPIC_API_KEY = "anthropic_api_key"
@@ -32,19 +37,31 @@ class SecurePreferences(context: Context) {
             val match = regex.find(trimmed)
             return match?.groupValues?.get(1) ?: trimmed
         }
+
+        private fun createEncryptedPreferences(context: Context): SharedPreferences {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            return EncryptedSharedPreferences.create(
+                context,
+                "sitevoice_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
     }
 
-    private val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-
-    private val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "sitevoice_secure_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    var llmTemperature: Float
+        get() {
+            val raw = sharedPreferences.getFloat(KEY_LLM_TEMPERATURE, DEFAULT_LLM_TEMPERATURE)
+            return raw.coerceIn(0.0f, 0.8f)
+        }
+        set(value) {
+            val clamped = value.coerceIn(0.0f, 0.8f)
+            sharedPreferences.edit().putFloat(KEY_LLM_TEMPERATURE, clamped).apply()
+        }
 
     var groqApiKey: String?
         get() = sharedPreferences.getString(KEY_GROQ_API_KEY, null)
