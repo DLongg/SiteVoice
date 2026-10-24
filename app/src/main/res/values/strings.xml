@@ -141,4 +141,37 @@
     <string name="template_save_success">Đã lưu mẫu vào thư viện thành công!</string>
     <string name="template_activate_success">Đã chuyển sang mẫu: %1$s</string>
     <string name="template_duplicate_suffix">(Bản sao)</string>
+
+    <!-- FormSetupDialog 2-Step Workflow -->
+    <string name="form_setup_dialog_title">Thiết lập Form Tự động</string>
+    <string name="form_setup_dialog_subtitle">Nhận diện chỗ điền &amp; tinh chỉnh trực tiếp theo quy trình 2 bước</string>
+    <string name="form_setup_step1_indicator">Bước 1 / 2: Kiểm tra thẻ neo {{MA}}</string>
+    <string name="form_setup_step2_indicator">Bước 2 / 2: Xem lại Prompt &amp; Cấu hình</string>
+    <string name="form_setup_step1_continue">Tiếp tục: Sinh Prompt thống nhất →</string>
+    <string name="form_setup_step2_back">← Quay lại</string>
+    <string name="form_setup_step2_complete">✓ Hoàn tất &amp; Tạo Mẫu</string>
+    <string name="form_setup_step2_regenerate">🔄 Sinh lại Prompt</string>
+    <string name="form_setup_template_name_label">1. Tên Mẫu hiển thị:</string>
+    <string name="form_setup_safe_copy_label">Bản sao an toàn trên Google Drive:</string>
+    <string name="form_setup_open_in_docs">📄 Mở &amp; gõ sửa trên Docs ↗</string>
+    <string name="form_setup_rescan">🔄 Quét lại</string>
+    <string name="form_setup_rescan_hint">💡 File gốc giữ nguyên. Bạn có thể mở bản sao để gõ sửa tùy ý trên Google Docs rồi bấm \'Quét lại\' để cập nhật.</string>
+    <string name="form_setup_candidates_header">2. Chỗ điền phát hiện (%1$d chèn, %2$d bỏ qua):</string>
+    <string name="form_setup_candidates_hint">Chạm vào thẻ hoặc nút \'Sửa\' để chỉnh sửa tay mã thẻ, tên, loại và nguồn.</string>
+    <string name="form_setup_loading_title">Đang quét cấu trúc &amp; nhận diện chỗ điền...</string>
+    <string name="form_setup_loading_subtitle">Tạo bản sao an toàn trên Drive và phân loại vị trí</string>
+    <string name="form_setup_error_title">Không thể phân tích form:</string>
+    <string name="form_setup_generating_prompt">Đang tạo Prompt thống nhất...</string>
+    <string name="form_setup_generating_prompt_hint">AI đang phân tích danh sách thẻ neo đã duyệt để xây dựng chỉ thị biên tập chuẩn xác.</string>
+    <string name="form_setup_prompt_label">Prompt hướng dẫn AI tổng hợp (tự sinh từ các thẻ neo):</string>
+    <string name="form_setup_prompt_hint">Bạn có thể trực tiếp chỉnh sửa chỉ thị, văn phong hoặc bổ sung quy tắc trước khi lưu mẫu.</string>
+    <string name="form_setup_temperature_title">Nhiệt độ biên tập (Temperature)</string>
+    <string name="form_setup_temperature_desc">0.0: Bám sát nguyên văn | 0.8: Viết lại mượt mà</string>
+    <string name="form_setup_temperature_hint">💡 Mức 0.2 giúp liên kết câu khẩu ngữ rời rạc, bảo tồn số liệu thực tế.</string>
+
+    <!-- Settings Dialog Temperature -->
+    <string name="settings_temperature_title">Nhiệt độ biên tập (Temperature)</string>
+    <string name="settings_temperature_subtitle">Điều chỉnh mức độ mượt mà khi viết lại khẩu ngữ rời rạc ngoài hiện trường thành văn bản báo cáo.</string>
+    <string name="settings_temperature_desc">0.0: Bám sát nguyên văn | 0.8: Viết lại mượt mà</string>
+    <string name="settings_temperature_badge">Nhiệt độ: %1$s</string>
 </resources>
