@@ -2,6 +2,7 @@ package com.sitevoice.app
 
 import com.sitevoice.app.data.DailyInputEntity
 import com.sitevoice.app.data.TemplateItemEntity
+import com.sitevoice.app.export.DailyLogEntity
 import com.sitevoice.app.export.PlaceholderMapper
 import com.sitevoice.app.template.DailyReportContent
 import org.junit.Assert.assertEquals
@@ -160,5 +161,183 @@ class PlaceholderMapperTest {
         assertEquals(expected, map["{{thi_cong_trong_ngay}}"])
         assertEquals(expected, map["{{ thi_cong_trong_ngay }}"])
         assertEquals(expected, map["{{cong_viec}}"])
+    }
+
+    @Test
+    fun testMapToPlaceholdersVietnameseSchemaJsonObjectDefaultsToEmpty() {
+        val vnTemplate = TemplateItemEntity(
+            id = "nhat-ky-cong-truong",
+            name = "Nhật ký thi công",
+            description = "Mẫu chuẩn",
+            systemPrompt = "Prompt",
+            schemaJson = """
+                {
+                    "ten": "Nhật ký công trường",
+                    "truong_tong_hop": {
+                        "cong_viec_thi_cong": { "kieu": "danh_sach" },
+                        "nghiem_thu": { "kieu": "danh_sach" },
+                        "an_toan": { "kieu": "danh_sach" },
+                        "tong_quan": { "kieu": "van_ban", "placeholder": "{{TONG_QUAN}}" }
+                    },
+                    "nhap_tay": {
+                        "ngay": { "kieu": "ngay" },
+                        "thang": { "kieu": "so" },
+                        "s_n": { "kieu": "o_tich" },
+                        "nguoi_lap_bieu": { "kieu": "chu", "placeholder": "{{NGUOI_LAP_BIEU}}" }
+                    }
+                }
+            """.trimIndent()
+        )
+
+        val log = DailyLogEntity(date = "2026-10-24")
+        val map = PlaceholderMapper.mapToPlaceholders(log, vnTemplate)
+
+        // Các trường tổng hợp không có dữ liệu phải mặc định là ""
+        assertEquals("", map["{{cong_viec_thi_cong}}"])
+        assertEquals("", map["{{CONG_VIEC_THI_CONG}}"])
+        assertEquals("", map["{{nghiem_thu}}"])
+        assertEquals("", map["{{NGHIEM_THU}}"])
+        assertEquals("", map["{{an_toan}}"])
+        assertEquals("", map["{{AN_TOAN}}"])
+        assertEquals("", map["{{tong_quan}}"])
+        assertEquals("", map["{{TONG_QUAN}}"])
+        assertEquals("", map["{{ tong_quan }}"])
+        assertEquals("", map["{{ TONG_QUAN }}"])
+
+        // Trường nhập tay chưa điền dữ liệu
+        assertEquals("", map["{{nguoi_lap_bieu}}"])
+        assertEquals("", map["{{NGUOI_LAP_BIEU}}"])
+        assertEquals("", map["{{ NGUOI_LAP_BIEU }}"])
+    }
+
+    @Test
+    fun testMapToPlaceholdersVietnameseSchemaJsonArrayDefaultsToEmpty() {
+        val arrayTemplate = TemplateItemEntity(
+            id = "kiem-tra-hien-truong",
+            name = "Kiểm tra hiện trường",
+            description = "Mẫu mảng",
+            systemPrompt = "Prompt",
+            schemaJson = """
+                {
+                    "ten": "Biên bản kiểm tra",
+                    "truong_tong_hop": [
+                        { "ma": "HANG_MUC", "kieu": "danh_sach", "placeholder": "{{HANG_MUC}}" },
+                        { "ma": "KET_QUA", "kieu": "van_ban" }
+                    ],
+                    "nhap_tay": ["ngay_kiem_tra", "can_bo_giam_sat"]
+                }
+            """.trimIndent()
+        )
+
+        val log = DailyLogEntity(date = "2026-10-24")
+        val map = PlaceholderMapper.mapToPlaceholders(log, arrayTemplate)
+
+        assertEquals("", map["{{HANG_MUC}}"])
+        assertEquals("", map["{{hang_muc}}"])
+        assertEquals("", map["{{ HANG_MUC }}"])
+        assertEquals("", map["{{KET_QUA}}"])
+        assertEquals("", map["{{ket_qua}}"])
+        assertEquals("", map["{{ngay_kiem_tra}}"])
+        assertEquals("", map["{{NGAY_KIEM_TRA}}"])
+        assertEquals("", map["{{can_bo_giam_sat}}"])
+        assertEquals("", map["{{CAN_BO_GIAM_SAT}}"])
+    }
+
+    @Test
+    fun testMapToPlaceholdersEnglishSchemaFormatsDefaultsToEmpty() {
+        // 1. English format with summary_fields as JSONArray and manual_fields as JSONArray
+        val enArrayTemplate = TemplateItemEntity(
+            id = "en-array-template",
+            name = "Daily Site Report",
+            description = "English template array",
+            systemPrompt = "Prompt",
+            schemaJson = """
+                {
+                    "name": "Daily Site Report",
+                    "summary_fields": [
+                        { "name": "work_completed", "type": "list" },
+                        { "name": "safety_notes", "type": "list", "placeholder": "{{SAFETY_NOTES}}" }
+                    ],
+                    "manual_fields": ["inspector_name", "site_location"]
+                }
+            """.trimIndent()
+        )
+
+        val log1 = DailyLogEntity(date = "2026-10-24")
+        val map1 = PlaceholderMapper.mapToPlaceholders(log1, enArrayTemplate)
+
+        assertEquals("", map1["{{work_completed}}"])
+        assertEquals("", map1["{{WORK_COMPLETED}}"])
+        assertEquals("", map1["{{safety_notes}}"])
+        assertEquals("", map1["{{SAFETY_NOTES}}"])
+        assertEquals("", map1["{{ SAFETY_NOTES }}"])
+        assertEquals("", map1["{{inspector_name}}"])
+        assertEquals("", map1["{{INSPECTOR_NAME}}"])
+        assertEquals("", map1["{{site_location}}"])
+        assertEquals("", map1["{{SITE_LOCATION}}"])
+
+        // 2. English format with summary_fields as JSONObject and manual_fields as JSONObject
+        val enObjectTemplate = TemplateItemEntity(
+            id = "en-object-template",
+            name = "Engineering Log",
+            description = "English template object",
+            systemPrompt = "Prompt",
+            schemaJson = """
+                {
+                    "name": "Engineering Log",
+                    "summary_fields": {
+                        "structural_check": { "type": "string" },
+                        "mep_progress": { "type": "string", "placeholder": "{{MEP_PROGRESS}}" }
+                    },
+                    "manual_fields": {
+                        "lead_engineer": { "type": "string" }
+                    }
+                }
+            """.trimIndent()
+        )
+
+        val log2 = DailyLogEntity(date = "2026-10-24")
+        val map2 = PlaceholderMapper.mapToPlaceholders(log2, enObjectTemplate)
+
+        assertEquals("", map2["{{structural_check}}"])
+        assertEquals("", map2["{{STRUCTURAL_CHECK}}"])
+        assertEquals("", map2["{{mep_progress}}"])
+        assertEquals("", map2["{{MEP_PROGRESS}}"])
+        assertEquals("", map2["{{ MEP_PROGRESS }}"])
+        assertEquals("", map2["{{lead_engineer}}"])
+        assertEquals("", map2["{{LEAD_ENGINEER}}"])
+    }
+
+    @Test
+    fun testMapToPlaceholdersPreservesFilledDataWhileDefaultingUnfilled() {
+        val template = TemplateItemEntity(
+            id = "custom_mixed",
+            name = "Mẫu hỗn hợp",
+            description = "Test mixed",
+            systemPrompt = "Prompt",
+            schemaJson = """
+                {
+                    "truong_tong_hop": {
+                        "cong_viec_thi_cong": { "kieu": "danh_sach" },
+                        "chua_co_du_lieu": { "kieu": "van_ban" }
+                    }
+                }
+            """.trimIndent()
+        )
+
+        val reportContent = DailyReportContent(
+            congViecThiCong = listOf("Đổ bê tông móng M1")
+        )
+        val log = DailyLogEntity(
+            date = "2026-10-24",
+            reportContent = reportContent
+        )
+
+        val map = PlaceholderMapper.mapToPlaceholders(log, template)
+
+        assertEquals("- Đổ bê tông móng M1", map["{{CONG_VIEC_THI_CONG}}"])
+        assertEquals("- Đổ bê tông móng M1", map["{{cong_viec_thi_cong}}"])
+        assertEquals("", map["{{chua_co_du_lieu}}"])
+        assertEquals("", map["{{CHUA_CO_DU_LIEU}}"])
     }
 }
