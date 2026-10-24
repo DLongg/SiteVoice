@@ -1,12 +1,12 @@
 # SiteVoice — Active Context
 
-Cập nhật: 2026-10-24. Đây là trạng thái hiện tại; quy tắc ở [AGENTS.md](../AGENTS.md), lịch sử ở [WORK_LOG.md](WORK_LOG.md).
+Cập nhật: 2026-10-25. Đây là trạng thái hiện tại; quy tắc ở [AGENTS.md](../AGENTS.md), lịch sử ở [WORK_LOG.md](WORK_LOG.md).
 
 ## Tổng quan và trạng thái đã xác minh
 
 - Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
-- Đã hoàn thành Giai đoạn 0 đến Giai đoạn 3 và Milestone M1 (Cập nhật đồng bộ Tài liệu Thiết kế). Đã tự kiểm thử thực tế trên điện thoại thật Xiaomi 1080x2412 (id 33c4f658): ghi âm, hiển thị ghi chú mới nhất, kế thừa thời tiết, khống chế số dòng, duyệt và xuất Google Doc tự động lên Google Drive.
-- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (52/52 tests pass, APK 11.94 MB đã cài đặt và chạy hoàn hảo trên máy 33c4f658).
+- Đã hoàn thành 100% Giai đoạn 0–3 và toàn bộ gói nâng cấp **Milestones M1–M6 (Requirements R1–R5)**: Đọc file Google Doc nhận diện đề mục mở rộng & gộp dòng chấm liên tiếp, AI tự sinh Prompt thống nhất (duyệt Human-in-the-loop 2 bước), thanh trượt Nhiệt độ (`0.0 - 0.8`) và Ghi file Google Doc quét sạch 2 lớp.
+- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (**132/132 unit tests pass**, bao gồm đầy đủ các bộ test đối kháng M2–M5, và tạo `app-debug.apk` hoàn chỉnh).
 
 ## Kiến trúc và công nghệ dự kiến
 
@@ -16,12 +16,13 @@ Cập nhật: 2026-10-24. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Đang triển khai và bàn giao
 
-- **Đã hoàn thành Milestone M1 (Requirement R1) — Cập nhật đồng bộ Tài liệu Thiết kế**:
-  - `docs/10-thiet-lap-form.md`: Bổ sung regex đề mục mở rộng (La Mã, chữ cái, mục con, dấu `:`), truyền nhãn bảng trái sang phải, gộp dòng chấm liên tiếp thành `danh_sach`, bảo tồn cụm chấm nội dòng, quy trình Human-in-the-loop 2 bước (Bước 1 duyệt thẻ neo, Bước 2 duyệt Prompt thống nhất & thanh trượt nhiệt độ), và chuẩn hóa tương thích `schemaJson` song ngữ.
-  - `docs/05-llm.md`: Bổ sung cấu hình `llmTemperature` (`0.0 - 0.8`, mặc định `0.2f`) trong `SecurePreferences`, cơ chế tổng hợp JSON động 1-1 theo `summary_fields` của Mẫu trong `ReportSynthesizer`, và cấu trúc System Prompt thống nhất do AI sinh (Pha 4b).
-  - `docs/06-google-doc-mau.md`: Bổ sung cơ chế xuất Google Doc quét sạch 2 lớp (Lớp 1: map-based replace; Lớp 2: documents.get quét regex `\{\{[^{}\r\n]{1,100}\}\}` và batchUpdate xóa sạch 100% tag rỗng), cùng giá trị mặc định chuỗi rỗng `""` trong `PlaceholderMapper`.
-- **Kế hoạch tiếp theo**:
-  - Milestone M2: Nâng cấp `FormCandidateScanner`, `FormLlmDescriber`, `FormSetupService`, và `TemplateSchema` theo tài liệu thiết kế đã chuẩn hóa.
+- **Hoàn thành trọn gói R1–R5 (Milestones M1–M6)**:
+  - **R1 (Tài liệu)**: Đồng bộ `docs/10-thiet-lap-form.md`, `docs/05-llm.md`, `docs/06-google-doc-mau.md`.
+  - **R2 (Đọc file & Sinh Prompt)**: `FormCandidateScanner` nhận diện đề mục La Mã/chữ cái/mục con, truyền nhãn ô bảng trái sang phải, gộp nhiều dòng chấm liên tiếp thành 1 trường `danh_sach`; `FormLlmDescriber` khử trùng lặp mã `ma` và tự sinh Prompt thống nhất; `FormSetupService` & `TemplateSchema` tương thích song ngữ VI/EN không văng `JSONException`.
+  - **R3 (Tổng hợp động & Temperature)**: `SecurePreferences` lưu `llmTemperature` (`0.0f..0.8f`, mặc định `0.2f`); `ReportSynthesizer` sinh cấu trúc JSON đích động khớp 1-1 với trường của Mẫu và truyền `temperature` vào `LlmClient`.
+  - **R4 (Ghi file Google Doc 2 lớp)**: `PlaceholderMapper` gán mặc định `""` cho toàn bộ trường trong schema; `GoogleDocsExporter` bổ sung Lớp 2 (`documents.get` + regex `\{\{[^{}\r\n]{1,100}\}\}` + `batchUpdate`) xóa sạch 100% mọi tag `{{...}}` chưa có dữ liệu.
+  - **R5 (Giao diện HITL 2 bước & Cài đặt)**: `FormSetupDialog` 2 bước (Bước 1 duyệt thẻ neo `{{MA}}` → Bước 2 xem/sửa Prompt tự sinh & chỉnh Nhiệt độ) và thanh trượt Nhiệt độ trong `SettingsDialog`.
+- **Ưu tiên tiếp theo**: Kiểm thử thực tế luồng Thiết lập Form 2 bước và xuất Google Doc với biểu mẫu tùy chỉnh trên điện thoại.
 
 ## Quyết định phải giữ
 

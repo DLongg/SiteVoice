@@ -607,3 +607,31 @@ A templates/schema-chung.md
 - Kiểm tra: Đối chiếu chéo 100% yêu cầu R1 trong `ORIGINAL_REQUEST.md`, `PROJECT.md` và `survey_report.md`.
 - Còn lại: Sẵn sàng bàn giao cho Milestone M2 (Nâng cấp Scanner, Prompts & Bilingual Schema trong `FormCandidateScanner`, `FormLlmDescriber`, `FormSetupService`, `TemplateSchema`).
 
+## 2026-10-25 — Milestones M2–M6 (Requirements R2–R5): Hoàn thiện Đọc File, AI Tự sinh Prompt (HITL 2 bước), Thanh Nhiệt độ & Xuất Google Doc Quét sạch 2 Lớp — Hoàn thành
+
+- Kết quả:
+  + **Milestone M2 (R2 — Bộ quét Đề mục, Gộp dòng chấm, Tự sinh Prompt & Schema song ngữ)**:
+    * `FormCandidateScanner.kt`: Mở rộng regex đề mục nhận diện số La Mã (`I.`, `II.`), chữ cái (`A.`, `B.`), mục con (`1.1`, `3.1`) và dòng kết thúc bằng dấu `:`; truyền nhãn từ ô bảng bên trái sang ô trống/dấu chấm bên phải cùng hàng; gộp nhiều dòng chấm (`.....`) hoặc gạch dưới (`_____`) liên tiếp dưới cùng đề mục thành 1 ứng viên `danh_sach` duy nhất trong khi vẫn tách riêng các cụm `...` trên cùng 1 dòng (`Ngày ... tháng ... năm ...`).
+    * `FormLlmDescriber.kt`: Thêm `deduplicateCandidateCodes` khử trùng lặp mã `ma` và `generateUnifiedPrompt` tự động phân tích danh sách thẻ neo đã chốt ở Bước 1 để sinh bản Prompt thống nhất cho Pha 2 (quy tắc chống bịa số liệu, mô tả từng thẻ `{{MA}}`, cấu trúc JSON đích 1-1).
+    * `FormSetupService.kt` & `TemplateSchema.kt`: Xuất và đọc `schemaJson` tương thích song ngữ cả tiếng Việt (`ten`, `truong_tong_hop`) lẫn tiếng Anh (`name`, `summary_fields`), loại bỏ triệt để lỗi `JSONException` làm sập ngầm về Mẫu mặc định.
+  + **Milestone M3 (R3 — Đồng bộ Tổng hợp LLM theo Mẫu & Thanh kéo Nhiệt độ)**:
+    * `SecurePreferences.kt`: Bổ sung thuộc tính `llmTemperature` (mặc định `0.2f`, giới hạn an toàn `0.0f..0.8f`).
+    * `ReportSynthesizer.kt`: Xây dựng động cấu trúc JSON đầu ra khớp 1-1 với danh sách trường của `TemplateSchema` đang kích hoạt và truyền `temperature` người dùng đã chọn vào `LlmClient.chat(...)`.
+  + **Milestone M4 (R4 — Ghi File Google Doc Quét sạch 2 Lớp)**:
+    * `PlaceholderMapper.kt`: Nạp đầy đủ toàn bộ các trường trong `schemaJson` của Mẫu với giá trị mặc định là chuỗi rỗng `""` khi không có dữ liệu.
+    * `GoogleDocsExporter.kt`: Bổ sung Lớp 2 (`Pass 2 Clean Sweep`) — sau khi thay thế placeholder từ bản đồ dữ liệu, gọi `documents.get` đọc toàn bộ văn bản bản sao (body, bảng lồng nhau, header/footer), quét regex `\{\{[^{}\r\n]{1,100}\}\}` và gửi `batchUpdate` (`replaceAllText` → `""`) để xóa sạch 100% các tag `{{...}}` còn sót.
+  + **Milestone M5 (R5 — Giao diện Human-in-the-loop 2 Bước & Thanh trượt Nhiệt độ)**:
+    * `FormSetupDialog.kt`, `MainViewModel.kt`, `SettingsDialog.kt`, `strings.xml`: Chuyển hộp thoại Thiết lập Form sang quy trình 2 bước chuẩn App Screens (`design-taste-frontend`): Bước 1 kiểm tra/chỉnh sửa danh sách thẻ neo `{{MA}}` -> Bước 2 xem/chỉnh sửa trực tiếp bản Prompt thống nhất do AI sinh ra kèm thanh trượt Nhiệt độ (`0.00 - 0.80`), đồng thời thêm thanh trượt Nhiệt độ trong `SettingsDialog`.
+- File sửa / thêm:
+  + `app/src/main/java/com/sitevoice/app/formsetup/FormCandidateScanner.kt`, `FormLlmDescriber.kt`, `FormSetupService.kt`
+  + `app/src/main/java/com/sitevoice/app/template/TemplateSchema.kt`
+  + `app/src/main/java/com/sitevoice/app/settings/SecurePreferences.kt`
+  + `app/src/main/java/com/sitevoice/app/llm/ReportSynthesizer.kt`
+  + `app/src/main/java/com/sitevoice/app/export/PlaceholderMapper.kt`, `GoogleDocsExporter.kt`
+  + `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt`, `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `app/src/main/res/values/strings.xml`
+  + Các bộ test đơn vị & đối kháng: `FormCandidateScannerTest.kt`, `FormLlmDescriberTest.kt`, `TemplateSchemaTest.kt`, `ReportSynthesizerTest.kt`, `SecurePreferencesTest.kt`, `PlaceholderMapperTest.kt`, `GoogleDocsExporterTest.kt`, `AdversarialM2StressTest.kt`, `AdversarialM3StressTest.kt`, `AdversarialM4StressTest.kt`, `ChallengerM4StressTest.kt`, `AdversarialM5StressTest.kt`, `ChallengerM5StressTest.kt`
+- Kiểm tra:
+  + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug`: **BUILD SUCCESSFUL**, pass 100% (132/132 unit tests pass) và đóng gói thành công `app-debug.apk`.
+- Còn lại: Người dùng kiểm tra thực tế luồng Thiết lập Form 2 bước và xuất Google Doc trực tiếp trên điện thoại.
+
+

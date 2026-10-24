@@ -44,8 +44,8 @@ This project enhances:
 | M2 | Scanner & Prompt Generator Upgrade | FormCandidateScanner, FormLlmDescriber, FormSetupService, TemplateSchema | M1 | DONE |
 | M3 | Dynamic Synthesis & Temperature Config | SecurePreferences, ReportSynthesizer, MainViewModel | M2 | DONE |
 | M4 | Two-Pass Clean Google Doc Export | PlaceholderMapper, GoogleDocsExporter | M2 | DONE |
-| M5 | 2-Step FormSetupDialog UI & Settings | FormSetupDialog, SettingsDialog, MainViewModel, strings.xml | M2, M3 | PLANNED |
-| M6 | Full Verification & Git Deployment | testDebugUnitTest, assembleDebug, WORK_LOG.md, SUMMARY.md, Git push | M1, M2, M3, M4, M5 | PLANNED |
+| M5 | 2-Step FormSetupDialog UI & Settings | FormSetupDialog, SettingsDialog, MainViewModel, strings.xml | M2, M3 | DONE |
+| M6 | Full Verification & Git Deployment | testDebugUnitTest, assembleDebug, WORK_LOG.md, SUMMARY.md, Git push | M1, M2, M3, M4, M5 | DONE |
 
 ## Interface Contracts
 ### FormCandidateScanner ↔ FormLlmDescriber
