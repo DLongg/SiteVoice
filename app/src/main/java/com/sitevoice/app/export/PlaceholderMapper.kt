@@ -1,12 +1,60 @@
 package com.sitevoice.app.export
 
 import com.sitevoice.app.data.DailyInputEntity
+import com.sitevoice.app.data.DailyReportEntity
 import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.template.DailyReportContent
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.regex.Pattern
 
+data class DailyLogEntity(
+    val date: String = "",
+    val dailyInput: DailyInputEntity? = null,
+    val reportContent: DailyReportContent = DailyReportContent(),
+    val contentJson: String = "",
+    val templateId: String = ""
+) {
+    constructor(report: DailyReportEntity, dailyInput: DailyInputEntity? = null) : this(
+        date = report.date,
+        dailyInput = dailyInput,
+        reportContent = DailyReportContent.fromJson(report.contentJson),
+        contentJson = report.contentJson,
+        templateId = report.templateId
+    )
+}
+
 object PlaceholderMapper {
+
+    fun mapToPlaceholders(
+        log: DailyLogEntity,
+        template: TemplateItemEntity
+    ): Map<String, String> {
+        val content = if (log.contentJson.isNotBlank() && log.reportContent.allFields.isEmpty()) {
+            DailyReportContent.fromJson(log.contentJson)
+        } else {
+            log.reportContent
+        }
+        return buildPlaceholderMap(
+            date = log.date,
+            dailyInput = log.dailyInput,
+            reportContent = content,
+            template = template
+        )
+    }
+
+    fun mapToPlaceholders(
+        report: DailyReportEntity,
+        template: TemplateItemEntity,
+        dailyInput: DailyInputEntity? = null
+    ): Map<String, String> {
+        return buildPlaceholderMap(
+            date = report.date,
+            dailyInput = dailyInput,
+            reportContent = DailyReportContent.fromJson(report.contentJson),
+            template = template
+        )
+    }
 
     private val DOC_ID_PATTERN = Pattern.compile("/d/([a-zA-Z0-9_-]+)")
 
@@ -264,36 +312,80 @@ object PlaceholderMapper {
             }
         }
 
-        // 5. Nếu có template, bổ sung các trường được định nghĩa trong schema nếu chưa có
+        // 5. Nếu có template, nạp toàn bộ các trường được định nghĩa trong schemaJson với giá trị mặc định "" nếu chưa có
         if (template != null && template.schemaJson.isNotBlank()) {
             try {
                 val schemaObj = JSONObject(template.schemaJson)
-                val summaryFields = schemaObj.optJSONArray("summaryFields")
-                    ?: schemaObj.optJSONArray("summary_fields")
-                if (summaryFields != null) {
-                    for (i in 0 until summaryFields.length()) {
-                        val fieldObj = summaryFields.optJSONObject(i) ?: continue
-                        val fieldName = fieldObj.optString("name").ifBlank { fieldObj.optString("key") }
-                        val rawPlaceholder = fieldObj.optString("placeholder")
 
-                        if (rawPlaceholder.isNotBlank()) {
-                            if (!map.containsKey(rawPlaceholder)) {
-                                map[rawPlaceholder] = ""
+                fun registerTag(rawTag: String) {
+                    val trimmed = rawTag.trim()
+                    if (trimmed.isBlank()) return
+                    val inner = if (trimmed.startsWith("{{") && trimmed.endsWith("}}")) {
+                        trimmed.substring(2, trimmed.length - 2).trim()
+                    } else {
+                        trimmed
+                    }
+                    if (inner.isBlank()) return
+
+                    val baseTag = "{{$inner}}"
+                    val upperTag = "{{${inner.uppercase()}}}"
+                    val lowerTag = "{{${inner.lowercase()}}}"
+
+                    if (!map.containsKey(baseTag)) map[baseTag] = ""
+                    if (!map.containsKey(upperTag)) map[upperTag] = ""
+                    if (!map.containsKey(lowerTag)) map[lowerTag] = ""
+                }
+
+                fun processFieldObject(fieldObj: JSONObject?) {
+                    if (fieldObj == null) return
+                    fieldObj.optString("placeholder").takeIf { it.isNotBlank() }?.let { registerTag(it) }
+                    fieldObj.optString("key").takeIf { it.isNotBlank() }?.let { registerTag(it) }
+                    fieldObj.optString("name").takeIf { it.isNotBlank() }?.let { registerTag(it) }
+                    fieldObj.optString("ma").takeIf { it.isNotBlank() }?.let { registerTag(it) }
+                }
+
+                fun processContainer(obj: Any?) {
+                    when (obj) {
+                        is JSONObject -> {
+                            val keys = obj.keys()
+                            while (keys.hasNext()) {
+                                val key = keys.next()
+                                registerTag(key)
+                                val child = obj.opt(key)
+                                if (child is JSONObject) {
+                                    processFieldObject(child)
+                                } else if (child is String && child.isNotBlank()) {
+                                    registerTag(child)
+                                }
                             }
                         }
-
-                        if (fieldName.isNotBlank()) {
-                            val upperPlaceholder = "{{${fieldName.uppercase()}}}"
-                            val exactPlaceholder = "{{$fieldName}}"
-                            if (!map.containsKey(upperPlaceholder)) {
-                                map[upperPlaceholder] = ""
-                            }
-                            if (!map.containsKey(exactPlaceholder)) {
-                                map[exactPlaceholder] = ""
+                        is JSONArray -> {
+                            for (i in 0 until obj.length()) {
+                                val item = obj.opt(i)
+                                when (item) {
+                                    is JSONObject -> processFieldObject(item)
+                                    is String -> registerTag(item)
+                                }
                             }
                         }
                     }
                 }
+
+                // 1. truong_tong_hop (JSONObject hoặc JSONArray)
+                processContainer(schemaObj.opt("truong_tong_hop"))
+
+                // 2. nhap_tay (JSONObject hoặc JSONArray)
+                processContainer(schemaObj.opt("nhap_tay"))
+
+                // 3. summary_fields / summaryFields (JSONArray hoặc JSONObject)
+                processContainer(schemaObj.opt("summary_fields") ?: schemaObj.opt("summaryFields"))
+
+                // 4. manual_fields / manualFields (JSONArray hoặc JSONObject)
+                processContainer(schemaObj.opt("manual_fields") ?: schemaObj.opt("manualFields"))
+
+                // 5. cho_dien (JSONArray hoặc JSONObject)
+                processContainer(schemaObj.opt("cho_dien"))
+
             } catch (_: Exception) {
                 // schema parse fallback
             }
