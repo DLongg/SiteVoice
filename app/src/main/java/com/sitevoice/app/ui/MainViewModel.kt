@@ -512,10 +512,15 @@ class MainViewModel(
         }
     }
 
+    var pendingSetupPrompt: String? = null
+    var pendingSetupTemperature: Float? = null
+
     fun confirmFormSetup(
         context: Context,
         templateName: String,
         candidates: List<FormCandidate>,
+        systemPrompt: String? = null,
+        temperature: Float? = null,
         onSuccess: (TemplateItemEntity) -> Unit
     ) {
         val analysis = _formSetupAnalysis.value ?: return
@@ -542,16 +547,44 @@ class MainViewModel(
 
             _isFormSettingUp.value = false
             if (result.isSuccess) {
-                val template = result.getOrThrow()
+                var template = result.getOrThrow()
+                val effectivePrompt = systemPrompt ?: pendingSetupPrompt ?: securePreferences.getString("pending_setup_prompt")
+                if (!effectivePrompt.isNullOrBlank()) {
+                    template = template.copy(systemPrompt = effectivePrompt)
+                }
                 templateRepository.saveTemplate(template)
                 templateRepository.setActiveTemplate(template.id)
                 securePreferences.docTemplateId = analysis.workingDocId
+                val effectiveTemp = temperature ?: pendingSetupTemperature
+                if (effectiveTemp != null) {
+                    securePreferences.llmTemperature = effectiveTemp
+                }
+                securePreferences.setString("pending_setup_prompt", null)
+                pendingSetupPrompt = null
+                pendingSetupTemperature = null
                 _formSetupAnalysis.value = null
                 onSuccess(template)
             } else {
                 _formSetupError.value = result.exceptionOrNull()?.message ?: "Lỗi chèn placeholder"
             }
         }
+    }
+
+    fun onConfirmSetup(
+        templateName: String,
+        candidates: List<FormCandidate>,
+        systemPrompt: String,
+        temperature: Float,
+        onSuccess: ((TemplateItemEntity) -> Unit)? = null
+    ) {
+        confirmFormSetup(
+            context = appContext,
+            templateName = templateName,
+            candidates = candidates,
+            systemPrompt = systemPrompt,
+            temperature = temperature,
+            onSuccess = onSuccess ?: {}
+        )
     }
 
     fun setDeveloperMode(enabled: Boolean) {
