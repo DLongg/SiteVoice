@@ -172,38 +172,69 @@ class FormSetupService(
                 }
             }
 
-            // 2. Tạo schemaJson động cho Mẫu
+            // 2. Tạo schemaJson động song ngữ cho Mẫu
             val schemaJsonObj = JSONObject().apply {
-                put("id", "custom_auto_" + System.currentTimeMillis())
+                val templateId = "custom_auto_" + System.currentTimeMillis()
+                put("id", templateId)
+                put("ten", templateName)
                 put("name", templateName)
-                put("version", "1.0")
+                put("gom_theo", "ngay")
+                put("group_by", "ngay")
+                put("gioi_han_trang", 2)
                 put("max_pages", 2)
+                put("version", "1.0")
 
+                val summaryFieldsMap = JSONObject()
                 val summaryFieldsArray = JSONArray()
                 val validCandidates = candidates.filter { !it.boQua && it.ma.isNotBlank() }
 
                 for (c in validCandidates) {
-                    val fieldObj = JSONObject().apply {
-                        put("key", c.ma.lowercase())
+                    val key = c.ma.lowercase()
+                    val maxLines = if (c.loai == "danh_sach") 8 else 3
+                    val maxChars = if (c.loai == "van_ban") 200 else 0
+
+                    val mapFieldObj = JSONObject().apply {
+                        put("kieu", c.loai)
+                        put("type", c.loai)
+                        put("toi_da_dong", maxLines)
+                        put("max_lines", maxLines)
+                        put("ky_tu_moi_dong", 80)
+                        put("max_chars_per_line", 80)
+                        put("toi_da_ky_tu", maxChars)
+                        put("max_chars", maxChars)
+                        put("hien_trong_doc", true)
+                        put("show_in_doc", true)
+                        put("muc_nguon", JSONArray().apply { put(c.nguon) })
+                        put("source", c.nguon)
+                        put("placeholder", "{{${c.ma}}}")
+                        put("label", c.ten)
+                    }
+                    summaryFieldsMap.put(key, mapFieldObj)
+
+                    val arrayFieldObj = JSONObject().apply {
+                        put("key", key)
                         put("label", c.ten)
                         put("type", c.loai)
                         put("placeholder", "{{${c.ma}}}")
                         put("source", c.nguon)
-                        put("max_lines", if (c.loai == "danh_sach") 8 else 3)
+                        put("max_lines", maxLines)
                         put("max_chars_per_line", 80)
                     }
-                    summaryFieldsArray.put(fieldObj)
+                    summaryFieldsArray.put(arrayFieldObj)
                 }
+                put("truong_tong_hop", summaryFieldsMap)
                 put("summary_fields", summaryFieldsArray)
             }
 
             val docUrl = "https://docs.google.com/document/d/$workingDocId/edit"
+            val unifiedPrompt = FormLlmDescriber.generateUnifiedPrompt(candidates, templateName)
+
             val templateEntity = TemplateItemEntity(
                 id = "custom_auto_" + System.currentTimeMillis(),
                 name = templateName,
                 description = "Mẫu tự động sinh từ Google Doc (đã chèn ${candidates.count { !it.boQua }} thẻ placeholder)",
                 docTemplateUrl = docUrl,
-                systemPrompt = "Bạn là trợ lý tổng hợp báo cáo công trường theo biểu mẫu quy định. Hãy tóm tắt trung thực, súc tích và khống chế đúng số dòng cho từng mục.",
+                systemPrompt = unifiedPrompt,
                 schemaJson = schemaJsonObj.toString(2),
                 isBuiltIn = false,
                 isActive = true,
