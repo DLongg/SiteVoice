@@ -577,3 +577,33 @@ A templates/schema-chung.md
 - Kiểm tra:
   + Local: `.\gradlew.bat testDebugUnitTest assembleDebug` thành công 100%.
   + GitHub Actions: Run `39896710931` hoàn tất `completed / success`, tạo thành công GitHub Release và đính kèm `app-debug.apk`.
+
+## 2026-10-24 — Milestone M1 (Requirement R1): Cập nhật đồng bộ Tài liệu Thiết kế — Hoàn thành
+
+- Kết quả:
+  + Cập nhật đồng bộ các tài liệu thiết kế hệ thống (`docs/10-thiet-lap-form.md`, `docs/05-llm.md`, `docs/06-google-doc-mau.md`, `docs/SUMMARY.md`) phục vụ nâng cấp quy trình Thiết lập Biểu mẫu tự động và cơ chế xuất tài liệu:
+    1. `docs/10-thiet-lap-form.md`:
+       * Đề mục mở rộng: Regex nhận diện số La Mã (`I.`, `II.`), Chữ cái (`A.`, `B.`), Mục con (`1.1`, `3.1`), Số thứ tự (`1.`, `2.`), dòng kết thúc bằng dấu `:`.
+       * Bảng (`table`): Truyền nhãn từ ô bên trái sang ô bên phải cùng hàng (khi ô phải trống hoặc có dấu chấm).
+       * Gộp dòng chấm liên tiếp: Nhiều dòng chấm (`.....`) hoặc gạch dưới (`_____`) dưới cùng đề mục được gộp thành 1 chỗ điền duy nhất (`danh_sach`), bảo tồn nguyên vẹn các cụm chấm nội dòng (inline dots như `Ngày ... tháng ... năm ...`).
+       * Khử trùng lặp mã thẻ `ma` giữa các ứng viên.
+       * Quy trình Human-in-the-loop 2 bước trên `FormSetupDialog`: Bước 1 duyệt/chỉnh sửa thẻ neo `{{MA}}`; Bước 2 duyệt Prompt thống nhất do AI sinh và thanh trượt nhiệt độ (`0.0 - 0.8`, mặc định `0.20`).
+       * Sinh Prompt thống nhất cho Pha 2 (Pha 4b): Quy tắc chống bịa số liệu, mô tả thẻ neo, cấu trúc JSON đích 1-1.
+       * Tương thích `schemaJson` song ngữ (`ten`/`name`, `truong_tong_hop`/`summary_fields`).
+    2. `docs/05-llm.md`:
+       * Cấu hình `llmTemperature` (`0.0 - 0.8`, mặc định `0.2f`) trong `SecurePreferences` điều khiển phong cách tổng hợp (0.0 bám sát nguyên văn -> 0.2 mượt mà không bịa sự thật -> 0.8 trau chuốt linh hoạt).
+       * Tổng hợp JSON động 1-1 theo `summary_fields` của Mẫu đang kích hoạt trong `ReportSynthesizer`.
+       * Cấu trúc Prompt thống nhất do AI sinh cho Mẫu tùy chỉnh (Pha 4b).
+    3. `docs/06-google-doc-mau.md`:
+       * Cơ chế Ghi file Google Doc quét sạch 2 lớp trong `GoogleDocsExporter`: Lớp 1 thay thế placeholder theo bản đồ dữ liệu; Lớp 2 kiểm tra nội dung bản sao bằng `documents.get`, dùng regex `\{\{[^{}]+\}\}` tìm các tag sót và gửi `batchUpdate` `replaceAllText` -> `""` để xóa sạch 100% tag rỗng.
+       * `PlaceholderMapper`: Mặc định chuỗi rỗng `""` cho toàn bộ các trường trong schema Mẫu.
+    4. `docs/SUMMARY.md`: Cập nhật tiến độ Milestone M1, giữ dưới 80 dòng theo AGENTS.md.
+- File sửa:
+  + `docs/10-thiet-lap-form.md`
+  + `docs/05-llm.md`
+  + `docs/06-google-doc-mau.md`
+  + `docs/SUMMARY.md`
+  + `docs/WORK_LOG.md`
+- Kiểm tra: Đối chiếu chéo 100% yêu cầu R1 trong `ORIGINAL_REQUEST.md`, `PROJECT.md` và `survey_report.md`.
+- Còn lại: Sẵn sàng bàn giao cho Milestone M2 (Nâng cấp Scanner, Prompts & Bilingual Schema trong `FormCandidateScanner`, `FormLlmDescriber`, `FormSetupService`, `TemplateSchema`).
+
