@@ -16,7 +16,7 @@ Từ lúc có Doc mẫu, cách xuất hằng ngày GIỐNG NHAU.
    - Gửi lệnh `batchUpdate` với danh sách các thao tác `replaceAllText` để điền dữ liệu vào bản sao Doc.
 3. **Lớp 2 (Pass 2 — Sweep & Clean Remaining Tags)**:
    - Gọi Docs API `documents.get` để đọc lại toàn bộ cấu trúc nội dung văn bản của tài liệu vừa điền ở Pass 1.
-   - Sử dụng biểu thức chính quy `\{\{[^{}]+\}\}` để phát hiện mọi thẻ `{{...}}` còn sót lại trên tài liệu (do người dùng thêm trong Doc mẫu nhưng không có trong schema, hoặc lỗi cú pháp).
+   - Sử dụng biểu thức chính quy `\{\{[^{}\r\n]{1,100}\}\}` để phát hiện mọi thẻ {{...}} còn sót lại trên cùng một dòng của tài liệu (tránh quét xuyên đoạn văn bản khi ngoặc bị lỗi).
    - Nếu phát hiện thẻ sót, gửi tiếp lệnh `batchUpdate` thứ 2 với `replaceAllText` -> `""` để xóa sạch 100% các tag rỗng.
 4. **Hoàn tất & Lưu trữ**:
    - Lưu liên kết tài liệu vào `DailyReport.docUrl`.

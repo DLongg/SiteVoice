@@ -26,7 +26,7 @@ Bộ quét `FormCandidateScanner` áp dụng các biểu thức chính quy (Rege
 
 | Tín hiệu | Biểu thức / Tiêu chí | Loại gợi ý | Xử lý chi tiết |
 |---|---|---|---|
-| **Đề mục mở rộng** | Regex số La Mã (`I.`, `II.`, `III.`), Chữ cái (`A.`, `B.`, `C.`), Mục con (`1.1`, `3.1`), Số thứ tự (`1.`, `2.`), hoặc dòng kết thúc bằng dấu `:` | Tiêu đề ngữ cảnh | Dùng làm `tieuDeGanNhat` gán ngữ cảnh cho các chỗ điền nằm bên dưới. |
+| **Đề mục mở rộng** | `^\s*((?:[IVXLCDM]+|[A-Za-z]|\d+(?:\.\d+)*)[\.\)]\s*.*|[^:\n]{2,150}:)\s*$` | Tiêu đề ngữ cảnh | Nhận diện số La Mã (I., II.), Chữ cái (A., B.), Mục con (1.1, 3.1), Số thứ tự (1., 2.), hoặc dòng kết thúc bằng dấu : (hỗ trợ tiêu đề dài tới 150 ký tự). Dùng làm tieuDeGanNhat gán ngữ cảnh cho các chỗ điền nằm bên dưới. |
 | **Ô bảng trống / chấm** | Ô bên phải cùng hàng trong bảng (`tableCell`) có nội dung trống hoặc chỉ chứa dấu chấm | Theo ngữ cảnh nhãn | **Truyền nhãn bảng**: Tự động lấy nhãn văn bản từ ô bên trái làm `truoc` và nhãn gợi ý cho ô bên phải. |
 | **Gộp dòng chấm liên tiếp** | Nhiều dòng chấm (`.....`) hoặc gạch dưới (`_____`) liên tiếp nằm dưới cùng một đề mục | `danh_sach` | **Gộp thành 1 chỗ điền duy nhất**: Đếm số dòng (`soDongLienTiep = count`), gộp phạm vi từ `startIndex` dòng đầu đến `endIndex` dòng cuối. |
 | **Tách cụm chấm trên cùng dòng** | Nhiều cụm `...` xuất hiện trên cùng một đoạn (inline dots) | `ngay` / `so` / `van_ban` | **Bảo tồn & tách riêng**: Ví dụ `Ngày ... tháng ... năm ...` được tách thành 3 ứng viên riêng biệt (`NGAY`, `THANG`, `NAM`) với ngữ cảnh trước/sau tương ứng. |
@@ -143,7 +143,7 @@ Mẫu được lưu trong CSDL Room (`template_items`) với `schemaJson` tươn
 - Tuyệt đối không ném ngoại lệ `JSONException` làm sập ngầm ứng dụng hoặc rơi về Mẫu mặc định khi gặp schema sinh từ các phiên bản khác nhau.
 
 ## Bài kiểm tra chuẩn
-Chạy bộ nhận diện trên form nhật ký công trường (xem `templates/nhat-ky-cong-truong/doc-mau.md`, nội dung form gốc có chấm/ô tích). Kỳ vọng: nhận đúng  90% trong 13 chỗ điền, không bỏ sót chỗ nào, không tạo chỗ giả ở khối chữ ký. Ghi kết quả vào bảng đo độ chính xác (khi có `10-do-chinh-xac.md`).
+Chạy bộ nhận diện trên form nhật ký công trường (xem `templates/nhat-ky-cong-truong/doc-mau.md`, nội dung form gốc có chấm/ô tích). Kỳ vọng: nhận đúng >= 90% trong 13 chỗ điền, không bỏ sót chỗ nào, không tạo chỗ giả ở khối chữ ký. Ghi kết quả vào bảng đo độ chính xác (khi có `10-do-chinh-xac.md`).
 
 ## Rủi ro đã biết
 - Bảng lồng nhau, cột trộn ô.

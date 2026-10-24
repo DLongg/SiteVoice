@@ -19,7 +19,7 @@ Cập nhật: 2026-10-24. Đây là trạng thái hiện tại; quy tắc ở [A
 - **Đã hoàn thành Milestone M1 (Requirement R1) — Cập nhật đồng bộ Tài liệu Thiết kế**:
   - `docs/10-thiet-lap-form.md`: Bổ sung regex đề mục mở rộng (La Mã, chữ cái, mục con, dấu `:`), truyền nhãn bảng trái sang phải, gộp dòng chấm liên tiếp thành `danh_sach`, bảo tồn cụm chấm nội dòng, quy trình Human-in-the-loop 2 bước (Bước 1 duyệt thẻ neo, Bước 2 duyệt Prompt thống nhất & thanh trượt nhiệt độ), và chuẩn hóa tương thích `schemaJson` song ngữ.
   - `docs/05-llm.md`: Bổ sung cấu hình `llmTemperature` (`0.0 - 0.8`, mặc định `0.2f`) trong `SecurePreferences`, cơ chế tổng hợp JSON động 1-1 theo `summary_fields` của Mẫu trong `ReportSynthesizer`, và cấu trúc System Prompt thống nhất do AI sinh (Pha 4b).
-  - `docs/06-google-doc-mau.md`: Bổ sung cơ chế xuất Google Doc quét sạch 2 lớp (Lớp 1: map-based replace; Lớp 2: documents.get quét regex `\{\{[^{}]+\}\}` và batchUpdate xóa sạch 100% tag rỗng), cùng giá trị mặc định chuỗi rỗng `""` trong `PlaceholderMapper`.
+  - `docs/06-google-doc-mau.md`: Bổ sung cơ chế xuất Google Doc quét sạch 2 lớp (Lớp 1: map-based replace; Lớp 2: documents.get quét regex `\{\{[^{}\r\n]{1,100}\}\}` và batchUpdate xóa sạch 100% tag rỗng), cùng giá trị mặc định chuỗi rỗng `""` trong `PlaceholderMapper`.
 - **Kế hoạch tiếp theo**:
   - Milestone M2: Nâng cấp `FormCandidateScanner`, `FormLlmDescriber`, `FormSetupService`, và `TemplateSchema` theo tài liệu thiết kế đã chuẩn hóa.
 
