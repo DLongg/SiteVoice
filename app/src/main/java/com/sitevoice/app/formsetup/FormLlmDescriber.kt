@@ -40,7 +40,8 @@ class FormLlmDescriber(
             }
         }
 
-        return described
+        // 3. Khử trùng lặp mã placeholder ma giữa các ứng viên
+        return deduplicateCandidateCodes(described)
     }
 
     fun applyDeterministicRules(candidate: FormCandidate): FormCandidate {
@@ -252,6 +253,87 @@ class FormLlmDescriber(
         }
 
         return list
+    }
+
+    fun deduplicateCandidateCodes(candidates: List<FormCandidate>): List<FormCandidate> =
+        Companion.deduplicateCandidateCodes(candidates)
+
+    fun generateUnifiedPrompt(candidates: List<FormCandidate>, templateName: String): String =
+        Companion.generateUnifiedPrompt(candidates, templateName)
+
+    companion object {
+        fun deduplicateCandidateCodes(candidates: List<FormCandidate>): List<FormCandidate> {
+            val usedCodes = mutableSetOf<String>()
+            return candidates.map { candidate ->
+                if (candidate.boQua) {
+                    candidate
+                } else {
+                    var cleanMa = candidate.ma.trim().uppercase()
+                        .replace(Regex("[^A-Z0-9_]"), "_")
+                        .replace(Regex("_+"), "_")
+                        .trim('_')
+                    if (cleanMa.isBlank()) cleanMa = "TRUONG_${candidate.id}"
+
+                    var uniqueMa = cleanMa
+                    var suffix = 2
+                    while (usedCodes.contains(uniqueMa)) {
+                        uniqueMa = "${cleanMa}_$suffix"
+                        suffix++
+                    }
+                    usedCodes.add(uniqueMa)
+                    candidate.copy(ma = uniqueMa)
+                }
+            }
+        }
+
+        fun generateUnifiedPrompt(
+            candidates: List<FormCandidate>,
+            templateName: String
+        ): String {
+            val validCandidates = candidates.filter { !it.boQua && it.ma.isNotBlank() }
+
+            val fieldDescriptions = StringBuilder()
+            val jsonSampleObj = JSONObject()
+
+            for (c in validCandidates) {
+                val key = c.ma.lowercase()
+                val typeDesc = when (c.loai) {
+                    "danh_sach" -> "Danh sách các gạch đầu dòng '- ' (hoặc phân nhóm), tối đa 8 dòng (mỗi dòng ≤ 80 ký tự)."
+                    "van_ban" -> "Đoạn văn súc tích, ngắn gọn, chuẩn văn phong hành chính kỹ thuật (tối đa 200 ký tự)."
+                    "so" -> "Giá trị số hoặc số lượng kèm đơn vị (VD: '5', '12 công')."
+                    "ngay" -> "Giá trị ngày/tháng/năm theo ngữ cảnh."
+                    "o_tich" -> "Boolean true hoặc false (true nếu được nhắc tới/lựa chọn, false nếu không)."
+                    else -> "Chuỗi văn bản ngắn gọn."
+                }
+                fieldDescriptions.append("- `{{${c.ma}}}` (Key JSON: \"$key\"): ${c.ten}. Kiểu: ${c.loai}. Nguồn: ${c.nguon}. Quy tắc: $typeDesc\n")
+
+                when (c.loai) {
+                    "danh_sach" -> jsonSampleObj.put(key, JSONArray().apply { put("- Nội dung công việc 1") })
+                    "o_tich" -> jsonSampleObj.put(key, false)
+                    "so" -> jsonSampleObj.put(key, "0")
+                    "ngay" -> jsonSampleObj.put(key, "01")
+                    else -> jsonSampleObj.put(key, "")
+                }
+            }
+
+            return """Bạn là thư ký kỹ thuật công trường xây dựng chuyên nghiệp tại Việt Nam.
+Nhiệm vụ của bạn là tổng hợp các ghi chú âm thanh trong ngày thành bản báo cáo theo biểu mẫu '$templateName'.
+
+QUY TẮC BẮT BUỘC:
+1. BIÊN TẬP MƯỢT MÀ & VĂN PHONG CHUẨN:
+   - Chuyển hóa các câu nói rời rạc, khẩu ngữ ngoài công trường thành câu văn hành chính kỹ thuật chỉn chu, gãy gọn, đúng thuật ngữ xây dựng.
+2. TUYỆT ĐỐI KHÔNG BỊA ĐẶT SỐ LIỆU (ANTI-HALLUCINATION):
+   - CHỈ sử dụng thông tin có trong bản ghi âm hoặc ghi chú của người dùng.
+   - Tuyệt đối KHÔNG tự suy đoán, KHÔNG tự thêm công nhân, thiết bị, hạng mục hay số liệu khối lượng không được nhắc tới.
+   - Nếu mục nào không có thông tin trong ngày: hãy để giá trị mặc định ("" cho văn bản/số, [] cho danh sách, false cho ô tích).
+3. KHỐNG CHẾ DUNG LƯỢNG:
+   - Nghiêm ngặt tuân thủ số dòng tối đa và độ dài ký tự của từng mục để đảm bảo tài liệu không vượt quá 2 trang A4.
+4. DANH SÁCH CÁC TRƯỜNG CẦN TỔNG HỢP:
+$fieldDescriptions
+5. ĐỊNH DẠNG ĐẦU RA:
+   - CHỈ trả về JSON phẳng thuần túy khớp 1-1 với cấu trúc dưới đây, không bọc markdown ```json, không kèm lời giải thích.
+${jsonSampleObj.toString(2)}""".trimIndent()
+        }
     }
 
     private data class LlmResultItem(
