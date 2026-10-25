@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,17 +50,17 @@ import java.util.Locale
 data class CategoryOption(
     val key: String,
     val title: String,
-    val icon: String
+    val code: String
 )
 
 val CATEGORY_OPTIONS = listOf(
-    CategoryOption(NoteClassifier.LABEL_THI_CONG, "Thi công", "🏗️"),
-    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, "Nghiệm thu", "📐"),
-    CategoryOption(NoteClassifier.LABEL_AN_TOAN, "An toàn & Vệ sinh", "🦺"),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, "Ý kiến Chủ đầu tư", "🏛️"),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, "Ý kiến TVGS", "📋"),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, "Ý kiến Nhà thầu", "🏢"),
-    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, "Chưa phân loại", "❓")
+    CategoryOption(NoteClassifier.LABEL_THI_CONG, "Thi công", "TC"),
+    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, "Nghiệm thu", "NT"),
+    CategoryOption(NoteClassifier.LABEL_AN_TOAN, "An toàn & VSMT", "AT"),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, "Ý kiến Chủ đầu tư", "CĐT"),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, "Ý kiến TVGS", "TVGS"),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, "Ý kiến Nhà thầu", "NT-YK"),
+    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, "Chưa phân loại", "---")
 )
 
 @Composable
@@ -80,86 +79,99 @@ fun NotesListScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF8FAFC)
+        color = Color(0xFFF3EFE6)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            // Header: Tiêu đề và tổng số lượng ghi chú
-            Row(
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Top Architectural Ledger Banner
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .background(Color(0xFF14171A))
+                    .padding(horizontal = 20.dp, vertical = 18.dp)
             ) {
-                Text(
-                    text = stringResource(id = R.string.notes_title),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column {
+                        Text(
+                            text = "NHẬT KÝ GHI ÂM TRONG NGÀY",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.5.sp,
+                            color = Color(0xFFD84315)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(id = R.string.notes_title),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFFFAF8F3)
+                        )
+                    }
 
-                Text(
-                    text = stringResource(id = R.string.notes_count, notes.size),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF64748B)
-                )
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFF21262B), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.notes_count, notes.size).uppercase(),
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFAF8F3)
+                        )
+                    }
+                }
             }
 
             if (notes.isEmpty()) {
-                // Trạng thái trống (Empty State)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 60.dp),
+                        .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(24.dp)
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFAF8F3), RoundedCornerShape(4.dp))
+                            .border(1.dp, Color(0xFFD6CFC2), RoundedCornerShape(4.dp))
+                            .padding(24.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .background(Color(0xFFE2E8F0), RoundedCornerShape(32.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "📝",
-                                fontSize = 28.sp
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
+                        Text(
+                            text = "SỔ GHI CHÚ ĐANG TRỐNG",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.2.sp,
+                            color = Color(0xFFD84315)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = stringResource(id = R.string.notes_empty_title),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF334155)
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF14171A)
                         )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
+                        Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = stringResource(id = R.string.notes_empty_desc),
-                            fontSize = 13.sp,
-                            color = Color(0xFF64748B),
-                            lineHeight = 18.sp,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            fontSize = 14.sp,
+                            color = Color(0xFF5C6268),
+                            lineHeight = 20.sp
                         )
                     }
                 }
             } else {
-                // Danh sách ghi chú cuộn mượt
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 24.dp)
+                    contentPadding = PaddingValues(top = 16.dp, bottom = 28.dp)
                 ) {
                     items(notes, key = { it.id }) { note ->
                         val isPlaying = currentlyPlayingPath == note.audioPath
@@ -188,7 +200,6 @@ fun NotesListScreen(
             }
         }
 
-        // Dialog sửa văn bản
         editingNote?.let { note ->
             EditNoteDialog(
                 initialText = note.text.orEmpty(),
@@ -200,7 +211,6 @@ fun NotesListScreen(
             )
         }
 
-        // Dialog xác nhận xóa
         deletingNoteId?.let { noteId ->
             DeleteConfirmDialog(
                 onConfirm = {
@@ -232,52 +242,66 @@ fun NoteItemCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = CardDefaults.outlinedCardBorder()
+        shape = RoundedCornerShape(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF8F3)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD6CFC2))
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            // Header item: Giờ ghi + Label Badge hoặc Queue Status Pill
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = timeStr,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF475569)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFF14171A), RoundedCornerShape(2.dp))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = timeStr,
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFAF8F3)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "${durationSec}s",
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace,
+                        color = Color(0xFF5C6268)
+                    )
+                }
 
                 when {
                     note.error != null -> {
                         Box(
                             modifier = Modifier
-                                .background(Color(0xFFFEF2F2), RoundedCornerShape(6.dp))
-                                .border(1.dp, Color(0xFFFECACA), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(Color(0xFFFDE8E8), RoundedCornerShape(4.dp))
+                                .border(1.dp, Color(0xFFF8B4B4), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = stringResource(id = R.string.queue_badge_error),
+                                text = stringResource(id = R.string.queue_badge_error).uppercase(),
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFDC2626)
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF9B1C1C)
                             )
                         }
                     }
                     note.status == "RECORDED" -> {
                         Box(
                             modifier = Modifier
-                                .background(Color(0xFFFEF3C7), RoundedCornerShape(6.dp))
-                                .border(1.dp, Color(0xFFFDE68A), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(Color(0xFFFEF3C7), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = stringResource(id = R.string.queue_badge_waiting),
+                                text = stringResource(id = R.string.queue_badge_waiting).uppercase(),
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFB45309)
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF92400E)
                             )
                         }
                     }
@@ -285,51 +309,49 @@ fun NoteItemCard(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .background(Color(0xFFEFF6FF), RoundedCornerShape(6.dp))
-                                .border(1.dp, Color(0xFFBFDBFE), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(Color(0xFFEBE5D8), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(10.dp),
                                 strokeWidth = 1.5.dp,
-                                color = Color(0xFF2563EB)
+                                color = Color(0xFFD84315)
                             )
-                            Spacer(modifier = Modifier.width(5.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = stringResource(id = R.string.queue_badge_classifying),
+                                text = stringResource(id = R.string.queue_badge_classifying).uppercase(),
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF1D4ED8)
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF14171A)
                             )
                         }
                     }
                     else -> {
-                        // Nhãn mục có thể bấm để đổi khi đã hoàn thành phân loại
                         val currentCategory = CATEGORY_OPTIONS.find { it.key == note.label }
-                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), "❓")
+                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), "---")
 
                         val isUnclassified = note.label.isNullOrBlank() ||
                                 note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
                                 note.label == "unclassified"
 
-                        val labelBg = if (isUnclassified) Color(0xFFF1F5F9) else Color(0xFFEFF6FF)
-                        val labelColor = if (isUnclassified) Color(0xFF64748B) else Color(0xFF1D4ED8)
+                        val labelBg = if (isUnclassified) Color(0xFFEBE5D8) else Color(0xFF14171A)
+                        val labelColor = if (isUnclassified) Color(0xFF5C6268) else Color(0xFFFAF8F3)
 
                         Box {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .background(labelBg, RoundedCornerShape(6.dp))
+                                    .background(labelBg, RoundedCornerShape(4.dp))
                                     .clickable { showLabelMenu = true }
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    .padding(horizontal = 10.dp, vertical = 5.dp)
                             ) {
                                 Text(
-                                    text = "${currentCategory.icon} ${currentCategory.title}",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Medium,
+                                    text = "[${currentCategory.code}] ${currentCategory.title}",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
                                     color = labelColor
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "▾",
                                     fontSize = 10.sp,
@@ -345,7 +367,7 @@ fun NoteItemCard(
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                text = "${option.icon} ${option.title}",
+                                                text = "[${option.code}] ${option.title}",
                                                 fontSize = 13.sp,
                                                 fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
                                             )
@@ -362,32 +384,31 @@ fun NoteItemCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Nội dung văn bản hoặc trạng thái STT / hàng đợi
             when {
                 note.error != null -> {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFFEF2F2), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFFFCA5A5), RoundedCornerShape(6.dp))
-                            .padding(10.dp)
+                            .background(Color(0xFFFDE8E8), RoundedCornerShape(4.dp))
+                            .padding(12.dp)
                     ) {
                         Text(
                             text = "Lỗi nhận diện: ${note.error}",
                             fontSize = 13.sp,
-                            color = Color(0xFFDC2626)
+                            color = Color(0xFF9B1C1C)
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         OutlinedButton(
                             onClick = onRetryStt,
-                            shape = RoundedCornerShape(6.dp)
+                            shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.notes_retry_stt),
                                 fontSize = 12.sp,
-                                color = Color(0xFFDC2626)
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF9B1C1C)
                             )
                         }
                     }
@@ -396,29 +417,28 @@ fun NoteItemCard(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFF8FAFC), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(6.dp))
-                            .padding(10.dp),
+                            .background(Color(0xFFEBE5D8), RoundedCornerShape(4.dp))
+                            .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp,
-                            color = Color(0xFF0284C7)
+                            color = Color(0xFFD84315)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
                                 text = stringResource(id = R.string.queue_status_waiting_network),
                                 fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFF0369A1)
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF14171A)
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = stringResource(id = R.string.queue_status_audio_saved_hint),
                                 fontSize = 11.sp,
-                                color = Color(0xFF64748B)
+                                color = Color(0xFF5C6268)
                             )
                         }
                     }
@@ -426,58 +446,57 @@ fun NoteItemCard(
                 else -> {
                     Text(
                         text = note.text,
-                        fontSize = 14.sp,
-                        color = Color(0xFF0F172A),
-                        lineHeight = 20.sp
+                        fontSize = 15.sp,
+                        color = Color(0xFF14171A),
+                        lineHeight = 22.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // Footer item: Nghe lại, Sửa, Xóa
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Nút nghe lại âm thanh gốc
                 OutlinedButton(
                     onClick = onPlayToggle,
-                    shape = RoundedCornerShape(6.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                    shape = RoundedCornerShape(4.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = if (isPlaying) "■ Dừng" else "▶ ${durationSec}s",
-                        fontSize = 12.sp,
-                        color = Color(0xFF334155)
+                        text = if (isPlaying) "DỪNG PHÁT" else "PHÁT ÂM THANH GỐC",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF14171A)
                     )
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // Nút Sửa
                     OutlinedButton(
                         onClick = onEditClick,
-                        shape = RoundedCornerShape(6.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = stringResource(id = R.string.notes_edit),
-                            fontSize = 12.sp,
-                            color = Color(0xFF2563EB)
+                            text = stringResource(id = R.string.notes_edit).uppercase(),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF14171A)
                         )
                     }
 
-                    // Nút Xóa (Soft delete)
                     OutlinedButton(
                         onClick = onDeleteClick,
-                        shape = RoundedCornerShape(6.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = stringResource(id = R.string.notes_delete),
-                            fontSize = 12.sp,
-                            color = Color(0xFFDC2626)
+                            text = stringResource(id = R.string.notes_delete).uppercase(),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFD84315)
                         )
                     }
                 }

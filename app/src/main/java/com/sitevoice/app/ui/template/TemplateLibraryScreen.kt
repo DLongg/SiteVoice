@@ -58,130 +58,139 @@ fun TemplateLibraryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-            .padding(16.dp)
+            .background(Color(0xFFF3EFE6))
     ) {
         // Header
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF14171A))
+                .padding(horizontal = 20.dp, vertical = 18.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stringResource(id = R.string.template_library_title),
-                    fontSize = 20.sp,
+                    text = "QUẢN LÝ BIỂU MẪU BÁO CÁO",
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    letterSpacing = 1.2.sp,
+                    color = Color(0xFFD84315)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = stringResource(id = R.string.template_library_subtitle),
-                    fontSize = 13.sp,
-                    color = Color(0xFF64748B)
+                    text = stringResource(id = R.string.template_library_title),
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFFFAF8F3)
                 )
             }
             IconButton(onClick = onClose) {
-                Text(text = "✕", fontSize = 18.sp, color = Color(0xFF475569))
+                Text(text = "✕", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFAF8F3))
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Khối Tạo Mẫu Tự Động từ Google Doc (Gọi Docs API + LLM API trước)
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(10.dp))
-                .border(1.dp, Color(0xFFCBD5E1), shape = RoundedCornerShape(10.dp))
-                .padding(14.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Text(
-                text = stringResource(id = R.string.template_library_auto_setup_card_title),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0F172A)
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = stringResource(id = R.string.template_library_auto_setup_card_desc),
-                fontSize = 12.sp,
-                color = Color(0xFF475569)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = docUrlInput,
-                onValueChange = {
-                    docUrlInput = it
-                    docUrlError = null
-                },
-                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = 12.sp) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            docUrlError?.let { err ->
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "⚠️ $err", fontSize = 11.sp, color = Color(0xFFDC2626))
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Khối Tạo Mẫu Tự Động từ Google Doc (Gọi Docs API + LLM API trước)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFFAF8F3), shape = RoundedCornerShape(4.dp))
+                    .border(1.dp, Color(0xFFD6CFC2), shape = RoundedCornerShape(4.dp))
+                    .padding(16.dp)
             ) {
-                Button(
-                    onClick = {
-                        if (docUrlInput.isBlank()) {
-                            docUrlError = "Vui lòng dán link hoặc ID Google Doc trước khi quét."
-                        } else {
-                            onAutoSetupFromDoc(docUrlInput.trim())
-                        }
+                Text(
+                    text = stringResource(id = R.string.template_library_auto_setup_card_title),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF14171A)
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(id = R.string.template_library_auto_setup_card_desc),
+                    fontSize = 12.sp,
+                    color = Color(0xFF5C6268)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = docUrlInput,
+                    onValueChange = {
+                        docUrlInput = it
+                        docUrlError = null
                     },
-                    modifier = Modifier.weight(1.4f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.template_library_auto_setup_btn),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = Color.White
-                    )
+                    placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = 12.sp) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp)
+                )
+
+                docUrlError?.let { err ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = err, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFFD84315))
                 }
 
-                OutlinedButton(
-                    onClick = onCreateNewTemplate,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.template_btn_create_new),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp,
-                        color = Color(0xFF0F172A)
-                    )
+                    Button(
+                        onClick = {
+                            if (docUrlInput.isBlank()) {
+                                docUrlError = "Vui lòng dán link hoặc ID Google Doc trước khi quét."
+                            } else {
+                                onAutoSetupFromDoc(docUrlInput.trim())
+                            }
+                        },
+                        modifier = Modifier.weight(1.4f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD84315)),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.template_library_auto_setup_btn),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = Color.White
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = onCreateNewTemplate,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.template_btn_create_new),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = Color(0xFF14171A)
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-        // Danh sách mẫu
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(templates, key = { it.id }) { template ->
-                TemplateCardItem(
-                    template = template,
-                    onActivate = { onActivateTemplate(template.id) },
-                    onEdit = { onEditTemplate(template) },
-                    onDuplicate = { onDuplicateTemplate(template) },
-                    onDelete = { templateToDelete = template }
-                )
+            // Danh sách mẫu
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(templates, key = { it.id }) { template ->
+                    TemplateCardItem(
+                        template = template,
+                        onActivate = { onActivateTemplate(template.id) },
+                        onEdit = { onEditTemplate(template) },
+                        onDuplicate = { onDuplicateTemplate(template) },
+                        onDelete = { templateToDelete = template }
+                    )
+                }
             }
         }
     }

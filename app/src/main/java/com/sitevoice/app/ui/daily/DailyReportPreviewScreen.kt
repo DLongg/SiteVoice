@@ -65,7 +65,7 @@ fun DailyReportPreviewScreen(
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF8FAFC)
+        color = Color(0xFFF3EFE6)
     ) {
         if (isSynthesizing) {
             Box(
@@ -79,21 +79,21 @@ fun DailyReportPreviewScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator(
-                        color = Color(0xFF0F172A),
+                        color = Color(0xFFD84315),
                         strokeWidth = 3.dp
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
                         text = stringResource(id = R.string.report_synthesizing_loading),
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF0F172A)
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF14171A)
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = stringResource(id = R.string.report_synthesizing_budget_note),
                         fontSize = 12.sp,
-                        color = Color(0xFF64748B),
+                        color = Color(0xFF5C6268),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
@@ -112,22 +112,22 @@ fun DailyReportPreviewScreen(
                     Text(
                         text = "Chưa có bản tổng hợp nào cho ngày $currentDate",
                         fontSize = 14.sp,
-                        color = Color(0xFF64748B)
+                        color = Color(0xFF5C6268)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onResynthesizeClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                        shape = RoundedCornerShape(8.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD84315)),
+                        shape = RoundedCornerShape(4.dp)
                     ) {
-                        Text(text = stringResource(id = R.string.btn_generate_report))
+                        Text(text = stringResource(id = R.string.btn_generate_report).uppercase(), fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedButton(
                         onClick = onBackToEditClick,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(4.dp)
                     ) {
-                        Text(text = stringResource(id = R.string.report_btn_back_to_edit))
+                        Text(text = stringResource(id = R.string.report_btn_back_to_edit), fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -140,43 +140,62 @@ fun DailyReportPreviewScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Thanh điều hướng trên cùng
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Top Architectural Ledger Banner
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF14171A))
+                    .padding(horizontal = 20.dp, vertical = 18.dp)
             ) {
-                OutlinedButton(
-                    onClick = onBackToEditClick,
-                    shape = RoundedCornerShape(8.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "← " + stringResource(id = R.string.report_btn_back_to_edit), fontSize = 12.sp)
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFF21262B), RoundedCornerShape(4.dp))
+                            .border(1.dp, Color(0xFF3E444A), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        TextButton(
+                            onClick = onBackToEditClick,
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                            modifier = Modifier.height(22.dp)
+                        ) {
+                            Text(
+                                text = "← " + stringResource(id = R.string.report_btn_back_to_edit).uppercase(),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFAF8F3)
+                            )
+                        }
+                    }
+
+                    StatusBadge(status = reportEntity.status)
                 }
 
-                // Status Chip
-                StatusBadge(status = reportEntity.status)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = stringResource(id = R.string.report_preview_title),
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFFFAF8F3)
+                )
+                val templateDisplayName = activeTemplateName ?: (if (reportEntity.templateId == "nhat-ky-ca-nhan") "Nhật ký cá nhân" else "Nhật ký thi công công trường")
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "NGÀY: $currentDate  •  MẪU: ${templateDisplayName.uppercase()}",
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = Color(0xFFD84315)
+                )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Tiêu đề
-            Text(
-                text = stringResource(id = R.string.report_preview_title),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0F172A)
-            )
-            val templateDisplayName = activeTemplateName ?: (if (reportEntity.templateId == "nhat-ky-ca-nhan") "Nhật ký cá nhân" else "Nhật ký thi công công trường")
-            Text(
-                text = "Ngày: $currentDate • Mẫu: $templateDisplayName",
-                fontSize = 12.sp,
-                color = Color(0xFF64748B)
-            )
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
             // Banner phê duyệt nếu đã duyệt
             if (isApproved) {
@@ -639,7 +658,8 @@ fun DailyReportPreviewScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(36.dp))
+            }
         }
     }
 }

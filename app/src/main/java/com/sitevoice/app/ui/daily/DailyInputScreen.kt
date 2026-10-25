@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -65,7 +66,6 @@ fun DailyInputScreen(
 
     var isSavedNotification by remember { mutableStateOf(false) }
 
-    // Đồng bộ giá trị khởi tạo khi có bản ghi (hoặc bản ghi kế thừa)
     LaunchedEffect(initialDailyInput) {
         if (initialDailyInput != null) {
             weatherMorning = initialDailyInput.weatherMorning
@@ -79,377 +79,387 @@ fun DailyInputScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF8FAFC)
+        color = Color(0xFFF3EFE6)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header
-            Row(
+            // Top Architectural Ledger Banner
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .background(Color(0xFF14171A))
+                    .padding(horizontal = 20.dp, vertical = 18.dp)
             ) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.tab_report),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "Ngày: $currentDate",
-                        fontSize = 13.sp,
-                        color = Color(0xFF64748B)
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column {
+                        Text(
+                            text = "TỔNG HỢP CUỐI NGÀY • $currentDate",
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.2.sp,
+                            color = Color(0xFFD84315)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(id = R.string.tab_report),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFFFAF8F3)
+                        )
+                    }
+
+                    if (isSavedNotification) {
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFF1B4332), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Text(
+                                text = "ĐÃ LƯU",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF74C69D)
+                            )
+                        }
+                    }
                 }
 
-                if (isSavedNotification) {
-                    Text(
-                        text = "✓ Đã lưu",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF16A34A)
-                    )
-                }
-            }
+                Spacer(modifier = Modifier.height(14.dp))
 
-            // Banner chọn / đổi Mẫu Báo cáo (TemplateSelector)
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 14.dp)
-                    .clickable { onOpenTemplateLibrary() },
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(8.dp),
-                border = CardDefaults.outlinedCardBorder()
-            ) {
+                // Active Template Strip
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(Color(0xFF21262B), RoundedCornerShape(4.dp))
+                        .clickable { onOpenTemplateLibrary() }
                         .padding(horizontal = 14.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "MẪU BÁO CÁO ÁP DỤNG",
-                            fontSize = 11.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF64748B)
+                            color = Color(0xFF949A9E)
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "📑 " + (activeTemplateName ?: "Nhật ký thi công hằng ngày"),
+                            text = activeTemplateName ?: "Nhật ký thi công hằng ngày",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = Color(0xFFFAF8F3)
                         )
                     }
 
                     Text(
-                        text = "Đổi mẫu ▾",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF2563EB)
+                        text = "QUẢN LÝ MẪU →",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFD84315)
                     )
                 }
             }
 
-            // Thẻ trạng thái báo cáo hôm nay (nếu đã tổng hợp)
-            if (dailyReport != null) {
-                val isApproved = dailyReport.status == "APPROVED" || dailyReport.status == "EXPORTED"
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isApproved) Color(0xFFDCFCE7) else Color(0xFFEFF6FF)
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    border = androidx.compose.foundation.BorderStroke(
-                        1.dp,
-                        if (isApproved) Color(0xFF86EFAC) else Color(0xFFBFDBFE)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            val badgeTitle = if (isApproved) "✓ Đã duyệt nhật ký" else "📑 Bản dự thảo sẵn sàng"
-                            Text(
-                                text = badgeTitle,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isApproved) Color(0xFF166534) else Color(0xFF1E40AF)
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = if (isApproved) "Nhật ký đã được duyệt 1 lần duy nhất." else "Bấm để xem và duyệt trước khi xuất Doc.",
-                                fontSize = 12.sp,
-                                color = if (isApproved) Color(0xFF15803D) else Color(0xFF3B82F6)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = { onViewReportClick?.invoke() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isApproved) Color(0xFF15803D) else Color(0xFF2563EB)
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(text = "Xem", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Thẻ 1: Thời tiết trong ngày
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp),
-                border = CardDefaults.outlinedCardBorder()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.weather_title),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
-                        )
-                        Text(
-                            text = "{{SANG_*}} • {{CHIEU_*}} • {{TOI_*}}",
-                            fontSize = 10.sp,
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            color = Color(0xFF64748B)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Buổi Sáng
-                    WeatherRow(
-                        periodLabel = stringResource(id = R.string.weather_morning),
-                        currentSelection = weatherMorning,
-                        option1Key = "nang",
-                        option1Label = "☀️ Trời nắng",
-                        option2Key = "mua",
-                        option2Label = "🌧️ Trời mưa",
-                        onSelect = { weatherMorning = it }
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Buổi Chiều
-                    WeatherRow(
-                        periodLabel = stringResource(id = R.string.weather_afternoon),
-                        currentSelection = weatherAfternoon,
-                        option1Key = "nang",
-                        option1Label = "☀️ Trời nắng",
-                        option2Key = "mua",
-                        option2Label = "🌧️ Trời mưa",
-                        onSelect = { weatherAfternoon = it }
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Buổi Tối
-                    WeatherRow(
-                        periodLabel = stringResource(id = R.string.weather_evening),
-                        currentSelection = weatherEvening,
-                        option1Key = "binh_thuong",
-                        option1Label = "🌙 Bình thường",
-                        option2Key = "mua",
-                        option2Label = "🌧️ Trời mưa",
-                        onSelect = { weatherEvening = it }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Thẻ 2: Lực lượng thi công
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp),
-                border = CardDefaults.outlinedCardBorder()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.staff_title),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
-                        )
-                        Text(
-                            text = "{{BAN_CHI_HUY}} • {{CONG_NHAN}}",
-                            fontSize = 10.sp,
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            color = Color(0xFF64748B)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = if (commandStaffCount > 0) commandStaffCount.toString() else "",
-                            onValueChange = {
-                                commandStaffCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
-                            },
-                            label = { Text("Ban chỉ huy", fontSize = 12.sp) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        OutlinedTextField(
-                            value = if (workerCount > 0) workerCount.toString() else "",
-                            onValueChange = {
-                                workerCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
-                            },
-                            label = { Text("Công nhân", fontSize = 12.sp) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Máy móc - Thiết bị
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.equipment_title),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF334155)
-                        )
-                        Text(
-                            text = "{{MAY_MOC}}",
-                            fontSize = 10.sp,
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            color = Color(0xFF2563EB)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    OutlinedTextField(
-                        value = equipmentList,
-                        onValueChange = { equipmentList = it },
-                        placeholder = {
-                            Text(
-                                text = stringResource(id = R.string.equipment_hint),
-                                fontSize = 12.sp,
-                                color = Color(0xFF94A3B8)
-                            )
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(88.dp),
-                        maxLines = 3
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Nút Lưu thông tin cố định
-            OutlinedButton(
-                onClick = {
-                    val entity = DailyInputEntity(
-                        date = currentDate,
-                        weatherMorning = weatherMorning,
-                        weatherAfternoon = weatherAfternoon,
-                        weatherEvening = weatherEvening,
-                        commandStaffCount = commandStaffCount,
-                        workerCount = workerCount,
-                        equipmentList = equipmentList.trim()
-                    )
-                    onSaveDailyInput(entity)
-                    isSavedNotification = true
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.btn_save_daily_input),
-                    color = Color(0xFF1E293B),
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Nút Lớn: Tổng hợp nhật ký hôm nay
-            Button(
-                onClick = {
-                    // Tự động lưu trước khi bắt đầu tổng hợp
-                    val entity = DailyInputEntity(
-                        date = currentDate,
-                        weatherMorning = weatherMorning,
-                        weatherAfternoon = weatherAfternoon,
-                        weatherEvening = weatherEvening,
-                        commandStaffCount = commandStaffCount,
-                        workerCount = workerCount,
-                        equipmentList = equipmentList.trim()
-                    )
-                    onSaveDailyInput(entity)
-                    onGenerateReportClick()
-                },
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B))
+                    .padding(16.dp)
             ) {
-                val btnText = if (dailyReport != null) {
-                    "🔄 " + stringResource(id = R.string.report_btn_resynthesize)
-                } else {
-                    "⚡ " + stringResource(id = R.string.btn_generate_report)
+                // Report Draft/Approved Banner
+                if (dailyReport != null) {
+                    val isApproved = dailyReport.status == "APPROVED" || dailyReport.status == "EXPORTED"
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isApproved) Color(0xFF1B4332) else Color(0xFF14171A)
+                        ),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (isApproved) "ĐÃ PHÊ DUYỆT NHẬT KÝ" else "BẢN DỰ THẢO ĐÃ SẴN SÀNG",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.8.sp,
+                                    color = if (isApproved) Color(0xFF74C69D) else Color(0xFFD84315)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = if (isApproved)
+                                        "Nhật ký đã được duyệt và sẵn sàng xuất Google Doc."
+                                    else
+                                        "Mở bản xem trước để kiểm tra và xuất Google Doc.",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFFAF8F3)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Button(
+                                onClick = { onViewReportClick?.invoke() },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD84315)),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = "MỞ XEM →",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
                 }
-                Text(
-                    text = btnText,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
+                // Panel 1: Weather
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF8F3)),
+                    shape = RoundedCornerShape(4.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD6CFC2))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.weather_title).uppercase(),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.6.sp,
+                                color = Color(0xFF14171A)
+                            )
+                            Text(
+                                text = "{{SANG_*}} • {{CHIEU_*}} • {{TOI_*}}",
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = Color(0xFF5C6268)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        WeatherRow(
+                            periodLabel = stringResource(id = R.string.weather_morning),
+                            currentSelection = weatherMorning,
+                            option1Key = "nang",
+                            option1Label = "TRỜI NẮNG",
+                            option2Key = "mua",
+                            option2Label = "TRỜI MƯA",
+                            onSelect = { weatherMorning = it }
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        WeatherRow(
+                            periodLabel = stringResource(id = R.string.weather_afternoon),
+                            currentSelection = weatherAfternoon,
+                            option1Key = "nang",
+                            option1Label = "TRỜI NẮNG",
+                            option2Key = "mua",
+                            option2Label = "TRỜI MƯA",
+                            onSelect = { weatherAfternoon = it }
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        WeatherRow(
+                            periodLabel = stringResource(id = R.string.weather_evening),
+                            currentSelection = weatherEvening,
+                            option1Key = "binh_thuong",
+                            option1Label = "BÌNH THƯỜNG",
+                            option2Key = "mua",
+                            option2Label = "TRỜI MƯA",
+                            onSelect = { weatherEvening = it }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Panel 2: Workforce & Equipment
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF8F3)),
+                    shape = RoundedCornerShape(4.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD6CFC2))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.staff_title).uppercase(),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.6.sp,
+                                color = Color(0xFF14171A)
+                            )
+                            Text(
+                                text = "{{BAN_CHI_HUY}} • {{CONG_NHAN}}",
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = Color(0xFF5C6268)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = if (commandStaffCount > 0) commandStaffCount.toString() else "",
+                                onValueChange = {
+                                    commandStaffCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
+                                },
+                                label = { Text("Ban chỉ huy", fontSize = 12.sp) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                shape = RoundedCornerShape(4.dp),
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            OutlinedTextField(
+                                value = if (workerCount > 0) workerCount.toString() else "",
+                                onValueChange = {
+                                    workerCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
+                                },
+                                label = { Text("Công nhân", fontSize = 12.sp) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                shape = RoundedCornerShape(4.dp),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.equipment_title).uppercase(),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF14171A)
+                            )
+                            Text(
+                                text = "{{MAY_MOC}}",
+                                fontSize = 11.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFD84315)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        OutlinedTextField(
+                            value = equipmentList,
+                            onValueChange = { equipmentList = it },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(id = R.string.equipment_hint),
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF5C6268)
+                                )
+                            },
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(88.dp),
+                            maxLines = 3
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        val entity = DailyInputEntity(
+                            date = currentDate,
+                            weatherMorning = weatherMorning,
+                            weatherAfternoon = weatherAfternoon,
+                            weatherEvening = weatherEvening,
+                            commandStaffCount = commandStaffCount,
+                            workerCount = workerCount,
+                            equipmentList = equipmentList.trim()
+                        )
+                        onSaveDailyInput(entity)
+                        isSavedNotification = true
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.btn_save_daily_input).uppercase(),
+                        color = Color(0xFF14171A),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = {
+                        val entity = DailyInputEntity(
+                            date = currentDate,
+                            weatherMorning = weatherMorning,
+                            weatherAfternoon = weatherAfternoon,
+                            weatherEvening = weatherEvening,
+                            commandStaffCount = commandStaffCount,
+                            workerCount = workerCount,
+                            equipmentList = equipmentList.trim()
+                        )
+                        onSaveDailyInput(entity)
+                        onGenerateReportClick()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD84315))
+                ) {
+                    val btnText = if (dailyReport != null) {
+                        stringResource(id = R.string.report_btn_resynthesize).uppercase()
+                    } else {
+                        stringResource(id = R.string.btn_generate_report).uppercase()
+                    }
+                    Text(
+                        text = btnText,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 0.8.sp,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
 }
@@ -472,9 +482,9 @@ fun WeatherRow(
         Text(
             text = periodLabel,
             fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF475569),
-            modifier = Modifier.width(60.dp)
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF14171A),
+            modifier = Modifier.width(64.dp)
         )
 
         Row(
@@ -505,22 +515,23 @@ fun WeatherChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val bg = if (isSelected) Color(0xFFEFF6FF) else Color(0xFFF8FAFC)
-    val borderCol = if (isSelected) Color(0xFF2563EB) else Color(0xFFE2E8F0)
-    val textCol = if (isSelected) Color(0xFF1D4ED8) else Color(0xFF64748B)
+    val bg = if (isSelected) Color(0xFF14171A) else Color(0xFFEBE5D8)
+    val borderCol = if (isSelected) Color(0xFF14171A) else Color(0xFFD6CFC2)
+    val textCol = if (isSelected) Color(0xFFFAF8F3) else Color(0xFF5C6268)
 
     Box(
         modifier = modifier
-            .background(bg, RoundedCornerShape(8.dp))
-            .border(1.dp, borderCol, RoundedCornerShape(8.dp))
+            .background(bg, RoundedCornerShape(4.dp))
+            .border(1.dp, borderCol, RoundedCornerShape(4.dp))
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .padding(vertical = 9.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = label,
-            fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.5.sp,
             color = textCol
         )
     }
