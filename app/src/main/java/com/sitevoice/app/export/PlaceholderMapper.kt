@@ -112,7 +112,14 @@ object PlaceholderMapper {
 
         val banChiHuy = (dailyInput?.commandStaffCount ?: 0).toString()
         val congNhan = (dailyInput?.workerCount ?: 0).toString()
-        val mayMoc = dailyInput?.equipmentList?.trim() ?: ""
+        val inputEquipment = dailyInput?.equipmentList?.trim().orEmpty()
+        val noteEquipment = when (val eqObj = reportContent.allFields["may_moc"] ?: reportContent.allFields["thiet_bi"]) {
+            is List<*> -> formatList(eqObj.map { it?.toString() ?: "" })
+            is String -> eqObj.trim()
+            null -> ""
+            else -> eqObj.toString().trim()
+        }
+        val mayMoc = if (inputEquipment.isNotBlank()) inputEquipment else noteEquipment
 
         map["{{SANG_NANG}}"] = morningNang
         map["{{SANG_MUA}}"] = morningMua
@@ -124,6 +131,9 @@ object PlaceholderMapper {
         map["{{BAN_CHI_HUY}}"] = banChiHuy
         map["{{CONG_NHAN}}"] = congNhan
         map["{{MAY_MOC}}"] = mayMoc
+        map["{{may_moc}}"] = mayMoc
+        map["{{THIET_BI}}"] = mayMoc
+        map["{{thiet_bi}}"] = mayMoc
 
         // Các alias phổ biến từ mẫu tự tạo / viết tắt
         map["{{s_n}}"] = morningNang
@@ -137,7 +147,6 @@ object PlaceholderMapper {
 
         map["{{ng_ch}}"] = banChiHuy
         map["{{ng_cn}}"] = congNhan
-        map["{{may_moc}}"] = mayMoc
 
         // 3. Các trường chuẩn của Nhật ký công trường
         val congViecThiCong = formatList(reportContent.congViecThiCong)
@@ -304,10 +313,13 @@ object PlaceholderMapper {
                     map["{{CONG_NHAN}}"] = formattedValue
                 }
                 "may_moc", "thiet_bi" -> {
-                    map["{{may_moc}}"] = formattedValue
-                    map["{{MAY_MOC}}"] = formattedValue
-                    map["{{thiet_bi}}"] = formattedValue
-                    map["{{THIET_BI}}"] = formattedValue
+                    if (inputEquipment.isBlank() || formattedValue.isNotBlank()) {
+                        val finalVal = if (inputEquipment.isNotBlank()) inputEquipment else formattedValue
+                        map["{{may_moc}}"] = finalVal
+                        map["{{MAY_MOC}}"] = finalVal
+                        map["{{thiet_bi}}"] = finalVal
+                        map["{{THIET_BI}}"] = finalVal
+                    }
                 }
             }
         }

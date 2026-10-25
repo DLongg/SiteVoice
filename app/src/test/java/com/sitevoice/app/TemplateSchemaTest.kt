@@ -223,4 +223,53 @@ class TemplateSchemaTest {
         assertEquals("123", partialSchema.id)
         assertEquals(2, partialSchema.maxPages)
     }
+
+    @Test
+    fun testPositionMetadataPersistenceAndParsing() = runBlocking {
+        val candidates = listOf(
+            FormCandidate(
+                id = 1,
+                startIndex = 120,
+                endIndex = 180,
+                truoc = "3. Công việc thi công trong ngày:",
+                sau = "4. Nghiệm thu",
+                tinHieu = "dong_cham",
+                tieuDeGanNhat = "3. Công việc thi công trong ngày:",
+                soDongLienTiep = 2,
+                loaiGoiY = "danh_sach",
+                ma = "CONG_VIEC_THI_CONG",
+                ten = "Công việc thi công",
+                loai = "danh_sach",
+                nguon = "thi_cong"
+            )
+        )
+
+        val fakeInterceptor = Interceptor { chain ->
+            Response.Builder()
+                .request(chain.request())
+                .protocol(Protocol.HTTP_1_1)
+                .code(200)
+                .message("OK")
+                .body("""{"documentId": "test_doc_pos"}""".toResponseBody("application/json".toMediaType()))
+                .build()
+        }
+        val client = OkHttpClient.Builder().addInterceptor(fakeInterceptor).build()
+        val service = FormSetupService(httpClient = client)
+        val template = service.applyPlaceholdersAndGenerateTemplate(
+            workingDocId = "test_doc_pos",
+            templateName = "Mẫu Test Vị Trí",
+            candidates = candidates,
+            accessToken = "fake_token"
+        ).getOrThrow()
+
+        val schema = TemplateSchema.fromJson(template.schemaJson)
+        val field = schema.summaryFields["cong_viec_thi_cong"]
+        assertNotNull(field)
+        assertEquals(120, field?.startIndex)
+        assertEquals(180, field?.endIndex)
+        assertEquals("3. Công việc thi công trong ngày:", field?.tieuDeGanNhat)
+        assertEquals("3. Công việc thi công trong ngày:", field?.truoc)
+        assertEquals("4. Nghiệm thu", field?.sau)
+        assertEquals("dong_cham", field?.tinHieu)
+    }
 }

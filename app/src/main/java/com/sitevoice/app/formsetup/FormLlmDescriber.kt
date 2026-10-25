@@ -26,13 +26,17 @@ class FormLlmDescriber(
                 val llmResults = callLlm(candidates)
                 for (res in llmResults) {
                     val target = described.find { it.id == res.id }
-                    if (target != null && target.doTinCay < 0.99f) {
-                        target.ma = res.ma
-                        target.ten = res.ten
-                        target.loai = res.loai
-                        target.nguon = res.nguon
-                        target.boQua = res.boQua
-                        target.doTinCay = res.doTinCay
+                    if (target != null) {
+                        val isFixedUserTag = target.tinHieu == "the_ma"
+                        val isDateOrCheckbox = (target.loai == "ngay" || target.loai == "o_tich") && target.doTinCay >= 1.0f
+                        if (!isFixedUserTag && !isDateOrCheckbox) {
+                            target.ma = res.ma
+                            target.ten = res.ten
+                            target.loai = res.loai
+                            target.nguon = res.nguon
+                            target.boQua = res.boQua
+                            target.doTinCay = res.doTinCay
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -57,15 +61,36 @@ class FormLlmDescriber(
         var doTinCay = 0.8f
 
         when {
-            // Khối chữ ký ở cuối -> bỏ qua
-            tieuDe.contains("chữ ký") || truoc.contains("đơn vị thi công") || truoc.contains("tư vấn giám sát") && candidate.soDongLienTiep > 3 -> {
+            // 0. Thẻ neo do người dùng tự đặt trong Google Doc
+            candidate.tinHieu == "the_ma" && candidate.ma.isNotBlank() -> {
+                ma = candidate.ma
+                ten = candidate.ten.ifBlank { candidate.ma }
+                doTinCay = 1.0f
+                val upperMa = ma.uppercase()
+                when {
+                    upperMa.contains("NGAY") || upperMa.contains("THANG") || upperMa.contains("NAM") -> { loai = "ngay"; nguon = "nhap_tay" }
+                    upperMa.contains("NANG") || upperMa.contains("MUA") -> { loai = "o_tich"; nguon = "nhap_tay" }
+                    upperMa.contains("THI_CONG") -> { loai = "danh_sach"; nguon = "thi_cong" }
+                    upperMa.contains("NGHIEM_THU") -> { loai = "danh_sach"; nguon = "nghiem_thu" }
+                    upperMa.contains("AN_TOAN") -> { loai = "danh_sach"; nguon = "an_toan" }
+                    upperMa.contains("CDT") -> { loai = "van_ban"; nguon = "y_kien_cdt" }
+                    upperMa.contains("TVGS") -> { loai = "van_ban"; nguon = "y_kien_tvgs" }
+                    upperMa.contains("NHA_THAU") -> { loai = "van_ban"; nguon = "y_kien_nha_thau" }
+                    upperMa.contains("MAY_MOC") || upperMa.contains("THIET_BI") -> { loai = "van_ban"; nguon = "nhap_tay" }
+                    else -> { loai = candidate.loaiGoiY; nguon = "nhap_tay" }
+                }
+            }
+
+            // 1. Khối chữ ký ở cuối -> bỏ qua
+            tieuDe.contains("chữ ký") || truoc.contains("chữ ký") ||
+            (candidate.soDongLienTiep > 3 && (truoc.contains("đơn vị thi công") || truoc.contains("tư vấn giám sát"))) -> {
                 boQua = true
                 ma = "CHU_KY"
                 ten = "Khối chữ ký"
                 doTinCay = 0.95f
             }
 
-            // Ngày tháng năm
+            // 2. Ngày tháng năm
             truoc.contains("ngày") && (sau.contains("tháng") || sau.contains(".....")) -> {
                 ma = "NGAY"
                 ten = "Ngày"
@@ -88,7 +113,7 @@ class FormLlmDescriber(
                 doTinCay = 1.0f
             }
 
-            // Ô tích thời tiết
+            // 3. Ô tích thời tiết
             candidate.tinHieu == "o_tich" -> {
                 loai = "o_tich"
                 nguon = "nhap_tay"
@@ -106,73 +131,74 @@ class FormLlmDescriber(
                 }
             }
 
-            // Nhân lực & máy móc
-            truoc.contains("chỉ huy") -> {
-                ma = "BAN_CHI_HUY"
-                ten = "Ban chỉ huy"
-                loai = "so"
-                nguon = "nhap_tay"
-                doTinCay = 1.0f
-            }
-            truoc.contains("công nhân") -> {
-                ma = "CONG_NHAN"
-                ten = "Công nhân"
-                loai = "so"
-                nguon = "nhap_tay"
-                doTinCay = 1.0f
-            }
-            truoc.contains("máy móc") || tieuDe.contains("máy móc") -> {
-                ma = "MAY_MOC"
-                ten = "Máy móc thiết bị"
-                loai = "van_ban"
-                nguon = "nhap_tay"
-                doTinCay = 0.95f
-            }
-
-            // Các mục ghi chú chính
-            tieuDe.contains("nghiệm thu") -> {
-                ma = "NGHIEM_THU"
-                ten = "Công việc nghiệm thu trong ngày"
-                loai = "danh_sach"
-                nguon = "nghiem_thu"
-                doTinCay = 1.0f
-            }
-            tieuDe.contains("thi công") -> {
-                ma = "CONG_VIEC_THI_CONG"
-                ten = "Công việc thi công trong ngày"
-                loai = "danh_sach"
-                nguon = "thi_cong"
-                doTinCay = 1.0f
-            }
-            tieuDe.contains("an toàn") || tieuDe.contains("vệ sinh") -> {
-                ma = "AN_TOAN"
-                ten = "An toàn lao động và vệ sinh"
-                loai = "danh_sach"
-                nguon = "an_toan"
-                doTinCay = 1.0f
-            }
-
-            // Ý kiến các đơn vị
-            tieuDe.contains("chủ đầu tư") || truoc.contains("chủ đầu tư") -> {
+            // 4. Ý kiến các đơn vị (kiểm tra TRƯỚC "thi công")
+            tieuDe.contains("chủ đầu tư") || truoc.contains("chủ đầu tư") || tieuDe.contains("cđt") || truoc.contains("cđt") -> {
                 ma = "Y_KIEN_CDT"
                 ten = "Ý kiến Chủ đầu tư"
                 loai = "van_ban"
                 nguon = "y_kien_cdt"
                 doTinCay = 0.95f
             }
-            tieuDe.contains("tư vấn") || truoc.contains("tư vấn giám sát") -> {
+            tieuDe.contains("tư vấn") || truoc.contains("tư vấn") || tieuDe.contains("giám sát") || truoc.contains("giám sát") || tieuDe.contains("tvgs") || truoc.contains("tvgs") -> {
                 ma = "Y_KIEN_TVGS"
                 ten = "Ý kiến Tư vấn giám sát"
                 loai = "van_ban"
                 nguon = "y_kien_tvgs"
                 doTinCay = 0.95f
             }
-            tieuDe.contains("nhà thầu") || truoc.contains("nhà thầu") -> {
+            tieuDe.contains("nhà thầu") || truoc.contains("nhà thầu") ||
+            ((tieuDe.contains("đơn vị thi công") || truoc.contains("đơn vị thi công")) && (tieuDe.contains("ý kiến") || truoc.contains("ý kiến"))) -> {
                 ma = "Y_KIEN_NHA_THAU"
                 ten = "Ý kiến Nhà thầu thi công"
                 loai = "van_ban"
                 nguon = "y_kien_nha_thau"
                 doTinCay = 0.95f
+            }
+
+            // 5. Nhân lực & Máy móc thiết bị (kiểm tra TRƯỚC "thi công")
+            truoc.contains("chỉ huy") || tieuDe.contains("chỉ huy") || truoc.contains("bch") || tieuDe.contains("bch") -> {
+                ma = "BAN_CHI_HUY"
+                ten = "Ban chỉ huy"
+                loai = "so"
+                nguon = "nhap_tay"
+                doTinCay = 0.95f
+            }
+            truoc.contains("công nhân") || tieuDe.contains("công nhân") -> {
+                ma = "CONG_NHAN"
+                ten = "Công nhân"
+                loai = "so"
+                nguon = "nhap_tay"
+                doTinCay = 0.95f
+            }
+            truoc.contains("máy móc") || tieuDe.contains("máy móc") || truoc.contains("thiết bị") || tieuDe.contains("thiết bị") || truoc.contains("xe máy") || tieuDe.contains("xe máy") -> {
+                ma = "MAY_MOC"
+                ten = "Máy móc thiết bị thi công"
+                loai = "van_ban"
+                nguon = "nhap_tay"
+                doTinCay = 0.9f
+            }
+
+            // 6. Các mục tổng hợp kỹ thuật
+            tieuDe.contains("nghiệm thu") || truoc.contains("nghiệm thu") -> {
+                ma = "NGHIEM_THU"
+                ten = "Công việc nghiệm thu trong ngày"
+                loai = "danh_sach"
+                nguon = "nghiem_thu"
+                doTinCay = 0.9f
+            }
+            tieuDe.contains("an toàn") || truoc.contains("an toàn") || tieuDe.contains("vệ sinh") || truoc.contains("vệ sinh") || tieuDe.contains("môi trường") || truoc.contains("môi trường") -> {
+                ma = "AN_TOAN"
+                ten = "An toàn lao động và vệ sinh"
+                loai = "danh_sach"
+                nguon = "an_toan"
+                doTinCay = 0.9f
+            }
+            tieuDe.contains("công việc") || truoc.contains("công việc") || tieuDe.contains("thi công") || truoc.contains("thi công") -> {
+                ma = "CONG_VIEC_THI_CONG"
+                ten = "Công việc thi công trong ngày"
+                loai = "danh_sach"
+                nguon = "thi_cong"
+                doTinCay = 0.85f
             }
 
             else -> {
@@ -234,7 +260,13 @@ class FormLlmDescriber(
         val response = client.chat(messages, temperature = 0.0f, responseJson = true).getOrNull() ?: return emptyList()
 
         val list = mutableListOf<LlmResultItem>()
-        val json = JSONObject(response)
+        val cleanJson = response.trim()
+            .removePrefix("```json")
+            .removePrefix("```JSON")
+            .removePrefix("```")
+            .removeSuffix("```")
+            .trim()
+        val json = JSONObject(cleanJson)
         val array = json.optJSONArray("ket_qua") ?: return emptyList()
 
         for (i in 0 until array.length()) {

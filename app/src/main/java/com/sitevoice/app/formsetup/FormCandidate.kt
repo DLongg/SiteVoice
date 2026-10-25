@@ -6,12 +6,12 @@ package com.sitevoice.app.formsetup
  */
 data class FormCandidate(
     val id: Int,
-    val startIndex: Int,
-    val endIndex: Int,
-    val truoc: String,
-    val sau: String,
-    val tinHieu: String, // "dong_cham", "o_tich", "doan_trong", "o_bang", "ngay"
-    val tieuDeGanNhat: String,
+    var startIndex: Int,
+    var endIndex: Int,
+    var truoc: String,
+    var sau: String,
+    var tinHieu: String, // "dong_cham", "o_tich", "doan_trong", "o_bang", "ngay", "the_ma"
+    var tieuDeGanNhat: String,
     val soDongLienTiep: Int = 1,
     val loaiGoiY: String, // "van_ban", "danh_sach", "so", "ngay", "o_tich"
     var ma: String = "",
@@ -19,5 +19,6 @@ data class FormCandidate(
     var loai: String = "",
     var nguon: String = "",
     var boQua: Boolean = false,
-    var doTinCay: Float = 1.0f
+    var doTinCay: Float = 1.0f,
+    val originalMa: String = "" // Lưu mã gốc nếu quét từ the_ma
 )

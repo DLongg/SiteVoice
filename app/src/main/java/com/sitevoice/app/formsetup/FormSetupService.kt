@@ -208,6 +208,16 @@ class FormSetupService(
                         put("source", c.nguon)
                         put("placeholder", "{{${c.ma}}}")
                         put("label", c.ten)
+                        put("start_index", c.startIndex)
+                        put("startIndex", c.startIndex)
+                        put("end_index", c.endIndex)
+                        put("endIndex", c.endIndex)
+                        put("tieu_de_gan_nhat", c.tieuDeGanNhat)
+                        put("tieuDeGanNhat", c.tieuDeGanNhat)
+                        put("truoc", c.truoc)
+                        put("sau", c.sau)
+                        put("tin_hieu", c.tinHieu)
+                        put("tinHieu", c.tinHieu)
                     }
                     summaryFieldsMap.put(key, mapFieldObj)
 
@@ -219,6 +229,12 @@ class FormSetupService(
                         put("source", c.nguon)
                         put("max_lines", maxLines)
                         put("max_chars_per_line", 80)
+                        put("startIndex", c.startIndex)
+                        put("endIndex", c.endIndex)
+                        put("tieuDeGanNhat", c.tieuDeGanNhat)
+                        put("truoc", c.truoc)
+                        put("sau", c.sau)
+                        put("tinHieu", c.tinHieu)
                     }
                     summaryFieldsArray.put(arrayFieldObj)
                 }

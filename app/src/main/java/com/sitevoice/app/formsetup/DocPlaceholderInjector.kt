@@ -28,6 +28,36 @@ object DocPlaceholderInjector {
         for (c in sorted) {
             val placeholder = "{{${c.ma}}}"
 
+            if (c.tinHieu == "the_ma") {
+                // Nếu thẻ người dùng gõ trong Doc trùng với mã được duyệt: KHÔNG sửa đổi Doc
+                if (c.originalMa.isNotBlank() && c.ma.equals(c.originalMa, ignoreCase = true)) {
+                    continue
+                }
+
+                // Nếu người dùng đã sửa đổi mã trên App khác với thẻ cũ trong Doc: Thay thế phạm vi thẻ cũ
+                if (c.endIndex > c.startIndex) {
+                    val deleteRequest = JSONObject().apply {
+                        put("deleteContentRange", JSONObject().apply {
+                            put("range", JSONObject().apply {
+                                put("startIndex", c.startIndex)
+                                put("endIndex", c.endIndex)
+                            })
+                        })
+                    }
+                    requests.put(deleteRequest)
+                    val insertRequest = JSONObject().apply {
+                        put("insertText", JSONObject().apply {
+                            put("location", JSONObject().apply {
+                                put("index", c.startIndex)
+                            })
+                            put("text", placeholder)
+                        })
+                    }
+                    requests.put(insertRequest)
+                }
+                continue
+            }
+
             // 1. Xóa nội dung cũ (dòng chấm, ô tích)
             // LƯU Ý: Với doan_trong, đoạn trống chỉ chứa ký tự \n. Docs API cấm xóa newline kết thúc segment.
             // Do đó với doan_trong chỉ cần insertText tại startIndex.

@@ -8,7 +8,13 @@ data class SummaryFieldConfig(
     val maxCharsPerLine: Int = 100,
     val maxChars: Int = 0,
     val sourceCategories: List<String> = emptyList(),
-    val showInDoc: Boolean = true
+    val showInDoc: Boolean = true,
+    val startIndex: Int = -1,
+    val endIndex: Int = -1,
+    val tieuDeGanNhat: String = "",
+    val truoc: String = "",
+    val sau: String = "",
+    val tinHieu: String = ""
 )
 
 data class TemplateSchema(
@@ -101,13 +107,38 @@ data class TemplateSchema(
                             if (singleSource.isNotBlank()) sources.add(singleSource)
                         }
 
+                        val startIndex = when {
+                            fieldObj.has("start_index") -> fieldObj.optInt("start_index", -1)
+                            fieldObj.has("startIndex") -> fieldObj.optInt("startIndex", -1)
+                            else -> -1
+                        }
+                        val endIndex = when {
+                            fieldObj.has("end_index") -> fieldObj.optInt("end_index", -1)
+                            fieldObj.has("endIndex") -> fieldObj.optInt("endIndex", -1)
+                            else -> -1
+                        }
+                        val tieuDeGanNhat = fieldObj.optString("tieu_de_gan_nhat").ifBlank {
+                            fieldObj.optString("tieuDeGanNhat").ifBlank {
+                                fieldObj.optString("heading", "")
+                            }
+                        }
+                        val truoc = fieldObj.optString("truoc").ifBlank { fieldObj.optString("before", "") }
+                        val sau = fieldObj.optString("sau").ifBlank { fieldObj.optString("after", "") }
+                        val tinHieu = fieldObj.optString("tin_hieu").ifBlank { fieldObj.optString("tinHieu", "") }
+
                         summaryFields[key] = SummaryFieldConfig(
                             type = type,
                             maxLines = maxLines,
                             maxCharsPerLine = maxCharsPerLine,
                             maxChars = maxChars,
                             sourceCategories = sources,
-                            showInDoc = showInDoc
+                            showInDoc = showInDoc,
+                            startIndex = startIndex,
+                            endIndex = endIndex,
+                            tieuDeGanNhat = tieuDeGanNhat,
+                            truoc = truoc,
+                            sau = sau,
+                            tinHieu = tinHieu
                         )
                     }
                 }
@@ -169,13 +200,38 @@ data class TemplateSchema(
                             if (singleSource.isNotBlank()) sources.add(singleSource)
                         }
 
+                        val startIndex = when {
+                            fieldObj.has("startIndex") -> fieldObj.optInt("startIndex", -1)
+                            fieldObj.has("start_index") -> fieldObj.optInt("start_index", -1)
+                            else -> -1
+                        }
+                        val endIndex = when {
+                            fieldObj.has("endIndex") -> fieldObj.optInt("endIndex", -1)
+                            fieldObj.has("end_index") -> fieldObj.optInt("end_index", -1)
+                            else -> -1
+                        }
+                        val tieuDeGanNhat = fieldObj.optString("tieuDeGanNhat").ifBlank {
+                            fieldObj.optString("tieu_de_gan_nhat").ifBlank {
+                                fieldObj.optString("heading", "")
+                            }
+                        }
+                        val truoc = fieldObj.optString("truoc").ifBlank { fieldObj.optString("before", "") }
+                        val sau = fieldObj.optString("sau").ifBlank { fieldObj.optString("after", "") }
+                        val tinHieu = fieldObj.optString("tinHieu").ifBlank { fieldObj.optString("tin_hieu", "") }
+
                         summaryFields[key] = SummaryFieldConfig(
                             type = type,
                             maxLines = maxLines,
                             maxCharsPerLine = maxCharsPerLine,
                             maxChars = maxChars,
                             sourceCategories = sources,
-                            showInDoc = showInDoc
+                            showInDoc = showInDoc,
+                            startIndex = startIndex,
+                            endIndex = endIndex,
+                            tieuDeGanNhat = tieuDeGanNhat,
+                            truoc = truoc,
+                            sau = sau,
+                            tinHieu = tinHieu
                         )
                     }
                 }

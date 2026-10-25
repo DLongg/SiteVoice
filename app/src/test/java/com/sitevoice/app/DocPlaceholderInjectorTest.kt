@@ -83,4 +83,56 @@ class DocPlaceholderInjectorTest {
         val lastDelete = requests.getJSONObject(3).getJSONObject("deleteContentRange")
         assertEquals(10, lastDelete.getJSONObject("range").getInt("startIndex"))
     }
+
+    @Test
+    fun testTheMaUnchangedGeneratesZeroRequests() {
+        val candidates = listOf(
+            FormCandidate(
+                id = 1,
+                startIndex = 100,
+                endIndex = 115,
+                truoc = "Ý kiến:",
+                sau = "",
+                tinHieu = "the_ma",
+                tieuDeGanNhat = "Chủ đầu tư",
+                loaiGoiY = "van_ban",
+                ma = "Y_KIEN_CDT",
+                originalMa = "Y_KIEN_CDT"
+            )
+        )
+
+        val payload = DocPlaceholderInjector.buildBatchUpdatePayload(candidates)
+        val requests = payload.getJSONArray("requests")
+        assertEquals(0, requests.length())
+    }
+
+    @Test
+    fun testTheMaChangedGeneratesDeleteAndInsert() {
+        val candidates = listOf(
+            FormCandidate(
+                id = 1,
+                startIndex = 100,
+                endIndex = 115,
+                truoc = "Ý kiến:",
+                sau = "",
+                tinHieu = "the_ma",
+                tieuDeGanNhat = "Chủ đầu tư",
+                loaiGoiY = "van_ban",
+                ma = "Y_KIEN_CHU_DAU_TU",
+                originalMa = "Y_KIEN_CDT"
+            )
+        )
+
+        val payload = DocPlaceholderInjector.buildBatchUpdatePayload(candidates)
+        val requests = payload.getJSONArray("requests")
+        assertEquals(2, requests.length())
+
+        val del = requests.getJSONObject(0).getJSONObject("deleteContentRange").getJSONObject("range")
+        assertEquals(100, del.getInt("startIndex"))
+        assertEquals(115, del.getInt("endIndex"))
+
+        val ins = requests.getJSONObject(1).getJSONObject("insertText")
+        assertEquals(100, ins.getJSONObject("location").getInt("index"))
+        assertEquals("{{Y_KIEN_CHU_DAU_TU}}", ins.getString("text"))
+    }
 }

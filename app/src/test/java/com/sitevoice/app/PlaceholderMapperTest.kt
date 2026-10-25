@@ -340,4 +340,48 @@ class PlaceholderMapperTest {
         assertEquals("", map["{{chua_co_du_lieu}}"])
         assertEquals("", map["{{CHUA_CO_DU_LIEU}}"])
     }
+
+    @Test
+    fun testEquipmentFallbackFromNoteContentWhenDailyInputBlank() {
+        val reportContent = DailyReportContent(
+            allFields = mapOf(
+                "may_moc" to "2 máy lu, 1 máy đào"
+            )
+        )
+        val log = DailyLogEntity(
+            date = "2026-10-25",
+            dailyInput = null,
+            reportContent = reportContent
+        )
+
+        val map = PlaceholderMapper.buildPlaceholderMap(log.date, log.dailyInput, log.reportContent)
+
+        assertEquals("2 máy lu, 1 máy đào", map["{{MAY_MOC}}"])
+        assertEquals("2 máy lu, 1 máy đào", map["{{may_moc}}"])
+        assertEquals("2 máy lu, 1 máy đào", map["{{THIET_BI}}"])
+        assertEquals("2 máy lu, 1 máy đào", map["{{thiet_bi}}"])
+    }
+
+    @Test
+    fun testEquipmentPrefersDailyInputOverNoteContent() {
+        val dailyInput = DailyInputEntity(
+            date = "2026-10-25",
+            equipmentList = "1 cẩu tháp, 2 máy trộn"
+        )
+        val reportContent = DailyReportContent(
+            allFields = mapOf(
+                "may_moc" to "máy hàn dự phòng"
+            )
+        )
+        val log = DailyLogEntity(
+            date = "2026-10-25",
+            dailyInput = dailyInput,
+            reportContent = reportContent
+        )
+
+        val map = PlaceholderMapper.buildPlaceholderMap(log.date, log.dailyInput, log.reportContent)
+
+        assertEquals("1 cẩu tháp, 2 máy trộn", map["{{MAY_MOC}}"])
+        assertEquals("1 cẩu tháp, 2 máy trộn", map["{{THIET_BI}}"])
+    }
 }

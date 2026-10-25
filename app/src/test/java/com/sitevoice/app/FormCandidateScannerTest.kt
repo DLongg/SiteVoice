@@ -1,6 +1,7 @@
 package com.sitevoice.app
 
 import com.sitevoice.app.formsetup.FormCandidateScanner
+import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -241,6 +242,128 @@ class FormCandidateScannerTest {
         assertEquals("ngay", candidates[1].loaiGoiY)
         assertEquals(1, candidates[1].soDongLienTiep)
         assertTrue(candidates[1].truoc.contains("tháng"))
+    }
+
+    @Test
+    fun testStandardConstructionLogWithAll6SectionsNoBleed() = runBlocking {
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    var idx = 1
+                    fun addP(text: String): JSONObject {
+                        val start = idx
+                        val end = idx + text.length
+                        idx = end
+                        return createParagraphElement(start, end, text)
+                    }
+
+                    put(addP("1. Tình hình thời tiết:\n"))
+                    put(addP("- Sáng: trời nắng ☐ trời mưa ☑\n"))
+                    put(addP("2. Lực lượng thi công\n"))
+                    put(addP("- Ban chỉ huy: ..... người\n"))
+                    put(addP("- Công nhân: ..... người\n"))
+                    put(addP("* Máy móc thiết bị thi công chính: ....................\n"))
+                    put(addP("3. Công việc thi công trong ngày:\n"))
+                    put(addP("....................................................\n"))
+                    put(addP("....................................................\n"))
+                    put(addP("4. Công việc nghiệm thu trong ngày:\n"))
+                    put(addP("....................................................\n"))
+                    put(addP("5. An toàn lao động và vệ sinh môi trường:\n"))
+                    put(addP("....................................................\n"))
+                    put(addP("6. Ý kiến của các đơn vị:\n"))
+                    put(addP("a. Chủ đầu tư: ....................\n"))
+                    put(addP("b. Tư vấn giám sát: ....................\n"))
+                    put(addP("c. Nhà thầu thi công xây dựng: ....................\n"))
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        assertTrue(candidates.size >= 8)
+
+        val describer = com.sitevoice.app.formsetup.FormLlmDescriber()
+        val described = describer.describeCandidates(candidates)
+
+        val mayMoc = described.find { it.ma.contains("MAY_MOC") }
+        assertNotNull("Máy móc phải được nhận diện", mayMoc)
+        assertEquals("MAY_MOC", mayMoc?.ma)
+        assertEquals("nhap_tay", mayMoc?.nguon)
+        assertFalse(mayMoc?.tieuDeGanNhat?.contains("Công việc thi công trong ngày") == true)
+
+        val thiCong = described.find { it.ma.contains("CONG_VIEC_THI_CONG") }
+        assertNotNull("Công việc thi công phải được nhận diện", thiCong)
+        assertEquals("CONG_VIEC_THI_CONG", thiCong?.ma)
+        assertEquals("thi_cong", thiCong?.nguon)
+
+        val ykCdt = described.find { it.ma == "Y_KIEN_CDT" }
+        assertNotNull("Ý kiến CĐT phải được nhận diện", ykCdt)
+        assertEquals("y_kien_cdt", ykCdt?.nguon)
+        assertTrue("Heading phải là Chủ đầu tư, không bị tràn từ mục 3", ykCdt?.tieuDeGanNhat?.contains("Chủ đầu tư") == true)
+
+        val ykTvgs = described.find { it.ma == "Y_KIEN_TVGS" }
+        assertNotNull("Ý kiến TVGS phải được nhận diện", ykTvgs)
+        assertEquals("y_kien_tvgs", ykTvgs?.nguon)
+        assertTrue("Heading phải là Tư vấn giám sát", ykTvgs?.tieuDeGanNhat?.contains("Tư vấn giám sát") == true)
+
+        val ykNhaThau = described.find { it.ma == "Y_KIEN_NHA_THAU" }
+        assertNotNull("Ý kiến Nhà thầu phải được nhận diện (không bị gán nhầm sang CONG_VIEC_THI_CONG)", ykNhaThau)
+        assertEquals("y_kien_nha_thau", ykNhaThau?.nguon)
+        assertTrue("Heading phải là Nhà thầu", ykNhaThau?.tieuDeGanNhat?.contains("Nhà thầu") == true)
+    }
+
+    @Test
+    fun testUserCustomPlaceholderTagsRecognized() {
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    put(createParagraphElement(1, 40, "Ý kiến Chủ đầu tư: {{Y_KIEN_CDT}}\n"))
+                    put(createParagraphElement(41, 80, "Thẻ tùy chỉnh: {{CUSTOM_MY_TAG}}\n"))
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        assertEquals(2, candidates.size)
+
+        val c1 = candidates[0]
+        assertEquals("the_ma", c1.tinHieu)
+        assertEquals("Y_KIEN_CDT", c1.ma)
+        assertEquals("Y_KIEN_CDT", c1.originalMa)
+        assertEquals(1.0f, c1.doTinCay, 0.001f)
+
+        val c2 = candidates[1]
+        assertEquals("the_ma", c2.tinHieu)
+        assertEquals("CUSTOM_MY_TAG", c2.ma)
+        assertEquals("CUSTOM_MY_TAG", c2.originalMa)
+    }
+
+    @Test
+    fun testTableMultiParagraphLabelAndDotsSeparation() {
+        val tableElement = createTableElement(
+            listOf(
+                listOf(
+                    listOf(
+                        Pair(10, "Ý kiến Chủ đầu tư:\n"),
+                        Pair(35, "................................\n")
+                    )
+                )
+            )
+        )
+
+        val doc = JSONObject().apply {
+            put("body", JSONObject().apply {
+                put("content", JSONArray().apply {
+                    put(tableElement)
+                })
+            })
+        }
+
+        val candidates = FormCandidateScanner.scanDocument(doc)
+        assertEquals(1, candidates.size)
+        val c = candidates[0]
+        assertEquals("Ý kiến Chủ đầu tư:", c.tieuDeGanNhat)
+        assertEquals("Ý kiến Chủ đầu tư:", c.truoc)
+        assertEquals("o_bang", c.tinHieu)
     }
 
     private fun createParagraphElement(start: Int, end: Int, text: String): JSONObject {

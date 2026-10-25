@@ -274,4 +274,108 @@ class FormLlmDescriberTest {
         assertTrue(parsedJson.has("cong_viec_thi_cong"))
         assertFalse(parsedJson.has("chu_ky"))
     }
+
+    @Test
+    fun testCallLlmWithMarkdownFencedJson() = runBlocking {
+        val fakeLlmClient = object : com.sitevoice.app.llm.LlmClient {
+            override suspend fun chat(
+                messages: List<com.sitevoice.app.llm.LlmMessage>,
+                temperature: Float,
+                responseJson: Boolean
+            ): Result<String> {
+                val jsonPayload = """
+                    ```json
+                    {
+                      "ket_qua": [
+                        {
+                          "id": 1,
+                          "ma": "CONG_VIEC_THI_CONG",
+                          "ten": "Công việc thi công",
+                          "loai": "danh_sach",
+                          "nguon": "thi_cong",
+                          "bo_qua": false,
+                          "do_tin_cay": 0.98
+                        }
+                      ]
+                    }
+                    ```
+                """.trimIndent()
+                return Result.success(jsonPayload)
+            }
+        }
+
+        val describer = FormLlmDescriber(fakeLlmClient)
+        val candidates = listOf(
+            FormCandidate(
+                id = 1,
+                startIndex = 10,
+                endIndex = 20,
+                truoc = "Mục chung:",
+                sau = "",
+                tinHieu = "doan_trong",
+                tieuDeGanNhat = "Mục chung",
+                loaiGoiY = "van_ban"
+            )
+        )
+
+        val result = describer.describeCandidates(candidates)
+        assertEquals(1, result.size)
+        assertEquals("CONG_VIEC_THI_CONG", result[0].ma)
+        assertEquals("thi_cong", result[0].nguon)
+    }
+
+    @Test
+    fun testPriorityRulesOpinionAndEquipmentBeforeThiCong() {
+        val describer = FormLlmDescriber()
+
+        // 1. Nhà thầu thi công xây dựng -> Y_KIEN_NHA_THAU, not CONG_VIEC_THI_CONG
+        val c1 = describer.applyDeterministicRules(
+            FormCandidate(
+                id = 1, startIndex = 0, endIndex = 10, truoc = "c. Nhà thầu thi công xây dựng:", sau = "",
+                tinHieu = "dong_cham", tieuDeGanNhat = "6. Ý kiến của các đơn vị:", loaiGoiY = "van_ban"
+            )
+        )
+        assertEquals("Y_KIEN_NHA_THAU", c1.ma)
+        assertEquals("y_kien_nha_thau", c1.nguon)
+
+        // 2. Máy móc thiết bị thi công -> MAY_MOC, not CONG_VIEC_THI_CONG
+        val c2 = describer.applyDeterministicRules(
+            FormCandidate(
+                id = 2, startIndex = 20, endIndex = 30, truoc = "* Máy móc thiết bị thi công chính:", sau = "",
+                tinHieu = "dong_cham", tieuDeGanNhat = "2. Lực lượng thi công", loaiGoiY = "van_ban"
+            )
+        )
+        assertEquals("MAY_MOC", c2.ma)
+        assertEquals("nhap_tay", c2.nguon)
+
+        // 3. Tư vấn giám sát -> Y_KIEN_TVGS
+        val c3 = describer.applyDeterministicRules(
+            FormCandidate(
+                id = 3, startIndex = 40, endIndex = 50, truoc = "b. Tư vấn giám sát:", sau = "",
+                tinHieu = "dong_cham", tieuDeGanNhat = "6. Ý kiến của các đơn vị:", loaiGoiY = "van_ban"
+            )
+        )
+        assertEquals("Y_KIEN_TVGS", c3.ma)
+        assertEquals("y_kien_tvgs", c3.nguon)
+
+        // 4. Chủ đầu tư -> Y_KIEN_CDT
+        val c4 = describer.applyDeterministicRules(
+            FormCandidate(
+                id = 4, startIndex = 60, endIndex = 70, truoc = "a. Chủ đầu tư:", sau = "",
+                tinHieu = "dong_cham", tieuDeGanNhat = "6. Ý kiến của các đơn vị:", loaiGoiY = "van_ban"
+            )
+        )
+        assertEquals("Y_KIEN_CDT", c4.ma)
+        assertEquals("y_kien_cdt", c4.nguon)
+
+        // 5. Công việc thi công trong ngày -> CONG_VIEC_THI_CONG
+        val c5 = describer.applyDeterministicRules(
+            FormCandidate(
+                id = 5, startIndex = 80, endIndex = 90, truoc = "3. Công việc thi công trong ngày:", sau = "",
+                tinHieu = "doan_trong", tieuDeGanNhat = "3. Công việc thi công trong ngày:", loaiGoiY = "danh_sach"
+            )
+        )
+        assertEquals("CONG_VIEC_THI_CONG", c5.ma)
+        assertEquals("thi_cong", c5.nguon)
+    }
 }
