@@ -13,13 +13,13 @@ class HybridClassificationPipeline(
         userLabel: String? = null,
         previousNoteLabel: String? = null
     ): ClassificationResult {
-        // TẦNG 1: Nhãn do người dùng đã sửa (Ưu tiên tuyệt đối)
-        if (!userLabel.isNullOrBlank() && NoteClassifier.VALID_LABELS.contains(userLabel)) {
-            return ClassificationResult(id, userLabel, 1.0)
-        }
-
         // BƯỚC 1: Chuẩn hóa từ điển & sửa lỗi nghe
         val normalized = TextNormalizer.normalize(rawText)
+
+        // TẦNG 1: Nhãn do người dùng đã sửa (Ưu tiên tuyệt đối)
+        if (!userLabel.isNullOrBlank() && NoteClassifier.VALID_LABELS.contains(userLabel)) {
+            return ClassificationResult(id, userLabel, 1.0, correctedText = normalized)
+        }
 
         // BƯỚC 2: Tách mệnh đề
         val clauses = ClauseSplitter.splitIntoClauses(normalized)
@@ -27,7 +27,7 @@ class HybridClassificationPipeline(
         // TẦNG 2 & 3: Tầng quy tắc tất định 0ms Offline
         val ruleResult = DeterministicRuleEngine.evaluate(normalized, clauses)
         if (ruleResult != null && ruleResult.confidence >= 0.90) {
-            return ClassificationResult(id, ruleResult.label, ruleResult.confidence)
+            return ClassificationResult(id, ruleResult.label, ruleResult.confidence, correctedText = normalized)
         }
 
         // TẦNG 4: Kế thừa ngữ cảnh cho câu ngắn phụ thuộc
@@ -36,12 +36,12 @@ class HybridClassificationPipeline(
 
         // Trường hợp nghiệm thu đạt ngắn gọn: "đạt rồi", "cho nghiệm thu"
         if (lower.contains("đạt rồi") || lower.contains("cho chuyển bước") || lower.contains("cho chuyển tiếp")) {
-            return ClassificationResult(id, NoteClassifier.LABEL_NGHIEM_THU, 0.90)
+            return ClassificationResult(id, NoteClassifier.LABEL_NGHIEM_THU, 0.90, correctedText = normalized)
         }
 
         // Nếu câu ngắn và có câu trước: kế thừa mục câu trước
         if (words.size <= 6 && !previousNoteLabel.isNullOrBlank() && NoteClassifier.VALID_LABELS.contains(previousNoteLabel)) {
-            return ClassificationResult(id, previousNoteLabel, 0.85)
+            return ClassificationResult(id, previousNoteLabel, 0.85, correctedText = normalized)
         }
 
         // TẦNG 5: Gọi LLM (nếu có LLM client) và Hậu kiểm Guardrails
@@ -49,11 +49,13 @@ class HybridClassificationPipeline(
             val llmRes = llmClassifier.classify(id, normalized)
             if (llmRes.isSuccess) {
                 val candidate = llmRes.getOrThrow()
-                return SemanticGuardrails.verify(normalized, candidate)
+                val finalCorrected = candidate.correctedText?.ifBlank { normalized } ?: normalized
+                val candidateWithText = candidate.copy(correctedText = finalCorrected)
+                return SemanticGuardrails.verify(normalized, candidateWithText)
             }
         }
 
         // Fallback an toàn cuối cùng
-        return ClassificationResult(id, NoteClassifier.LABEL_CHUA_PHAN_LOAI, 0.5)
+        return ClassificationResult(id, NoteClassifier.LABEL_CHUA_PHAN_LOAI, 0.5, correctedText = normalized)
     }
 }

@@ -11,7 +11,28 @@ object TextNormalizer {
     private val RE_VSMT_SPACED = Pattern.compile("(?iu)\\b(v\\s+s\\s+m\\s+t|v\\.s\\.m\\.t)\\b")
 
     private val RE_MAC_BETONG = Pattern.compile("(?iu)\\b(mác|mac)\\s*(\\d{2,3})\\b")
-    private val RE_COFFA = Pattern.compile("(?iu)\\b(cốt pha|coffa|cop pha)\\b")
+    private val RE_COFFA = Regex("(?iu)\\b(cốc pha|cốt pha|coffa|cop pha)\\b")
+    private val RE_RAM_SAN = Regex("(?iu)\\brầm sàn\\b")
+    private val RE_NHIEM_THU = Regex("(?iu)\\bnhiệm thu\\b")
+    private val RE_COT_PHEP = Regex("(?iu)\\bcốt phép\\b")
+    private val RE_GIAN_DAO = Regex("(?iu)\\bgiàn dáo\\b")
+    private val RE_CHAT_TUONG = Regex("(?iu)\\bchát tường\\b")
+    private val RE_BAO_DU = Regex("(?iu)\\bbảo dữ(?=[\\s.,;:!?]|\\b|$)")
+
+    private fun replacePreservingCase(text: String, regex: Regex, replacement: String): String {
+        return text.replace(regex) { matchResult ->
+            val matchedStr = matchResult.value
+            if (matchedStr.isNotEmpty() && matchedStr[0].isUpperCase()) {
+                if (matchedStr.all { !it.isLetter() || it.isUpperCase() }) {
+                    replacement.uppercase()
+                } else {
+                    replacement.replaceFirstChar { it.uppercase() }
+                }
+            } else {
+                replacement
+            }
+        }
+    }
 
     /**
      * Chuẩn hóa từ ngữ, chữ viết tắt, thuật ngữ công trường trước khi đưa vào phân loại.
@@ -28,9 +49,15 @@ object TextNormalizer {
         result = RE_ATLD_SPACED.matcher(result).replaceAll("ATLĐ")
         result = RE_VSMT_SPACED.matcher(result).replaceAll("VSMT")
 
-        // 2. Chuẩn hóa thuật ngữ bê tông, cốp pha
+        // 2. Chuẩn hóa thuật ngữ bê tông, cốp pha và các từ đồng âm công trường theo R5
         result = RE_MAC_BETONG.matcher(result).replaceAll("mác $2")
-        result = RE_COFFA.matcher(result).replaceAll("ván khuôn")
+        result = replacePreservingCase(result, RE_COFFA, "cốp pha")
+        result = replacePreservingCase(result, RE_RAM_SAN, "dầm sàn")
+        result = replacePreservingCase(result, RE_NHIEM_THU, "nghiệm thu")
+        result = replacePreservingCase(result, RE_COT_PHEP, "cốt thép")
+        result = replacePreservingCase(result, RE_GIAN_DAO, "giàn giáo")
+        result = replacePreservingCase(result, RE_CHAT_TUONG, "trát tường")
+        result = replacePreservingCase(result, RE_BAO_DU, "bảo dưỡng")
 
         // 3. Phân biệt đúc / đục trong ngữ cảnh công trường
         result = result.replace("(?iu)\\bmáy đúc\\b".toRegex(), "máy đục")

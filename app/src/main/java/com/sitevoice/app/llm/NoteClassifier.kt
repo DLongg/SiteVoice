@@ -5,7 +5,8 @@ import org.json.JSONObject
 data class ClassificationResult(
     val id: Long,
     val label: String,
-    val confidence: Double
+    val confidence: Double,
+    val correctedText: String? = null
 )
 
 class NoteClassifier(
@@ -30,8 +31,10 @@ class NoteClassifier(
             LABEL_CHUA_PHAN_LOAI
         )
 
-        private const val SYSTEM_PROMPT = """Bạn là trợ lý phân loại ghi chú nhật ký công trường xây dựng Việt Nam.
-Nhiệm vụ: gán MỖI ghi chú vào đúng một mục trong danh sách khóa dưới đây.
+        private const val SYSTEM_PROMPT = """Bạn là trợ lý phân loại và hiệu đính ghi chú nhật ký công trường xây dựng Việt Nam.
+Nhiệm vụ:
+1. Phân loại MỖI ghi chú vào đúng một mục trong danh sách khóa.
+2. Kiểm tra lỗi nhận diện âm thanh (STT) theo ngữ cảnh xây dựng Việt Nam và trả về văn bản đã hiệu đính trong trường "van_ban_da_sua".
 
 Các khóa mục:
 - "thi_cong": công việc đang/đã thi công, khối lượng, nhân lực làm việc, máy móc sử dụng
@@ -43,11 +46,13 @@ Các khóa mục:
 - "chua_phan_loai": không đủ thông tin để chắc chắn
 
 Quy tắc:
+- Tự động sửa các từ bị nhận diện sai âm (STT) dựa theo ngữ cảnh xây dựng Việt Nam vào trường "van_ban_da_sua".
+- RÀNG BUỘC HIỆU ĐÍNH: Bắt buộc giữ nguyên 100% các số liệu, vị trí trục, tầng và ý nghĩa gốc của câu. Tuyệt đối không bịa đặt hay suy diễn thêm nội dung ngoài lời nói. Nếu câu không có lỗi STT, giữ nguyên văn bản gốc.
 - Nếu ghi chú chứa nhiều ý gộp (ví dụ: vừa có thời tiết, vừa có thi công và nghiệm thu): ưu tiên chọn mục công việc cốt lõi (thi_cong, nghiem_thu hoặc an_toan) làm 'muc' đại diện.
 - Nếu có từ khóa mở đầu ("Thi công:", "Nghiệm thu:", "An toàn:", "Chủ đầu tư:", "Giám sát:", "Nhà thầu:") thì theo từ khóa đó.
 - Không chắc chắn thì chọn "chua_phan_loai", KHÔNG đoán.
 - Trả về CHỈ JSON theo định dạng:
-{"ket_qua": [{"id": 1, "muc": "thi_cong", "do_chac_chan": 0.95}]}"""
+{"ket_qua": [{"id": 1, "muc": "thi_cong", "do_chac_chan": 0.95, "van_ban_da_sua": "văn bản đã hiệu đính"}]}"""
     }
 
     private fun quoteJson(str: String): String {
@@ -100,10 +105,13 @@ Quy tắc:
         val mucRegex = Regex("\"muc\"\\s*:\\s*\"([^\"]+)\"")
         val confRegex = Regex("\"do_chac_chan\"\\s*:\\s*([0-9.]+)")
         val idRegex = Regex("\"id\"\\s*:\\s*([0-9]+)")
+        val correctedRegex = Regex("\"van_ban_da_sua\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"")
 
         val mucMatch = mucRegex.find(clean)?.groupValues?.get(1)?.trim()
         val confMatch = confRegex.find(clean)?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
         val idMatch = idRegex.find(clean)?.groupValues?.get(1)?.toLongOrNull() ?: expectedId
+        val rawCorrected = correctedRegex.find(clean)?.groupValues?.get(1)
+        val correctedMatch = rawCorrected?.replace("\\\"", "\"")?.replace("\\n", "\n")?.trim()?.ifBlank { null }
 
         val finalLabel = if (mucMatch != null && mucMatch in VALID_LABELS) {
             mucMatch
@@ -114,7 +122,8 @@ Quy tắc:
         return ClassificationResult(
             id = idMatch,
             label = finalLabel,
-            confidence = confMatch
+            confidence = confMatch,
+            correctedText = correctedMatch
         )
     }
 }

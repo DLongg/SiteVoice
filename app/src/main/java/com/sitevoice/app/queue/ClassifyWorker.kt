@@ -98,13 +98,20 @@ class ClassifyWorker(
             previousNoteLabel = previousNote?.label
         )
 
+        val finalCleanText = if (!result.correctedText.isNullOrBlank() && result.correctedText != note.text) {
+            result.correctedText
+        } else {
+            note.text
+        }
+
         val updatedNote = note.copy(
+            text = finalCleanText,
             label = result.label,
             labelSource = if (note.labelSource == "user") "user" else "auto",
             status = "LABELED"
         )
         noteDao.update(updatedNote)
-        Log.i(TAG, "Phân loại thành công note $noteId -> label: ${result.label} (confidence: ${result.confidence})")
+        Log.i(TAG, "Phân loại thành công note $noteId -> label: ${result.label} (confidence: ${result.confidence}, textUpdated: ${finalCleanText != note.text})")
 
         return Result.success()
     }
