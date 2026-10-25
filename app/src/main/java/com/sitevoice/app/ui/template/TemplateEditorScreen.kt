@@ -174,30 +174,27 @@ Quy tắc bắt buộc:
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF3EFE6))
+            .background(Color(0xFFF8FAFC))
             .padding(16.dp)
     ) {
         // TopBar
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF14171A), RoundedCornerShape(4.dp))
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onClose) {
-                    Text(text = "←", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFAF8F3))
+                    Text(text = "←", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0F172A))
                 }
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(
                         id = if (template == null) R.string.template_editor_create_title else R.string.template_editor_edit_title
                     ),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFFFAF8F3)
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0F172A)
                 )
             }
         }

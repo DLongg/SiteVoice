@@ -117,11 +117,10 @@ fun MainScreen(
     }
 
     Scaffold(
-        containerColor = Color(0xFFF3EFE6),
         bottomBar = {
             NavigationBar(
-                containerColor = Color(0xFF14171A),
-                tonalElevation = 0.dp
+                containerColor = Color.White,
+                tonalElevation = 4.dp
             ) {
                 // Tab 0: Ghi âm
                 NavigationBarItem(
@@ -129,26 +128,20 @@ fun MainScreen(
                     onClick = { selectedTab = 0 },
                     icon = {
                         Text(
-                            text = "REC",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp
+                            text = "🎙️",
+                            fontSize = 18.sp
                         )
                     },
                     label = {
                         Text(
-                            text = stringResource(id = R.string.tab_record).uppercase(),
-                            fontSize = 11.sp,
-                            letterSpacing = 0.5.sp,
+                            text = stringResource(id = R.string.tab_record),
                             fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = Color(0xFFFAF8F3),
-                        selectedIconColor = Color(0xFFFAF8F3),
-                        unselectedTextColor = Color(0xFF949A9E),
-                        unselectedIconColor = Color(0xFF949A9E),
-                        indicatorColor = Color(0xFFD84315)
+                        selectedTextColor = Color(0xFF1E293B),
+                        selectedIconColor = Color(0xFF1E293B),
+                        indicatorColor = Color(0xFFE2E8F0)
                     )
                 )
 
@@ -161,39 +154,30 @@ fun MainScreen(
                             badge = {
                                 if (activeNotes.isNotEmpty()) {
                                     Badge(
-                                        containerColor = Color(0xFFD84315),
+                                        containerColor = Color(0xFF2563EB),
                                         contentColor = Color.White
                                     ) {
-                                        Text(
-                                            text = activeNotes.size.toString(),
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                        Text(text = activeNotes.size.toString())
                                     }
                                 }
                             }
                         ) {
                             Text(
-                                text = "LOG",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 1.sp
+                                text = "📋",
+                                fontSize = 18.sp
                             )
                         }
                     },
                     label = {
                         Text(
-                            text = stringResource(id = R.string.tab_notes).uppercase(),
-                            fontSize = 11.sp,
-                            letterSpacing = 0.5.sp,
+                            text = stringResource(id = R.string.tab_notes),
                             fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = Color(0xFFFAF8F3),
-                        selectedIconColor = Color(0xFFFAF8F3),
-                        unselectedTextColor = Color(0xFF949A9E),
-                        unselectedIconColor = Color(0xFF949A9E),
-                        indicatorColor = Color(0xFFD84315)
+                        selectedTextColor = Color(0xFF1E293B),
+                        selectedIconColor = Color(0xFF1E293B),
+                        indicatorColor = Color(0xFFE2E8F0)
                     )
                 )
 
@@ -203,26 +187,20 @@ fun MainScreen(
                     onClick = { selectedTab = 2 },
                     icon = {
                         Text(
-                            text = "DOC",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp
+                            text = "📑",
+                            fontSize = 18.sp
                         )
                     },
                     label = {
                         Text(
-                            text = stringResource(id = R.string.tab_report).uppercase(),
-                            fontSize = 11.sp,
-                            letterSpacing = 0.5.sp,
+                            text = stringResource(id = R.string.tab_report),
                             fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = Color(0xFFFAF8F3),
-                        selectedIconColor = Color(0xFFFAF8F3),
-                        unselectedTextColor = Color(0xFF949A9E),
-                        unselectedIconColor = Color(0xFF949A9E),
-                        indicatorColor = Color(0xFFD84315)
+                        selectedTextColor = Color(0xFF1E293B),
+                        selectedIconColor = Color(0xFF1E293B),
+                        indicatorColor = Color(0xFFE2E8F0)
                     )
                 )
             }

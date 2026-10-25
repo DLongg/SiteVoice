@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -51,7 +51,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +82,6 @@ fun RecordScreen(
     val recorder = remember { AudioRecorder(context) }
     val audioPlayer = viewModel.audioPlayer
     val sttStatus by viewModel.currentSttStatus.collectAsState()
-    val activeNotes by viewModel.activeNotes.collectAsState()
 
     var hasPermission by remember {
         mutableStateOf(
@@ -105,6 +103,7 @@ fun RecordScreen(
     var lastRecordedItem by remember { mutableStateOf<LastRecordedItem?>(null) }
     var isPlayingLastRecord by remember { mutableStateOf(false) }
 
+    // Timer đếm giây khi đang ghi âm
     LaunchedEffect(isRecording) {
         if (isRecording) {
             recordingTimerSeconds = 0L
@@ -115,6 +114,7 @@ fun RecordScreen(
         }
     }
 
+    // Cleanup khi thoát màn hình
     DisposableEffect(Unit) {
         onDispose {
             recorder.cancelRecording()
@@ -123,464 +123,370 @@ fun RecordScreen(
     }
 
     val buttonScale by animateFloatAsState(
-        targetValue = if (isRecording) 0.96f else 1.0f,
-        animationSpec = tween(durationMillis = 120),
+        targetValue = if (isRecording) 1.12f else 1.0f,
+        animationSpec = tween(durationMillis = 150),
         label = "ButtonScaleAnimation"
     )
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF3EFE6)
+        color = Color(0xFFF6F7F9)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Top Architectural Ledger Banner
-            Column(
+            // Header tiêu chuẩn kèm nút Cài đặt API
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF14171A))
-                    .padding(horizontal = 20.dp, vertical = 18.dp)
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "SỔ NHẬT KÝ CÔNG TRƯỜNG",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.5.sp,
-                            color = Color(0xFFD84315)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(id = R.string.app_name),
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-0.5).sp,
-                            color = Color(0xFFFAF8F3)
-                        )
-                    }
-
-                    val hasStt = !securePreferences.groqApiKey.isNullOrBlank()
-                    val hasClassify = !securePreferences.geminiApiKey.isNullOrBlank()
-                    val (statusText, statusBg, statusFg) = when {
-                        hasStt && hasClassify -> Triple("API SẴN SÀNG", Color(0xFF1B4332), Color(0xFF74C69D))
-                        hasStt -> Triple("STT + GROQ", Color(0xFF1B4332), Color(0xFF74C69D))
-                        hasClassify -> Triple("THIẾU STT KEY", Color(0xFF5F370E), Color(0xFFFBD38D))
-                        else -> Triple("CÀI ĐẶT API", Color(0xFFD84315), Color.White)
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .background(statusBg, RoundedCornerShape(4.dp))
-                            .clickable { onOpenSettings() }
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = statusText,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.5.sp,
-                            color = statusFg
-                        )
-                    }
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF111827)
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(id = R.string.welcome_subtitle),
+                        fontSize = 13.sp,
+                        color = Color(0xFF6B7280)
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                val hasStt = !securePreferences.groqApiKey.isNullOrBlank()
+                val hasClassify = !securePreferences.geminiApiKey.isNullOrBlank()
+                val (statusText, statusColor) = when {
+                    hasStt && hasClassify -> "STT ✓ | Gemini ✓" to Color(0xFF16A34A)
+                    hasStt -> "STT ✓ | Phân loại: Groq" to Color(0xFF16A34A)
+                    hasClassify -> "Thiếu STT Key" to Color(0xFFD97706)
+                    else -> "Cài API Key" to Color(0xFFDC2626)
+                }
 
-                // Ledger Meta Strip: Date + Active Template + Today's Note Count
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF21262B), RoundedCornerShape(4.dp))
-                        .clickable { onOpenTemplateLibrary() }
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                OutlinedButton(
+                    onClick = onOpenSettings,
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = statusText,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = statusColor
+                    )
+                }
+            }
+
+            // Thanh hiển thị và đổi nhanh Mẫu báo cáo
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                OutlinedButton(
+                    onClick = onOpenTemplateLibrary,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White),
+                    modifier = Modifier.height(34.dp)
+                ) {
+                    Text(
+                        text = "📑 Mẫu: ${activeTemplateName ?: "Nhật ký thi công"} ▾",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF1E293B)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // Phần trung tâm: Nút ghi âm một chạm
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (!hasPermission) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.record_permission_required),
+                                fontSize = 14.sp,
+                                color = Color(0xFF92400E)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(
+                                onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706)),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(text = stringResource(id = R.string.record_btn_grant_permission))
+                            }
+                        }
+                    }
+                } else {
+                    // Hiển thị bộ đếm thời gian
+                    if (isRecording) {
+                        val minutes = recordingTimerSeconds / 60
+                        val seconds = recordingTimerSeconds % 60
                         Text(
-                            text = "BIỂU MẪU ĐANG ÁP DỤNG",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF949A9E)
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = activeTemplateName ?: "Nhật ký thi công công trường",
-                            fontSize = 14.sp,
+                            text = String.format("%02d:%02d", minutes, seconds),
+                            fontSize = 38.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFAF8F3)
+                            color = Color(0xFFDC2626)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.record_status_recording),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFFDC2626)
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.record_hint_ready),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF4B5563)
                         )
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color(0xFF14171A), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = "${activeNotes.size} GHI CHÚ",
-                                fontSize = 11.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFAF8F3)
+                    Spacer(modifier = Modifier.height(28.dp))
+
+                    // Nút nhấn giữ ghi âm trung tâm
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(108.dp)
+                            .scale(buttonScale)
+                            .clip(CircleShape)
+                            .background(
+                                if (isRecording) Color(0xFFDC2626) else Color(0xFF1E293B)
                             )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
+                            .border(
+                                width = if (isRecording) 4.dp else 2.dp,
+                                color = if (isRecording) Color(0xFFFCA5A5) else Color(0xFF94A3B8),
+                                shape = CircleShape
+                            )
+                            .pointerInput(hasPermission) {
+                                detectTapGestures(
+                                    onPress = {
+                                        if (!hasPermission) {
+                                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                            return@detectTapGestures
+                                        }
+
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        val startResult = recorder.startRecording()
+                                        if (startResult.isSuccess) {
+                                            isRecording = true
+                                        }
+
+                                        val released = tryAwaitRelease()
+
+                                        if (released) {
+                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            val stopResult = recorder.stopRecording()
+                                            isRecording = false
+                                            if (stopResult.isSuccess && startResult.isSuccess) {
+                                                val duration = stopResult.getOrNull() ?: 0L
+                                                val file = startResult.getOrNull()
+                                                if (file != null && duration >= 800L) {
+                                                    lastRecordedItem = LastRecordedItem(
+                                                        file = file,
+                                                        durationSeconds = duration / 1000L
+                                                    )
+                                                    // Lưu ngay vào Room và kích hoạt STT qua ViewModel
+                                                    viewModel.onRecordFinished(file, duration)
+                                                }
+                                            }
+                                        } else {
+                                            recorder.cancelRecording()
+                                            isRecording = false
+                                        }
+                                    }
+                                )
+                            }
+                    ) {
                         Text(
-                            text = "ĐỔI MẪU →",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD84315)
+                            text = if (isRecording) "■" else "●",
+                            color = Color.White,
+                            fontSize = if (isRecording) 28.sp else 34.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
 
-            // Main Field-Recording Deck
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (!hasPermission) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF8F3)),
-                        shape = RoundedCornerShape(4.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD84315)),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = "YÊU CẦU QUYỀN MICROPHONE",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFD84315)
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = stringResource(id = R.string.record_permission_required),
-                                fontSize = 14.sp,
-                                color = Color(0xFF14171A)
-                            )
-                            Spacer(modifier = Modifier.height(14.dp))
-                            Button(
-                                onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD84315)),
-                                shape = RoundedCornerShape(4.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.record_btn_grant_permission),
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    // Industrial Push-To-Talk Console Panel
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFFFAF8F3), RoundedCornerShape(4.dp))
-                            .border(1.dp, Color(0xFFD6CFC2), RoundedCornerShape(4.dp))
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Phần kết quả: Thẻ bản ghi âm và kết quả STT
+            lastRecordedItem?.let { item ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(12.dp),
+                    border = CardDefaults.outlinedCardBorder()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = if (isRecording) "ĐANG THU ÂM HIỆN TRƯỜNG" else "BỘ ĐÀM GHI NHẬT KÝ",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp,
-                                color = if (isRecording) Color(0xFFD84315) else Color(0xFF5C6268)
-                            )
-                            Text(
-                                text = viewModel.currentDate,
-                                fontSize = 12.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF5C6268)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        val minutes = recordingTimerSeconds / 60
-                        val seconds = recordingTimerSeconds % 60
-                        Text(
-                            text = String.format("%02d:%02d", minutes, seconds),
-                            fontSize = 52.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            color = if (isRecording) Color(0xFFD84315) else Color(0xFF14171A)
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        Text(
-                            text = if (isRecording)
-                                stringResource(id = R.string.record_status_recording)
-                            else
-                                stringResource(id = R.string.record_hint_ready),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (isRecording) Color(0xFFD84315) else Color(0xFF5C6268)
-                        )
-
-                        Spacer(modifier = Modifier.height(28.dp))
-
-                        // Tactile Architectural Push-To-Talk Trigger
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(132.dp)
-                                .scale(buttonScale)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(
-                                    if (isRecording) Color(0xFFD84315) else Color(0xFF14171A)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(id = R.string.record_recent_card_title),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF111827)
                                 )
-                                .border(
-                                    width = 2.dp,
-                                    color = if (isRecording) Color(0xFFFAF8F3) else Color(0xFF3E444A),
-                                    shape = RoundedCornerShape(4.dp)
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = stringResource(id = R.string.record_duration, item.durationSeconds),
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF6B7280)
                                 )
-                                .pointerInput(hasPermission) {
-                                    detectTapGestures(
-                                        onPress = {
-                                            if (!hasPermission) {
-                                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                                                return@detectTapGestures
-                                            }
+                            }
 
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            val startResult = recorder.startRecording()
-                                            if (startResult.isSuccess) {
-                                                isRecording = true
-                                            }
-
-                                            val released = tryAwaitRelease()
-
-                                            if (released) {
-                                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                val stopResult = recorder.stopRecording()
-                                                isRecording = false
-                                                if (stopResult.isSuccess && startResult.isSuccess) {
-                                                    val duration = stopResult.getOrNull() ?: 0L
-                                                    val file = startResult.getOrNull()
-                                                    if (file != null && duration >= 800L) {
-                                                        lastRecordedItem = LastRecordedItem(
-                                                            file = file,
-                                                            durationSeconds = duration / 1000L
-                                                        )
-                                                        viewModel.onRecordFinished(file, duration)
-                                                    }
-                                                }
-                                            } else {
-                                                recorder.cancelRecording()
-                                                isRecording = false
-                                            }
+                            OutlinedButton(
+                                onClick = {
+                                    if (isPlayingLastRecord) {
+                                        audioPlayer.stop()
+                                        isPlayingLastRecord = false
+                                    } else {
+                                        audioPlayer.play(item.file.absolutePath) {
+                                            isPlayingLastRecord = false
                                         }
-                                    )
-                                }
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        isPlayingLastRecord = true
+                                    }
+                                },
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
                                 Text(
-                                    text = if (isRecording) "[ NHẢ TAY ĐỂ LƯU GHI CHÚ ]" else "NHẤN & GIỮ ĐỂ NÓI",
-                                    color = Color(0xFFFAF8F3),
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.2.sp
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(
-                                    text = if (isRecording)
-                                        "Âm thanh gốc đang được ghi trực tiếp vào bộ nhớ máy"
+                                    text = if (isPlayingLastRecord)
+                                        stringResource(id = R.string.record_stop)
                                     else
-                                        "Tự động nhận diện giọng nói & hiệu đính thuật ngữ xây dựng",
-                                    color = Color(0xFFD6CFC2),
-                                    fontSize = 12.sp
+                                        stringResource(id = R.string.record_play)
                                 )
                             }
                         }
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                // Latest Recorded Item & STT Dispatch Card
-                lastRecordedItem?.let { item ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF8F3)),
-                        shape = RoundedCornerShape(4.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD6CFC2))
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = stringResource(id = R.string.record_recent_card_title).uppercase(),
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.8.sp,
-                                        color = Color(0xFF5C6268)
+                        // Khối hiển thị trạng thái STT
+                        when (val state = sttStatus) {
+                            is CurrentSttStatus.Idle -> {
+                                Text(
+                                    text = "Đã lưu vào danh sách ghi chú",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                            is CurrentSttStatus.Transcribing -> {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFF1F5F9), RoundedCornerShape(8.dp))
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        strokeWidth = 2.dp,
+                                        color = Color(0xFF2563EB)
                                     )
-                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Spacer(modifier = Modifier.width(12.dp))
                                     Text(
-                                        text = stringResource(id = R.string.record_duration, item.durationSeconds),
-                                        fontSize = 14.sp,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF14171A)
+                                        text = "Đang chuyển văn bản qua Groq Whisper...",
+                                        fontSize = 13.sp,
+                                        color = Color(0xFF334155)
                                     )
                                 }
-
-                                OutlinedButton(
-                                    onClick = {
-                                        if (isPlayingLastRecord) {
-                                            audioPlayer.stop()
-                                            isPlayingLastRecord = false
-                                        } else {
-                                            audioPlayer.play(item.file.absolutePath) {
-                                                isPlayingLastRecord = false
-                                            }
-                                            isPlayingLastRecord = true
-                                        }
-                                    },
-                                    shape = RoundedCornerShape(4.dp)
+                            }
+                            is CurrentSttStatus.Success -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFF8FAFC), RoundedCornerShape(8.dp))
+                                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
+                                        .padding(12.dp)
                                 ) {
                                     Text(
-                                        text = if (isPlayingLastRecord)
-                                            stringResource(id = R.string.record_stop)
-                                        else
-                                            stringResource(id = R.string.record_play),
+                                        text = "Văn bản nhận diện (STT):",
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF14171A)
+                                        color = Color(0xFF16A34A)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = state.text,
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF0F172A),
+                                        lineHeight = 20.sp
                                     )
                                 }
                             }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            when (val state = sttStatus) {
-                                is CurrentSttStatus.Idle -> {
+                            is CurrentSttStatus.Error -> {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFFEF2F2), RoundedCornerShape(8.dp))
+                                        .padding(12.dp)
+                                ) {
                                     Text(
-                                        text = "Đã lưu vào sổ ghi chú hôm nay",
+                                        text = "Lỗi STT: ${state.message}",
                                         fontSize = 13.sp,
-                                        color = Color(0xFF5C6268)
+                                        color = Color(0xFFB91C1C)
                                     )
-                                }
-                                is CurrentSttStatus.Transcribing -> {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(Color(0xFFEBE5D8), RoundedCornerShape(4.dp))
-                                            .padding(12.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    OutlinedButton(
+                                        onClick = {
+                                            viewModel.onRecordFinished(item.file, item.durationSeconds * 1000)
+                                        },
+                                        shape = RoundedCornerShape(6.dp)
                                     ) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(18.dp),
-                                            strokeWidth = 2.dp,
-                                            color = Color(0xFFD84315)
-                                        )
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Text(
-                                            text = "Đang chuyển giọng nói sang văn bản & hiệu đính ngữ cảnh...",
-                                            fontSize = 13.sp,
-                                            color = Color(0xFF14171A)
-                                        )
+                                        Text("Thử lại STT", fontSize = 12.sp)
                                     }
                                 }
-                                is CurrentSttStatus.Success -> {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(Color(0xFFEBE5D8), RoundedCornerShape(4.dp))
-                                            .padding(12.dp)
+                            }
+                            is CurrentSttStatus.NoApiKey -> {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFFFFBEB), RoundedCornerShape(8.dp))
+                                        .padding(12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Chưa có Groq API Key",
+                                        fontSize = 13.sp,
+                                        color = Color(0xFFB45309)
+                                    )
+                                    Button(
+                                        onClick = onOpenSettings,
+                                        shape = RoundedCornerShape(6.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706))
                                     ) {
-                                        Text(
-                                            text = "NỘI DUNG ĐÃ NHẬN DIỆN & HIỆU ĐÍNH:",
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF1B4332)
-                                        )
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = state.text,
-                                            fontSize = 15.sp,
-                                            color = Color(0xFF14171A),
-                                            lineHeight = 21.sp
-                                        )
-                                    }
-                                }
-                                is CurrentSttStatus.Error -> {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(Color(0xFFFDE8E8), RoundedCornerShape(4.dp))
-                                            .padding(12.dp)
-                                    ) {
-                                        Text(
-                                            text = "Lỗi STT: ${state.message}",
-                                            fontSize = 13.sp,
-                                            color = Color(0xFF9B1C1C)
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        OutlinedButton(
-                                            onClick = {
-                                                viewModel.onRecordFinished(item.file, item.durationSeconds * 1000)
-                                            },
-                                            shape = RoundedCornerShape(4.dp)
-                                        ) {
-                                            Text("Thử lại STT", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                        }
-                                    }
-                                }
-                                is CurrentSttStatus.NoApiKey -> {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(Color(0xFFFEF3C7), RoundedCornerShape(4.dp))
-                                            .padding(12.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "Chưa cài đặt Groq API Key",
-                                            fontSize = 13.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF92400E)
-                                        )
-                                        Button(
-                                            onClick = onOpenSettings,
-                                            shape = RoundedCornerShape(4.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD84315))
-                                        ) {
-                                            Text("Cài đặt ngay", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                        }
+                                        Text("Cài đặt key", fontSize = 12.sp)
                                     }
                                 }
                             }
