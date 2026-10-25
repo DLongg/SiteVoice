@@ -663,8 +663,8 @@ A templates/schema-chung.md
   + Test mới: `ChallengerM1StressTest.kt`, `ChallengerM1_2AdversarialTest.kt`, `ChallengerM2AdversarialTest.kt`, `ChallengerM2StressTest.kt`, `TemplateEditorAndPositionTest.kt`
 - Kiểm tra:
   + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon`: **BUILD SUCCESSFUL**, pass 100% toàn bộ unit tests & adversarial tests, đóng gói thành công `app\build\outputs\apk\debug\app-debug.apk`.
-  + Kiểm tra kết nối ADB (`adb devices -l`): thiết bị chưa kết nối vào máy tính tại thời điểm chạy lệnh cài đặt nên chưa chạy `adb install` tự động.
-- Còn lại: Cắm cáp USB điện thoại để cài đặt `app-debug.apk` và trải nghiệm thực tế trên thiết bị.
+  + Đã cài đặt (`adb install -r app\build\outputs\apk\debug\app-debug.apk` -> `Success`) và khởi chạy ứng dụng (`com.sitevoice.app/.MainActivity`) thành công trên điện thoại thật `33c4f658` (`model:PKS110`).
+- Còn lại: Người dùng trải nghiệm trực tiếp các tính năng mới trên điện thoại.
 
 
 

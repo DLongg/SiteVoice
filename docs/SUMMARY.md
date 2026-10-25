@@ -22,7 +22,7 @@ Cập nhật: 2026-10-25. Đây là trạng thái hiện tại; quy tắc ở [A
   - **R3 (Xem & Sửa vị trí neo Google Doc)**: `TemplateSchema` & `FormSetupService` lưu/đọc `startIndex`, `endIndex`, `tieuDeGanNhat`, `truoc`, `sau`, `tinHieu`; `FormSetupDialog` & `TemplateEditorScreen` cho phép sửa vị trí neo trực tiếp trên app hoặc mở Google Doc đặt `{{MA}}` bằng tay rồi bấm **"🔄 Đồng bộ lại vị trí & trường từ Doc"**.
   - **R4 (Render Prompt từ các trường tổng hợp)**: Nút **"🔄 Render Prompt từ các trường tổng hợp"** tại Phần 3 của `TemplateEditorScreen` tự sinh lại Prompt thống nhất từ danh sách trường ở Phần 2.
   - **R5 (Hiệu đính STT theo ngữ cảnh & Huy hiệu `{{MA}}`)**: `TextNormalizer`, `NoteClassifier` (`van_ban_da_sua`) và `ClassifyWorker` tự động sửa lỗi STT nghe nhầm thuật ngữ xây dựng mà vẫn giữ nguyên 100% số liệu/tầng/trục; `DailyInputScreen` & `DailyReportPreviewScreen` gắn huy hiệu `{{MA}}` rõ ràng.
-- **Ưu tiên tiếp theo**: Cắm cáp USB điện thoại để cài đặt `app\build\outputs\apk\debug\app-debug.apk` và kiểm thử thực tế trên thiết bị.
+- **Ưu tiên tiếp theo**: Đã cài đặt `app\build\outputs\apk\debug\app-debug.apk` (`Success`) và mở ứng dụng trực tiếp trên điện thoại thật `33c4f658` (`model:PKS110`); sẵn sàng cho người dùng kiểm thử thực tế trên thiết bị.
 
 ## Quyết định phải giữ
 
