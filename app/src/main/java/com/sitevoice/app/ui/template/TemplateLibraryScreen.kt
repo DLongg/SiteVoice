@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,9 +48,12 @@ fun TemplateLibraryScreen(
     onCreateNewTemplate: () -> Unit,
     onEditTemplate: (TemplateItemEntity) -> Unit,
     onDuplicateTemplate: (TemplateItemEntity) -> Unit,
-    onDeleteTemplate: (String) -> Unit
+    onDeleteTemplate: (String) -> Unit,
+    onAutoSetupFromDoc: (String) -> Unit = {}
 ) {
     var templateToDelete by remember { mutableStateOf<TemplateItemEntity?>(null) }
+    var docUrlInput by remember { mutableStateOf("") }
+    var docUrlError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -81,23 +85,89 @@ fun TemplateLibraryScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Nút Tạo Mẫu Mới
-        Button(
-            onClick = onCreateNewTemplate,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-            shape = RoundedCornerShape(8.dp)
+        // Khối Tạo Mẫu Tự Động từ Google Doc (Gọi Docs API + LLM API trước)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(10.dp))
+                .border(1.dp, Color(0xFFCBD5E1), shape = RoundedCornerShape(10.dp))
+                .padding(14.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.template_btn_create_new),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp
+                text = stringResource(id = R.string.template_library_auto_setup_card_title),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0F172A)
             )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = stringResource(id = R.string.template_library_auto_setup_card_desc),
+                fontSize = 12.sp,
+                color = Color(0xFF475569)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = docUrlInput,
+                onValueChange = {
+                    docUrlInput = it
+                    docUrlError = null
+                },
+                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = 12.sp) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            )
+
+            docUrlError?.let { err ->
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = "⚠️ $err", fontSize = 11.sp, color = Color(0xFFDC2626))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        if (docUrlInput.isBlank()) {
+                            docUrlError = "Vui lòng dán link hoặc ID Google Doc trước khi quét."
+                        } else {
+                            onAutoSetupFromDoc(docUrlInput.trim())
+                        }
+                    },
+                    modifier = Modifier.weight(1.4f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.template_library_auto_setup_btn),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = Color.White
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = onCreateNewTemplate,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.template_btn_create_new),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 12.sp,
+                        color = Color(0xFF0F172A)
+                    )
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Danh sách mẫu
         LazyColumn(

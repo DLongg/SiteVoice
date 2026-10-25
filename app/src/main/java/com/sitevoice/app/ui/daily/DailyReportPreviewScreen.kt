@@ -258,7 +258,7 @@ fun DailyReportPreviewScreen(
                 // Khối 2: Công việc thi công (Ngân sách: ≤ 15 dòng)
                 ReportSectionList(
                     title = stringResource(id = R.string.report_section_construction),
-                    badgeText = "${content.congViecThiCong.size}/15 dòng",
+                    badgeText = "{{CONG_VIEC_THI_CONG}} • ${content.congViecThiCong.size}/15 dòng",
                     items = content.congViecThiCong
                 )
 
@@ -267,7 +267,7 @@ fun DailyReportPreviewScreen(
                 // Khối 3: Nghiệm thu công việc (Ngân sách: ≤ 6 dòng)
                 ReportSectionList(
                     title = stringResource(id = R.string.report_section_inspection),
-                    badgeText = "${content.nghiemThu.size}/6 dòng",
+                    badgeText = "{{NGHIEM_THU}} • ${content.nghiemThu.size}/6 dòng",
                     items = content.nghiemThu
                 )
 
@@ -276,7 +276,7 @@ fun DailyReportPreviewScreen(
                 // Khối 4: An toàn lao động & VSMT (Ngân sách: ≤ 3 dòng)
                 ReportSectionList(
                     title = stringResource(id = R.string.report_section_safety),
-                    badgeText = "${content.anToan.size}/3 dòng",
+                    badgeText = "{{AN_TOAN}} • ${content.anToan.size}/3 dòng",
                     items = content.anToan
                 )
 
@@ -298,11 +298,11 @@ fun DailyReportPreviewScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        OpinionRow(label = stringResource(id = R.string.report_opinion_cdt), content = content.yKienCdt)
+                        OpinionRow(label = stringResource(id = R.string.report_opinion_cdt) + " ({{Y_KIEN_CDT}})", content = content.yKienCdt)
                         Spacer(modifier = Modifier.height(8.dp))
-                        OpinionRow(label = stringResource(id = R.string.report_opinion_tvgs), content = content.yKienTvgs)
+                        OpinionRow(label = stringResource(id = R.string.report_opinion_tvgs) + " ({{Y_KIEN_TVGS}})", content = content.yKienTvgs)
                         Spacer(modifier = Modifier.height(8.dp))
-                        OpinionRow(label = stringResource(id = R.string.report_opinion_contractor), content = content.yKienNhaThau)
+                        OpinionRow(label = stringResource(id = R.string.report_opinion_contractor) + " ({{Y_KIEN_NHA_THAU}})", content = content.yKienNhaThau)
                     }
                 }
             } else {
@@ -310,11 +310,12 @@ fun DailyReportPreviewScreen(
                 val dynamicFields = content.allFields.filterKeys { it != "rawJson" && it != "chua_phan_loai" }
                 dynamicFields.forEach { (key, value) ->
                     val readableTitle = key.replace("_", " ").replaceFirstChar { it.uppercase() }
+                    val placeholderTag = "{{${key.uppercase()}}}"
                     if (value is List<*>) {
                         val stringList = value.mapNotNull { it?.toString() }
                         ReportSectionList(
                             title = readableTitle,
-                            badgeText = "${stringList.size} mục",
+                            badgeText = "$placeholderTag • ${stringList.size} mục",
                             items = stringList
                         )
                         Spacer(modifier = Modifier.height(12.dp))
@@ -326,12 +327,24 @@ fun DailyReportPreviewScreen(
                             border = CardDefaults.outlinedCardBorder()
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
-                                Text(
-                                    text = readableTitle,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0F172A)
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = readableTitle,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF0F172A)
+                                    )
+                                    Text(
+                                        text = placeholderTag,
+                                        fontSize = 11.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        color = Color(0xFF2563EB)
+                                    )
+                                }
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = value.toString().ifBlank { stringResource(id = R.string.report_empty_field) },

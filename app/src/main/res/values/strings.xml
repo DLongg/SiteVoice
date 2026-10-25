@@ -141,6 +141,21 @@
     <string name="template_save_success">Đã lưu mẫu vào thư viện thành công!</string>
     <string name="template_activate_success">Đã chuyển sang mẫu: %1$s</string>
     <string name="template_duplicate_suffix">(Bản sao)</string>
+    <string name="template_library_auto_setup_card_title">Tạo Mẫu Tự Động Từ Google Doc</string>
+    <string name="template_library_auto_setup_card_desc">Dán link Google Doc, tạo bản sao an toàn và gọi AI tự động bóc tách các trường {{MA}}</string>
+    <string name="template_library_auto_setup_btn">✨ Tạo bản sao &amp; Nhận diện trường bằng AI</string>
+    <string name="template_editor_empty_fields_title">Chưa có trường placeholder nào</string>
+    <string name="template_editor_empty_fields_desc">Dán link Google Doc ở mục 1 rồi bấm \'Tạo bản sao &amp; Gọi AI lấy các trường từ Doc\' để trích xuất tự động, hoặc bấm \'+ Thêm trường mới\' để tạo thủ công.</string>
+    <string name="template_editor_scan_doc_btn">✨ Tạo bản sao &amp; Gọi AI lấy các trường từ Doc</string>
+    <string name="template_editor_open_doc_btn">📄 Mở bản sao Doc để đặt/dời {{MA}} bằng tay</string>
+    <string name="template_editor_rescan_doc_btn">🔄 Đồng bộ lại vị trí &amp; trường từ Doc</string>
+    <string name="template_editor_render_prompt_btn">🔄 Render Prompt từ các trường tổng hợp</string>
+    <string name="field_position_section_title">📍 Vị trí neo trong bản mẫu Google Doc</string>
+    <string name="field_position_heading_label">Đề mục (tieuDeGanNhat)</string>
+    <string name="field_position_before_label">Ngữ cảnh trước (truoc)</string>
+    <string name="field_position_after_label">Ngữ cảnh sau (sau)</string>
+    <string name="field_position_start_index">Ký tự bắt đầu</string>
+    <string name="field_position_end_index">Ký tự kết thúc</string>
 
     <!-- FormSetupDialog 2-Step Workflow -->
     <string name="form_setup_dialog_title">Thiết lập Form Tự động</string>

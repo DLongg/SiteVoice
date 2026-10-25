@@ -512,6 +512,47 @@ class MainViewModel(
         }
     }
 
+    fun syncFieldsFromExistingDoc(
+        context: Context,
+        docUrlOrId: String,
+        onResult: (Result<List<FormCandidate>>) -> Unit
+    ) {
+        val docId = PlaceholderMapper.extractDocId(docUrlOrId)
+        if (docId.isBlank()) {
+            onResult(Result.failure(IllegalArgumentException("Link hoặc ID Google Doc không hợp lệ.")))
+            return
+        }
+        val account = GoogleAuthManager.getLastSignedInAccount(context)
+        if (account == null || account.account == null) {
+            onResult(Result.failure(IllegalStateException("Chưa đăng nhập tài khoản Google. Vui lòng bấm 'Đăng nhập Google' trong Cài đặt trước.")))
+            return
+        }
+
+        viewModelScope.launch {
+            val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
+            if (tokenResult.isFailure) {
+                val ex = tokenResult.exceptionOrNull()
+                if (ex is UserRecoverableAuthException) {
+                    _authConsentIntent.value = ex.intent
+                }
+                onResult(Result.failure(ex ?: IllegalStateException("Không thể lấy quyền truy cập Google")))
+                return@launch
+            }
+
+            val token = tokenResult.getOrThrow()
+            val result = formSetupService.rescanWorkingDoc(
+                workingDocId = docId,
+                workingTitle = "Bản mẫu",
+                accessToken = token
+            )
+            if (result.isSuccess) {
+                onResult(Result.success(result.getOrThrow().candidates))
+            } else {
+                onResult(Result.failure(result.exceptionOrNull() ?: IllegalStateException("Lỗi đồng bộ trường từ Google Doc")))
+            }
+        }
+    }
+
     var pendingSetupPrompt: String? = null
     var pendingSetupTemperature: Float? = null
 

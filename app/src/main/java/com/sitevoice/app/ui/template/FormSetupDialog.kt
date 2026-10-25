@@ -715,13 +715,31 @@ private fun CandidateCard(
                             color = if (isIncluded) Color(0xFF1E293B) else Color(0xFF94A3B8)
                         )
 
-                        if (candidate.truoc.isNotBlank() || candidate.sau.isNotBlank()) {
-                            Text(
-                                text = "Vị trí: \"${candidate.truoc}...${candidate.sau}\"",
-                                fontSize = 11.sp,
-                                color = Color(0xFF64748B),
-                                maxLines = 1
-                            )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Surface(
+                            color = Color(0xFFF8FAFC),
+                            shape = RoundedCornerShape(4.dp),
+                            border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFE2E8F0)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)) {
+                                if (candidate.tieuDeGanNhat.isNotBlank()) {
+                                    Text(
+                                        text = "📍 Đề mục: ${candidate.tieuDeGanNhat}",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF334155),
+                                        maxLines = 1
+                                    )
+                                }
+                                Text(
+                                    text = "Neo vị trí (#${candidate.startIndex}..#${candidate.endIndex}): Trước \"${candidate.truoc}\" | Sau \"${candidate.sau}\"",
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF64748B),
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
 
@@ -890,9 +908,104 @@ private fun CandidateCard(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // 5. Vị trí neo trong bản mẫu Google Doc (Xem & Sửa trực tiếp bằng tay)
+                Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = Color(0xFFF1F5F9),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "📍 Vị trí neo trong bản mẫu Google Doc:",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+                            Text(
+                                text = "Tín hiệu: ${candidate.tinHieu.ifBlank { "dong_cham" }}",
+                                fontSize = 10.sp,
+                                color = Color(0xFF475569)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        OutlinedTextField(
+                            value = candidate.tieuDeGanNhat,
+                            onValueChange = { onUpdate(candidate.copy(tieuDeGanNhat = it)) },
+                            label = { Text("Đề mục chứa chỗ điền (tieuDeGanNhat)", fontSize = 10.sp) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = candidate.truoc,
+                                onValueChange = { onUpdate(candidate.copy(truoc = it)) },
+                                label = { Text("Ngữ cảnh trước (truoc)", fontSize = 10.sp) },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            OutlinedTextField(
+                                value = candidate.sau,
+                                onValueChange = { onUpdate(candidate.copy(sau = it)) },
+                                label = { Text("Ngữ cảnh sau (sau)", fontSize = 10.sp) },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = candidate.startIndex.toString(),
+                                onValueChange = { str ->
+                                    val idx = str.filter { it.isDigit() || it == '-' }.toIntOrNull() ?: candidate.startIndex
+                                    onUpdate(candidate.copy(startIndex = idx))
+                                },
+                                label = { Text("Ký tự bắt đầu (startIndex)", fontSize = 10.sp) },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            OutlinedTextField(
+                                value = candidate.endIndex.toString(),
+                                onValueChange = { str ->
+                                    val idx = str.filter { it.isDigit() || it == '-' }.toIntOrNull() ?: candidate.endIndex
+                                    onUpdate(candidate.copy(endIndex = idx))
+                                },
+                                label = { Text("Ký tự kết thúc (endIndex)", fontSize = 10.sp) },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // 5. Thao tác phụ: Bỏ qua / Áp dụng & Nút Xong
+                // 6. Thao tác phụ: Bỏ qua / Áp dụng & Nút Xong
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,

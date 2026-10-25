@@ -344,6 +344,9 @@ fun MainScreen(
                     viewModel.confirmFormSetup(context, templateName, candidates) { createdTemplate ->
                         showFormSetupDialog = false
                         showSettingsDialog = false
+                        if (showTemplateEditor) {
+                            editingTemplate = createdTemplate
+                        }
                         Toast.makeText(context, "Đã tạo Mẫu '${createdTemplate.name}' và chèn placeholder thành công!", Toast.LENGTH_LONG).show()
                     }
                 },
@@ -375,6 +378,10 @@ fun MainScreen(
                     onCreateNewTemplate = {
                         editingTemplate = null
                         showTemplateEditor = true
+                    },
+                    onAutoSetupFromDoc = { docUrlOrId ->
+                        showFormSetupDialog = true
+                        viewModel.startFormSetup(context, docUrlOrId)
                     },
                     onEditTemplate = { t ->
                         editingTemplate = t
@@ -409,6 +416,13 @@ fun MainScreen(
                             showTemplateEditor = false
                             Toast.makeText(context, "Đã lưu mẫu vào thư viện!", Toast.LENGTH_SHORT).show()
                         }
+                    },
+                    onScanDocWithAi = { docUrlOrId ->
+                        showFormSetupDialog = true
+                        viewModel.startFormSetup(context, docUrlOrId)
+                    },
+                    onSyncFieldsFromDoc = { docUrlOrId, onResult ->
+                        viewModel.syncFieldsFromExistingDoc(context, docUrlOrId, onResult)
                     }
                 )
             }
