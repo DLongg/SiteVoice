@@ -634,4 +634,37 @@ A templates/schema-chung.md
   + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug`: **BUILD SUCCESSFUL**, pass 100% (132/132 unit tests pass) và đóng gói thành công `app-debug.apk`.
 - Còn lại: Người dùng kiểm tra thực tế luồng Thiết lập Form 2 bước và xuất Google Doc trực tiếp trên điện thoại.
 
+## 2026-10-25 — Nâng cấp Toàn diện R1–R5: Khắc phục Lệch Trường Xuất Doc, Bỏ Trường Cứng khi Tạo Mẫu, Xem/Sửa Vị Trí Neo Google Doc, Nút Render Prompt & Tự Sửa Lỗi STT theo Ngữ Cảnh — Hoàn thành
+
+- Kết quả:
+  + **R1 — Khắc phục lỗi nhận diện lệch trường & điền nhầm mục khi xuất Google Doc**:
+    * `FormCandidateScanner.kt`: Ngăn dòng vừa là đề mục vừa có dấu chấm (`3. Công việc thi công: ......`) ghi đè `currentHeading` của các dòng kế tiếp; truyền nhãn đầy đủ từ tất cả các cột bên trái sang ô trống trong bảng (`table`); quét trực tiếp các thẻ `{{MA}}` do người dùng tự gõ tay trong Google Doc (`tinHieu = "the_ma"`, bảo toàn `originalMa`).
+    * `FormLlmDescriber.kt`: Sửa thứ tự ưu tiên phân loại trong `applyFallbackSingle` để nhận diện `Y_KIEN_CDT`, `Y_KIEN_TVGS`, `Y_KIEN_NHA_THAU` và `MAY_MOC` (`máy móc`, `thiết bị`, `xe máy`) **trước** từ khóa chung `"thi công"`; bóc tách sạch khối markdown ```` ```json ... ``` ```` trong `callLlm()` và áp dụng kết quả LLM trả về.
+    * `PlaceholderMapper.kt` & `DocPlaceholderInjector.kt`: Bảo đảm `{{MAY_MOC}}` lấy dữ liệu từ cả `dailyInput.equipmentList` lẫn `reportContent.allFields["may_moc"]`, tách biệt tuyệt đối `{{Y_KIEN_CDT}}` / `{{Y_KIEN_TVGS}}` / `{{Y_KIEN_NHA_THAU}}` với `{{CONG_VIEC_THI_CONG}}`, và hỗ trợ thay thế thẻ `the_ma` khi người dùng đổi mã.
+  + **R2 — Bỏ 3 trường mẫu cứng khi Tạo Mẫu mới & Tích hợp Quét AI trực tiếp**:
+    * `TemplateEditorScreen.kt` & `TemplateLibraryScreen.kt`: Khi tạo mẫu mới (`template == null`), danh sách trường khởi tạo rỗng (`emptyList()`) thay vì 3 trường cứng (`cong_viec_chinh`, `van_de_ton_dong`, `ghi_chu_khac`). Bổ sung thẻ **"✨ Tạo bản sao & Nhận diện trường bằng AI"** ngay tại `TemplateLibraryScreen` và Phần 1 của `TemplateEditorScreen`.
+  + **R3 — Hiển thị & Cho phép Sửa Vị trí Trường trực tiếp bằng tay (trên App & trên Google Doc)**:
+    * `TemplateSchema.kt` & `FormSetupService.kt`: Lưu trữ và đọc đầy đủ tọa độ vị trí (`start_index`, `end_index`, `tieu_de_gan_nhat`, `truoc`, `sau`, `tin_hieu`) trong `schemaJson`.
+    * `FormSetupDialog.kt` & `TemplateEditorScreen.kt`: Hiển thị khung `📍 Vị trí neo trong bản mẫu Google Doc` trên từng thẻ trường, cho phép bấm mở rộng để sửa tay trực tiếp (`tieuDeGanNhat`, `truoc`, `sau`, `startIndex`, `endIndex`), đồng thời cung cấp 2 nút thao tác trực tiếp trên Google Doc: **"📄 Mở bản sao Doc để đặt/dời `{{MA}}` bằng tay"** và **"🔄 Đồng bộ lại vị trí & trường từ Doc"** (`MainViewModel.syncFieldsFromExistingDoc`).
+  + **R4 — Bổ sung nút "🔄 Render Prompt từ các trường tổng hợp"**:
+    * `TemplateEditorScreen.kt`: Tại Phần 3 (*Prompt hướng dẫn AI tổng hợp*), bổ sung nút **"🔄 Render Prompt từ các trường tổng hợp"** gọi `FormLlmDescriber.generateUnifiedPrompt` trực tiếp từ danh sách trường hiện tại ở Phần 2.
+  + **R5 — Tự động Hiệu đính Văn bản STT theo Ngữ cảnh Xây dựng & Chuẩn hóa UI 9 màn hình**:
+    * `TextNormalizer.kt`, `NoteClassifier.kt`, `HybridClassificationPipeline.kt`, `ClassifyWorker.kt`: Mở rộng từ điển chuẩn hóa thuật ngữ xây dựng và yêu cầu LLM trả về `van_ban_da_sua` (`correctedText`) để sửa lỗi đồng âm/nghe nhầm tiếng Việt của STT (giữ nguyên 100% con số, tầng, trục) rồi cập nhật trực tiếp vào `NoteEntity.text`.
+    * `DailyInputScreen.kt` & `DailyReportPreviewScreen.kt`: Hiển thị huy hiệu mã thẻ `{{MA}}` rõ ràng trên từng mục nhập và bản xem trước báo cáo theo đúng chuẩn App Screens (`design-taste-frontend`).
+- File sửa / thêm:
+  + `app/src/main/java/com/sitevoice/app/formsetup/FormCandidate.kt`, `FormCandidateScanner.kt`, `FormLlmDescriber.kt`, `DocPlaceholderInjector.kt`, `FormSetupService.kt`
+  + `app/src/main/java/com/sitevoice/app/template/TemplateSchema.kt`
+  + `app/src/main/java/com/sitevoice/app/export/PlaceholderMapper.kt`
+  + `app/src/main/java/com/sitevoice/app/llm/TextNormalizer.kt`, `NoteClassifier.kt`, `HybridClassificationPipeline.kt`
+  + `app/src/main/java/com/sitevoice/app/queue/ClassifyWorker.kt`
+  + `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt`, `TemplateLibraryScreen.kt`, `TemplateEditorScreen.kt`
+  + `app/src/main/java/com/sitevoice/app/ui/daily/DailyInputScreen.kt`, `DailyReportPreviewScreen.kt`
+  + `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `MainScreen.kt`, `app/src/main/res/values/strings.xml`
+  + Test mới: `ChallengerM1StressTest.kt`, `ChallengerM1_2AdversarialTest.kt`, `ChallengerM2AdversarialTest.kt`, `ChallengerM2StressTest.kt`, `TemplateEditorAndPositionTest.kt`
+- Kiểm tra:
+  + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon`: **BUILD SUCCESSFUL**, pass 100% toàn bộ unit tests & adversarial tests, đóng gói thành công `app\build\outputs\apk\debug\app-debug.apk`.
+  + Kiểm tra kết nối ADB (`adb devices -l`): thiết bị chưa kết nối vào máy tính tại thời điểm chạy lệnh cài đặt nên chưa chạy `adb install` tự động.
+- Còn lại: Cắm cáp USB điện thoại để cài đặt `app-debug.apk` và trải nghiệm thực tế trên thiết bị.
+
+
 

@@ -4,25 +4,25 @@ Cập nhật: 2026-10-25. Đây là trạng thái hiện tại; quy tắc ở [A
 
 ## Tổng quan và trạng thái đã xác minh
 
-- Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
-- Đã hoàn thành 100% Giai đoạn 0–3 và toàn bộ gói nâng cấp **Milestones M1–M6 (Requirements R1–R5)**: Đọc file Google Doc nhận diện đề mục mở rộng & gộp dòng chấm liên tiếp, AI tự sinh Prompt thống nhất (duyệt Human-in-the-loop 2 bước), thanh trượt Nhiệt độ (`0.0 - 0.8`) và Ghi file Google Doc quét sạch 2 lớp.
-- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug` build thành công 100% (**132/132 unit tests pass**, bao gồm đầy đủ các bộ test đối kháng M2–M5, và tạo `app-debug.apk` hoàn chỉnh).
+- Mục tiêu: ứng dụng Android ghi âm ngoài công trường → STT (kèm hiệu đính ngữ cảnh xây dựng) → phân loại → chuẩn bị cuối ngày → LLM tổng hợp theo Mẫu → duyệt bản xem trước một lần → Google Doc tối đa 2 trang.
+- Đã hoàn thành 100% Giai đoạn 0–3, gói Thiết lập Biểu mẫu 2 bước (HITL) và toàn bộ gói nâng cấp **R1–R5 (Sửa lệch trường xuất Doc, Bỏ trường cứng khi tạo Mẫu, Xem/Sửa vị trí neo Google Doc, Render Prompt từ trường tổng hợp, Hiệu đính STT ngữ cảnh & Chuẩn hóa UI 9 màn hình)**.
+- Lệnh `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon` build thành công 100% (toàn bộ unit tests và adversarial tests M1–M5 pass, tạo `app-debug.apk` hoàn chỉnh).
 
 ## Kiến trúc và công nghệ dự kiến
 
-- Kotlin + Jetpack Compose, Room, WorkManager, EncryptedSharedPreferences, OkHttp; các module: `ui`, `audio`, `stt`, `llm`, `template`, `export`, `data`, `queue`, `settings`. Xem [kiến trúc](03-kien-truc.md), [dữ liệu](04-du-lieu.md).
-- Giao diện UI: Chuẩn hóa theo skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), tuân thủ quy tắc App Screens (tinh gọn, tương phản cao, quy trình HITL 2 bước, thanh trượt nhiệt độ rõ ràng).
-- STT qua Groq Whisper; LLM độc lập: Gemini 3.8 Flash (qua Vilao AI), fallback Groq. Xuất Google Doc: Google Drive API v3 copy file và Google Docs API v1 batchUpdate thay placeholder kèm cơ chế quét sạch 2 lớp.
+- Kotlin + Jetpack Compose, Room, WorkManager, EncryptedSharedPreferences, OkHttp; các module: `ui`, `audio`, `stt`, `llm`, `template`, `export`, `data`, `queue`, `settings`, `formsetup`. Xem [kiến trúc](03-kien-truc.md), [dữ liệu](04-du-lieu.md).
+- Giao diện UI: Chuẩn hóa 9 màn hình theo skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), hiển thị rõ tọa độ neo Google Doc và huy hiệu `{{MA}}` xuyên suốt.
+- STT qua Groq Whisper + hiệu đính ngữ cảnh LLM (`NoteClassifier.correctedText`); LLM tổng hợp: Gemini 3.8 Flash (qua Vilao AI), fallback Groq. Xuất Google Doc: Google Drive API v3 copy file và Google Docs API v1 batchUpdate thay placeholder kèm cơ chế quét sạch 2 lớp.
 
 ## Đang triển khai và bàn giao
 
-- **Hoàn thành trọn gói R1–R5 (Milestones M1–M6)**:
-  - **R1 (Tài liệu)**: Đồng bộ `docs/10-thiet-lap-form.md`, `docs/05-llm.md`, `docs/06-google-doc-mau.md`.
-  - **R2 (Đọc file & Sinh Prompt)**: `FormCandidateScanner` nhận diện đề mục La Mã/chữ cái/mục con, truyền nhãn ô bảng trái sang phải, gộp nhiều dòng chấm liên tiếp thành 1 trường `danh_sach`; `FormLlmDescriber` khử trùng lặp mã `ma` và tự sinh Prompt thống nhất; `FormSetupService` & `TemplateSchema` tương thích song ngữ VI/EN không văng `JSONException`.
-  - **R3 (Tổng hợp động & Temperature)**: `SecurePreferences` lưu `llmTemperature` (`0.0f..0.8f`, mặc định `0.2f`); `ReportSynthesizer` sinh cấu trúc JSON đích động khớp 1-1 với trường của Mẫu và truyền `temperature` vào `LlmClient`.
-  - **R4 (Ghi file Google Doc 2 lớp)**: `PlaceholderMapper` gán mặc định `""` cho toàn bộ trường trong schema; `GoogleDocsExporter` bổ sung Lớp 2 (`documents.get` + regex `\{\{[^{}\r\n]{1,100}\}\}` + `batchUpdate`) xóa sạch 100% mọi tag `{{...}}` chưa có dữ liệu.
-  - **R5 (Giao diện HITL 2 bước & Cài đặt)**: `FormSetupDialog` 2 bước (Bước 1 duyệt thẻ neo `{{MA}}` → Bước 2 xem/sửa Prompt tự sinh & chỉnh Nhiệt độ) và thanh trượt Nhiệt độ trong `SettingsDialog`.
-- **Ưu tiên tiếp theo**: Kiểm thử thực tế luồng Thiết lập Form 2 bước và xuất Google Doc với biểu mẫu tùy chỉnh trên điện thoại.
+- **Hoàn thành trọn gói nâng cấp R1–R5 (Commit `1d06e1d`)**:
+  - **R1 (Khắc phục lệch trường & xuất Doc)**: `FormCandidateScanner` chặn lan truyền nhầm đề mục nội dòng, truyền nhãn toàn bộ cột bảng và quét thẻ `{{MA}}` gõ tay (`the_ma`); `FormLlmDescriber` ưu tiên `Y_KIEN_*` và `MAY_MOC` trước `"thi công"` và bóc sạch markdown JSON fence; `PlaceholderMapper` khớp chính xác `{{MAY_MOC}}` và `{{Y_KIEN_*}}`.
+  - **R2 (Bỏ trường cứng & Quét AI khi tạo Mẫu)**: `TemplateEditorScreen` khởi tạo danh sách trường rỗng khi tạo mới, tích hợp nút **"✨ Tạo bản sao & Nhận diện trường bằng AI"** ngay tại `TemplateLibraryScreen` và `TemplateEditorScreen`.
+  - **R3 (Xem & Sửa vị trí neo Google Doc)**: `TemplateSchema` & `FormSetupService` lưu/đọc `startIndex`, `endIndex`, `tieuDeGanNhat`, `truoc`, `sau`, `tinHieu`; `FormSetupDialog` & `TemplateEditorScreen` cho phép sửa vị trí neo trực tiếp trên app hoặc mở Google Doc đặt `{{MA}}` bằng tay rồi bấm **"🔄 Đồng bộ lại vị trí & trường từ Doc"**.
+  - **R4 (Render Prompt từ các trường tổng hợp)**: Nút **"🔄 Render Prompt từ các trường tổng hợp"** tại Phần 3 của `TemplateEditorScreen` tự sinh lại Prompt thống nhất từ danh sách trường ở Phần 2.
+  - **R5 (Hiệu đính STT theo ngữ cảnh & Huy hiệu `{{MA}}`)**: `TextNormalizer`, `NoteClassifier` (`van_ban_da_sua`) và `ClassifyWorker` tự động sửa lỗi STT nghe nhầm thuật ngữ xây dựng mà vẫn giữ nguyên 100% số liệu/tầng/trục; `DailyInputScreen` & `DailyReportPreviewScreen` gắn huy hiệu `{{MA}}` rõ ràng.
+- **Ưu tiên tiếp theo**: Cắm cáp USB điện thoại để cài đặt `app\build\outputs\apk\debug\app-debug.apk` và kiểm thử thực tế trên thiết bị.
 
 ## Quyết định phải giữ
 
@@ -33,4 +33,3 @@ Cập nhật: 2026-10-25. Đây là trạng thái hiện tại; quy tắc ở [A
 - Thay đổi 01 thêm [0006-tu-dat-placeholder](quyet-dinh/0006-tu-dat-placeholder.md) và [0007-dau-vao-gdoc-va-docx](quyet-dinh/0007-dau-vao-gdoc-va-docx.md); giữ tên file theo yêu cầu, không thay hai quyết định cũ trùng số.
 - Luôn commit và push chi tiết từng bước lên GitHub `origin/main`.
 - Quy tắc làm việc: Nếu Chrome/hệ thống yêu cầu người dùng thì agent cũng bị yêu cầu (hỏi và chờ xác nhận); nếu prompt của người dùng đi chệch hướng với luồng/luật/định nghĩa trong tài liệu (Doc) thì agent phải đưa ra câu hỏi lựa chọn để người dùng chốt trước khi làm.
-
