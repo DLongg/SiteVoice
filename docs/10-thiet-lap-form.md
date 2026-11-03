@@ -8,18 +8,15 @@ Mục tiêu: người dùng nạp form của họ MỘT LẦN; app tự đặt p
 - Không hỗ trợ: PDF, ảnh chụp, form có nội dung nằm trong hộp văn bản/hình vẽ. Phát hiện thì báo rõ lý do.
 - Luôn làm việc trên BẢN SAO; không bao giờ sửa file gốc của người dùng.
 
-## Luồng 7 bước
-1. Nạp form -> tạo bản sao làm việc trên Google Drive (Drive API v3 `files.copy`), tuyệt đối không sửa file gốc của người dùng.
-2. Đọc cấu trúc tài liệu bằng Docs API `documents.get`: các đoạn văn (`paragraph`), bảng (`table`), hàng (`tableRow`), ô (`tableCell`), và chỉ số vị trí (`startIndex`/`endIndex`).
-3. Code quét tìm ỨNG VIÊN chỗ điền theo tập tín hiệu tất định (xem "Tín hiệu tìm ứng viên").
-4. LLM hỗ trợ 2 pha (xem "Việc của model"):
-   - Pha 4a: Đặt tên gợi ý, chọn loại dữ liệu, gán nguồn và độ tin cậy cho từng ứng viên.
-   - Pha 4b: Tự sinh bản Prompt thống nhất cho Pha 2 dựa trên danh sách thẻ neo đã được người dùng chốt.
-5. Đo sức chứa để tính toán giới hạn dòng/ký tự cho từng chỗ điền (xem "Đo sức chứa").
-6. Quy trình Human-in-the-loop 2 bước (xem "Màn hình duyệt thiết lập"):
-   - Bước 1: Người dùng duyệt, bật/tắt và chỉnh sửa danh sách thẻ neo `{{MA}}`.
-   - Bước 2: Người dùng xem trước/chỉnh sửa Prompt AI thống nhất và điều chỉnh thanh trượt Nhiệt độ (`0.0 - 0.8`, mặc định `0.2`).
-7. Ghi placeholder vào bản sao Google Doc bằng Docs API `batchUpdate`, lưu Mẫu vào CSDL Room (hỗ trợ schema song ngữ). Từ đây xuất file hằng ngày chạy theo `06-google-doc-mau.md`.
+## Luồng tạo Một Bản Mẫu Tự Động Duy Nhất (cập nhật theo quyết định 0008)
+1. Người dùng mở phần **Nhật ký tự động / Thiết lập Mẫu** và dán link (hoặc ID) Google Doc biểu mẫu (hiển thị rõ thông báo trước khi gửi danh sách chỗ điền cho nhà cung cấp LLM).
+2. Hệ thống tự động thực hiện trọn gói một lần:
+   - Tạo bản sao làm việc trên Google Drive (Drive API v3 `files.copy`), tuyệt đối không sửa file gốc của người dùng.
+   - Đọc cấu trúc tài liệu bằng Docs API `documents.get` (`paragraph`, `table`, `tableRow`, `tableCell`, `startIndex`/`endIndex`).
+   - Code (`FormCandidateScanner`) quét tìm ỨNG VIÊN chỗ điền theo tập tín hiệu tất định.
+   - LLM (`FormLlmDescriber`) đặt tên gợi ý, chọn loại dữ liệu, gán nguồn cho từng ứng viên và tự sinh bản **System Prompt** thống nhất khớp 1-1 với các thẻ `{{MA}}`.
+   - Ghi các thẻ placeholder `{{MA}}` vào bản sao Google Doc bằng Docs API `batchUpdate` (theo thứ tự chỉ số giảm dần) và lưu thành **bản mẫu duy nhất đang áp dụng** trong Room (thay thế mô hình thư viện nhiều mẫu mặc định trước đây).
+3. Ngay sau khi tạo xong (và trong mọi lần mở lại sau đó), ứng dụng hiển thị trực tiếp màn hình **Chỉnh sửa Bản Mẫu Tự Động** duy nhất này để người dùng kiểm tra và chỉnh sửa bất kỳ thành phần nào (Form Google Doc bản sao, danh sách các mục/thẻ `{{MA}}`, vị trí neo, System Prompt, thanh trượt Nhiệt độ `0.0 - 0.8`), hoặc dán link Google Doc khác để tạo lại bản mẫu mới.
 
 ## Tín hiệu tìm ứng viên (do CODE thực hiện, không do model)
 Bộ quét `FormCandidateScanner` áp dụng các biểu thức chính quy (Regex) và cấu trúc phân tích tài liệu sau:
