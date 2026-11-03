@@ -45,6 +45,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (BuildConfig.DEBUG) {
+            intent?.getStringExtra("classify_api_key")?.takeIf { it.isNotBlank() }?.let {
+                securePreferences.geminiApiKey = it
+            }
+            intent?.getStringExtra("classify_base_url")?.takeIf { it.isNotBlank() }?.let {
+                securePreferences.geminiBaseUrl = it
+            }
+        }
+
         lifecycleScope.launch {
             templateRepository.ensureBuiltInTemplatesSeeded()
         }
