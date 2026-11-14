@@ -174,7 +174,7 @@ class FormSetupService(
 
             // 2. Tạo schemaJson động song ngữ cho Mẫu
             val schemaJsonObj = JSONObject().apply {
-                val templateId = "custom_auto_" + System.currentTimeMillis()
+                val templateId = com.sitevoice.app.template.DefaultTemplateRepository.SINGLE_AUTO_TEMPLATE_ID
                 put("id", templateId)
                 put("ten", templateName)
                 put("name", templateName)
@@ -246,7 +246,7 @@ class FormSetupService(
             val unifiedPrompt = FormLlmDescriber.generateUnifiedPrompt(candidates, templateName)
 
             val templateEntity = TemplateItemEntity(
-                id = "custom_auto_" + System.currentTimeMillis(),
+                id = com.sitevoice.app.template.DefaultTemplateRepository.SINGLE_AUTO_TEMPLATE_ID,
                 name = templateName,
                 description = "Mẫu tự động sinh từ Google Doc (đã chèn ${candidates.count { !it.boQua }} thẻ placeholder)",
                 docTemplateUrl = docUrl,
@@ -262,5 +262,34 @@ class FormSetupService(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * Tạo trọn gói Một Bản Mẫu Tự Động Duy Nhất trong 1 lần bấm:
+     * Copy Google Doc -> Quét ứng viên -> Gọi AI đặt tên/phân loại -> Chèn {{MA}} -> Sinh System Prompt & Schema.
+     */
+    suspend fun autoCreateSingleTemplateOneShot(
+        originalDocId: String,
+        accessToken: String,
+        customTemplateName: String? = null
+    ): Result<TemplateItemEntity> {
+        val analysisResult = analyzeForm(originalDocId, accessToken)
+        if (analysisResult.isFailure) {
+            return Result.failure(analysisResult.exceptionOrNull() ?: IOException("Lỗi phân tích biểu mẫu"))
+        }
+        val analysis = analysisResult.getOrThrow()
+        val effectiveName = customTemplateName?.trim()?.takeIf { it.isNotBlank() }
+            ?: analysis.originalDocTitle
+                .replace("[SiteVoice Mẫu] ", "")
+                .replace("Bản sao tự động", "Nhật ký tự động")
+                .trim()
+                .ifBlank { "Nhật ký tự động" }
+
+        return applyPlaceholdersAndGenerateTemplate(
+            workingDocId = analysis.workingDocId,
+            templateName = effectiveName,
+            candidates = analysis.candidates,
+            accessToken = accessToken
+        )
     }
 }

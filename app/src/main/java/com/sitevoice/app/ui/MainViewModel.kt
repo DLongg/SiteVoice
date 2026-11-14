@@ -300,7 +300,7 @@ class MainViewModel(
                     val json = result.getOrThrow()
                     val reportEntity = DailyReportEntity(
                         date = currentDate,
-                        templateId = currentSchema.id,
+                        templateId = currentTemplate?.id ?: DefaultTemplateRepository.SINGLE_AUTO_TEMPLATE_ID,
                         contentJson = json,
                         status = "DRAFT",
                         updatedAt = System.currentTimeMillis()
@@ -407,8 +407,69 @@ class MainViewModel(
 
     fun saveCustomTemplate(template: TemplateItemEntity, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
-            templateRepository.saveTemplate(template)
+            templateRepository.saveSingleAutoTemplate(template)
+            val docId = PlaceholderMapper.extractDocId(template.docTemplateUrl)
+            if (docId.isNotBlank()) {
+                securePreferences.docTemplateId = docId
+            }
             onComplete()
+        }
+    }
+
+    fun autoCreateSingleTemplateFromDoc(
+        context: Context,
+        docUrlOrId: String,
+        customName: String? = null,
+        onSuccess: (TemplateItemEntity) -> Unit
+    ) {
+        val docId = PlaceholderMapper.extractDocId(docUrlOrId)
+        if (docId.isBlank()) {
+            _formSetupError.value = "Link hoặc ID Google Doc không hợp lệ."
+            return
+        }
+
+        val account = GoogleAuthManager.getLastSignedInAccount(context)
+        if (account == null || account.account == null) {
+            _formSetupError.value = "Chưa đăng nhập tài khoản Google. Vui lòng bấm 'Đăng nhập Google' trong Cài đặt trước."
+            return
+        }
+
+        viewModelScope.launch {
+            _isFormSettingUp.value = true
+            _formSetupError.value = null
+
+            val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
+            if (tokenResult.isFailure) {
+                val ex = tokenResult.exceptionOrNull()
+                if (ex is UserRecoverableAuthException) {
+                    _isFormSettingUp.value = false
+                    _authConsentIntent.value = ex.intent
+                    return@launch
+                }
+                _formSetupError.value = "Không thể lấy quyền truy cập Google: ${ex?.message}"
+                _isFormSettingUp.value = false
+                return@launch
+            }
+
+            val token = tokenResult.getOrThrow()
+            val createResult = formSetupService.autoCreateSingleTemplateOneShot(
+                originalDocId = docId,
+                accessToken = token,
+                customTemplateName = customName
+            )
+
+            _isFormSettingUp.value = false
+            if (createResult.isSuccess) {
+                val created = createResult.getOrThrow()
+                templateRepository.saveSingleAutoTemplate(created)
+                val workingId = PlaceholderMapper.extractDocId(created.docTemplateUrl)
+                if (workingId.isNotBlank()) {
+                    securePreferences.docTemplateId = workingId
+                }
+                onSuccess(created)
+            } else {
+                _formSetupError.value = createResult.exceptionOrNull()?.message ?: "Lỗi tạo mẫu tự động từ Google Doc"
+            }
         }
     }
 
@@ -434,7 +495,7 @@ class MainViewModel(
         }
     }
 
-    fun startFormSetup(context: Context, docUrlOrId: String) {
+    fun startFormSetup(context: Context, docUrlOrId: String, customName: String? = null) {
         val docId = PlaceholderMapper.extractDocId(docUrlOrId)
         if (docId.isBlank()) {
             _formSetupError.value = "Link hoặc ID Google Doc không hợp lệ."
@@ -470,7 +531,9 @@ class MainViewModel(
 
             _isFormSettingUp.value = false
             if (analysisResult.isSuccess) {
-                _formSetupAnalysis.value = analysisResult.getOrThrow()
+                val analysis = analysisResult.getOrThrow()
+                val effectiveTitle = customName?.trim()?.takeIf { it.isNotBlank() } ?: analysis.originalDocTitle
+                _formSetupAnalysis.value = analysis.copy(originalDocTitle = effectiveTitle)
             } else {
                 _formSetupError.value = analysisResult.exceptionOrNull()?.message ?: "Lỗi phân tích biểu mẫu"
             }
@@ -593,8 +656,7 @@ class MainViewModel(
                 if (!effectivePrompt.isNullOrBlank()) {
                     template = template.copy(systemPrompt = effectivePrompt)
                 }
-                templateRepository.saveTemplate(template)
-                templateRepository.setActiveTemplate(template.id)
+                templateRepository.saveSingleAutoTemplate(template)
                 securePreferences.docTemplateId = analysis.workingDocId
                 val effectiveTemp = temperature ?: pendingSetupTemperature
                 if (effectiveTemp != null) {
