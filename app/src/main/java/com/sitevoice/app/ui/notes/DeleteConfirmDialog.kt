@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -17,13 +16,14 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.sitevoice.app.R
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 @Composable
 fun DeleteConfirmDialog(
@@ -33,32 +33,32 @@ fun DeleteConfirmDialog(
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             border = CardDefaults.outlinedCardBorder()
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(Spacing.xl)
             ) {
                 Text(
                     text = stringResource(id = R.string.delete_dialog_title),
-                    fontSize = 18.sp,
+                    fontSize = TextSizes.title,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFDC2626)
+                    color = MaterialTheme.colorScheme.error
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 Text(
                     text = stringResource(id = R.string.delete_dialog_message),
-                    fontSize = 14.sp,
-                    color = Color(0xFF475569),
-                    lineHeight = 20.sp
+                    fontSize = TextSizes.body,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = TextSizes.bodyLine
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(Spacing.xl))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -66,24 +66,24 @@ fun DeleteConfirmDialog(
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Text(
                             text = stringResource(id = R.string.btn_cancel),
-                            color = Color(0xFF475569)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(Spacing.md))
 
                     Button(
                         onClick = onConfirm,
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626))
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
                         Text(
                             text = stringResource(id = R.string.btn_confirm_delete),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
