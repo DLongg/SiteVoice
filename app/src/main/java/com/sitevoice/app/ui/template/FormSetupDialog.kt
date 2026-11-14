@@ -11,6 +11,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -141,7 +148,12 @@ fun FormSetupDialog(
                         )
                     }
                     IconButton(onClick = onDismiss, enabled = !isLoading) {
-                        Text("✕", fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.btn_cancel),
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
@@ -751,14 +763,25 @@ private fun CandidateCard(
                         ) {
                             Column(modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)) {
                                 if (candidate.tieuDeGanNhat.isNotBlank()) {
-                                    Text(
-                                        text = "📍 Đề mục: ${candidate.tieuDeGanNhat}",
-                                        fontSize = TextSizes.caption,
-                                        lineHeight = TextSizes.captionLine,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        maxLines = 1
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Place,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Text(
+                                            text = "Đề mục: ${candidate.tieuDeGanNhat}",
+                                            fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1
+                                        )
+                                    }
                                 }
                                 Text(
                                     text = "Neo vị trí (#${candidate.startIndex}..#${candidate.endIndex}): Trước \"${candidate.truoc}\" | Sau \"${candidate.sau}\"",
@@ -778,13 +801,24 @@ private fun CandidateCard(
                         onClick = onToggleExpand,
                         contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.xs)
                     ) {
-                        Text(
-                            text = "Sửa ✏️",
-                            fontSize = TextSizes.caption,
-                            lineHeight = TextSizes.captionLine,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Text(
+                                text = "Sửa",
+                                fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             } else {
@@ -794,19 +828,35 @@ private fun CandidateCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "✏️ Chỉnh sửa chỗ điền #${candidate.id}",
-                        fontSize = TextSizes.body,
-                        lineHeight = TextSizes.bodyLine,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Chỉnh sửa chỗ điền #${candidate.id}",
+                            fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
 
                     IconButton(
                         onClick = onToggleExpand,
                         modifier = Modifier.size(24.dp)
                     ) {
-                        Text("✕", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.btn_cancel),
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
@@ -960,13 +1010,24 @@ private fun CandidateCard(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "📍 Vị trí neo trong bản mẫu Google Doc:",
-                                fontSize = TextSizes.caption,
-                                lineHeight = TextSizes.captionLine,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Place,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "Vị trí neo trong bản mẫu Google Doc:",
+                                    fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                             Text(
                                 text = "Tín hiệu: ${candidate.tinHieu.ifBlank { "dong_cham" }}",
                                 fontSize = TextSizes.caption,
@@ -1060,12 +1121,23 @@ private fun CandidateCard(
                             contentColor = if (candidate.boQua) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.onErrorContainer
                         )
                     ) {
-                        Text(
-                            text = if (candidate.boQua) "✓ Khôi phục vị trí này" else "✕ Bỏ qua vị trí này",
-                            fontSize = TextSizes.caption,
-                            lineHeight = TextSizes.captionLine,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = if (candidate.boQua) Icons.Default.Refresh else Icons.Default.Clear,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = if (candidate.boQua) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                text = if (candidate.boQua) "Khôi phục vị trí này" else "Bỏ qua vị trí này",
+                                fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
 
                     Button(
@@ -1074,13 +1146,24 @@ private fun CandidateCard(
                         contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.xs),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(
-                            text = "✓ Xong",
-                            fontSize = TextSizes.caption,
-                            lineHeight = TextSizes.captionLine,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Text(
+                                text = "Xong",
+                                fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                 }
             }
