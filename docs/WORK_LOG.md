@@ -698,3 +698,11 @@ A templates/schema-chung.md
 - Kết quả: Cài `nextlevelbuilder/ui-ux-pro-max-skill` bằng `npx ui-ux-pro-max-cli init --ai claude` vào `.claude/skills/` (ui-ux-pro-max kèm dữ liệu stack `jetpack-compose`, cùng các skill đi kèm: design, design-system, ui-styling, brand, banner-design, slides). Chỉ là công cụ tham khảo bổ sung; quy tắc bắt buộc dùng `design-taste-frontend` trong AGENTS.md giữ nguyên.
 - Kiểm tra: `python .claude/skills/ui-ux-pro-max/scripts/search.py "mobile app form" --domain ux` trả kết quả đúng (Python 3.11.7, Node v22.17.0). Chưa chạy bộ test nội bộ của skill.
 - Còn lại: Khởi động lại Claude Code để nạp skill mới.
+
+## 2026-11-14 — Tạo design system SiteVoice (MASTER.md) bằng skill ui-ux-pro-max — Hoàn thành (đặc tả)
+- Kết quả: Tạo `design-system/sitevoice/MASTER.md`: bảng màu Material3 (giữ slate + xanh `#2563EB`, thêm `success`/`warning`), 5 cấp chữ (12–28sp, font hệ thống), lưới 4dp, bo góc 6/8/12dp, vùng chạm 48dp, bảng trạng thái, chuyển động, trợ năng, checklist. Người dùng chốt: giữ bảng màu hiện có, font hệ thống, chỉ giao diện sáng.
+- Cách làm: Chạy `search.py --design-system` hai lần; cả hai trả mẫu landing page/GSAP/CSS cho web nên không dùng `--persist`, tự viết MASTER theo token Compose. Đối chiếu `--stack jetpack-compose` và thống kê màu/cỡ chữ/bo góc/khoảng cách đang viết cứng trong `ui/`.
+- Phát hiện: `#94A3B8` dùng làm chữ (2.56:1), `#64748B` trên `#F1F5F9` (4.34:1), viền ô nhập `#E2E8F0` (1.18:1) không đạt; 95 chỗ chữ 10–11sp. Đã ghi quy tắc thay thế trong MASTER.
+- Liên kết: thêm dẫn chiếu trong `docs/03-kien-truc.md`, cập nhật `docs/SUMMARY.md`.
+- Kiểm tra: tài liệu; tỉ lệ tương phản tính bằng script Python. Không có thay đổi code nên không chạy build/test.
+- Còn lại: Áp dụng token vào code (`ui/theme/`, thay giá trị viết cứng theo từng màn hình) là task riêng, chờ người dùng giao.
