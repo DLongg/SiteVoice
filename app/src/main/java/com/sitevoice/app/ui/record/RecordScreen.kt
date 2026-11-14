@@ -178,8 +178,8 @@ fun RecordScreen(
                 val hasStt = !securePreferences.groqApiKey.isNullOrBlank()
                 val hasClassify = !securePreferences.geminiApiKey.isNullOrBlank()
                 val (statusText, statusColor) = when {
-                    hasStt && hasClassify -> "STT ✓ | Gemini ✓" to extraColors.success
-                    hasStt -> "STT ✓ | Phân loại: Groq" to extraColors.success
+                    hasStt && hasClassify -> "STT OK | Gemini OK" to extraColors.success
+                    hasStt -> "STT OK | Phân loại: Groq" to extraColors.success
                     hasClassify -> "Thiếu STT Key" to extraColors.warning
                     else -> "Cài API Key" to colors.error
                 }
