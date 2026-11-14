@@ -578,7 +578,7 @@ fun SettingsDialog(
                             )
                             onDismiss()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.medium
                     ) {
                         Text("Lưu cài đặt")
