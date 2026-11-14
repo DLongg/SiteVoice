@@ -120,7 +120,7 @@ fun DailyInputScreen(
                     )
                     Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
-                        text = "Ngày: $currentDate",
+                        text = stringResource(id = R.string.daily_date_label, currentDate),
                         fontSize = TextSizes.body,
                         lineHeight = TextSizes.bodyLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -139,7 +139,7 @@ fun DailyInputScreen(
                             tint = SiteVoiceTheme.colors.success
                         )
                         Text(
-                            text = "Đã lưu",
+                            text = stringResource(id = R.string.daily_saved_badge),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
@@ -168,7 +168,7 @@ fun DailyInputScreen(
                 ) {
                     Column {
                         Text(
-                            text = "MẪU BÁO CÁO ÁP DỤNG",
+                            text = stringResource(id = R.string.daily_template_banner_header),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.SemiBold,
@@ -186,7 +186,7 @@ fun DailyInputScreen(
                                 tint = if (activeTemplateName != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = if (activeTemplateName != null) activeTemplateName else "Chưa thiết lập Mẫu Google Doc",
+                                text = if (activeTemplateName != null) activeTemplateName else stringResource(id = R.string.daily_template_not_set),
                                 fontSize = TextSizes.body,
                                 lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
@@ -200,7 +200,7 @@ fun DailyInputScreen(
                         horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
                     ) {
                         Text(
-                            text = if (activeTemplateName != null) "Chỉnh sửa" else "Tạo tự động",
+                            text = if (activeTemplateName != null) stringResource(id = R.string.daily_template_btn_edit) else stringResource(id = R.string.daily_template_btn_create_auto),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Medium,
@@ -240,7 +240,7 @@ fun DailyInputScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            val badgeTitle = if (isApproved) "Đã duyệt nhật ký" else "Bản dự thảo sẵn sàng"
+                            val badgeTitle = if (isApproved) stringResource(id = R.string.daily_report_badge_approved) else stringResource(id = R.string.daily_report_badge_draft)
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
@@ -261,7 +261,7 @@ fun DailyInputScreen(
                             }
                             Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
-                                text = if (isApproved) "Nhật ký đã được duyệt 1 lần duy nhất." else "Bấm để xem và duyệt trước khi xuất Doc.",
+                                text = if (isApproved) stringResource(id = R.string.daily_report_approved_desc) else stringResource(id = R.string.daily_report_draft_desc),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 color = if (isApproved) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.primary
@@ -275,7 +275,7 @@ fun DailyInputScreen(
                             ),
                             shape = MaterialTheme.shapes.medium
                         ) {
-                            Text(text = "Xem", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold)
+                            Text(text = stringResource(id = R.string.daily_btn_view_report), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -320,10 +320,10 @@ fun DailyInputScreen(
                         currentSelection = weatherMorning,
                         option1Key = "nang",
                         option1Icon = Icons.Default.WbSunny,
-                        option1Label = "Trời nắng",
+                        option1Label = stringResource(id = R.string.weather_sunny),
                         option2Key = "mua",
                         option2Icon = Icons.Default.WaterDrop,
-                        option2Label = "Trời mưa",
+                        option2Label = stringResource(id = R.string.weather_rainy),
                         onSelect = { weatherMorning = it }
                     )
 
@@ -335,10 +335,10 @@ fun DailyInputScreen(
                         currentSelection = weatherAfternoon,
                         option1Key = "nang",
                         option1Icon = Icons.Default.WbSunny,
-                        option1Label = "Trời nắng",
+                        option1Label = stringResource(id = R.string.weather_sunny),
                         option2Key = "mua",
                         option2Icon = Icons.Default.WaterDrop,
-                        option2Label = "Trời mưa",
+                        option2Label = stringResource(id = R.string.weather_rainy),
                         onSelect = { weatherAfternoon = it }
                     )
 
@@ -350,10 +350,10 @@ fun DailyInputScreen(
                         currentSelection = weatherEvening,
                         option1Key = "binh_thuong",
                         option1Icon = Icons.Default.NightsStay,
-                        option1Label = "Bình thường",
+                        option1Label = stringResource(id = R.string.weather_normal),
                         option2Key = "mua",
                         option2Icon = Icons.Default.WaterDrop,
-                        option2Label = "Trời mưa",
+                        option2Label = stringResource(id = R.string.weather_rainy),
                         onSelect = { weatherEvening = it }
                     )
                 }
@@ -401,7 +401,7 @@ fun DailyInputScreen(
                             onValueChange = {
                                 commandStaffCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
                             },
-                            label = { Text("Ban chỉ huy", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                            label = { Text(stringResource(id = R.string.daily_staff_command_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = MaterialTheme.shapes.medium,
                             modifier = Modifier.weight(1f)
@@ -412,7 +412,7 @@ fun DailyInputScreen(
                             onValueChange = {
                                 workerCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
                             },
-                            label = { Text("Công nhân", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                            label = { Text(stringResource(id = R.string.daily_staff_workers_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = MaterialTheme.shapes.medium,
                             modifier = Modifier.weight(1f)
