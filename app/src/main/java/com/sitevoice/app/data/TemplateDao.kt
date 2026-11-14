@@ -37,6 +37,12 @@ interface TemplateDao {
     @Query("DELETE FROM templates WHERE id = :id AND isBuiltIn = 0")
     suspend fun deleteCustomTemplate(id: String): Int
 
+    @Query("DELETE FROM templates WHERE isBuiltIn = 1")
+    suspend fun deleteAllBuiltInTemplates(): Int
+
+    @Query("DELETE FROM templates WHERE id != :keepId")
+    suspend fun deleteAllExcept(keepId: String): Int
+
     @Query("UPDATE templates SET isActive = 0")
     suspend fun deactivateAll()
 

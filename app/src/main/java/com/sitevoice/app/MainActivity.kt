@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            templateRepository.ensureBuiltInTemplatesSeeded()
+            templateRepository.purgeBuiltInAndEnsureSingleActive()
         }
 
         setContent {

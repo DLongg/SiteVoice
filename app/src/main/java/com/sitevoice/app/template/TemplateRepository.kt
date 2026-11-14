@@ -14,6 +14,8 @@ interface TemplateRepository {
     fun getTemplateById(id: String): Flow<TemplateItemEntity?>
     suspend fun getTemplateByIdSync(id: String): TemplateItemEntity?
     suspend fun saveTemplate(template: TemplateItemEntity)
+    suspend fun saveSingleAutoTemplate(template: TemplateItemEntity)
+    suspend fun purgeBuiltInAndEnsureSingleActive()
     suspend fun deleteTemplate(id: String): Result<Unit>
     suspend fun setActiveTemplate(id: String)
     suspend fun ensureBuiltInTemplatesSeeded()
@@ -28,6 +30,7 @@ class DefaultTemplateRepository(
 ) : TemplateRepository {
 
     companion object {
+        const val SINGLE_AUTO_TEMPLATE_ID = "auto_single_template"
         const val ID_CONG_TRUONG = "nhat-ky-cong-truong"
         const val ID_CA_NHAN = "nhat-ky-ca-nhan"
 
@@ -196,6 +199,47 @@ Quy tắc bắt buộc:
 
     override suspend fun saveTemplate(template: TemplateItemEntity) {
         templateDao.insertOrUpdate(template)
+    }
+
+    override suspend fun saveSingleAutoTemplate(template: TemplateItemEntity) {
+        val normalized = template.copy(
+            id = SINGLE_AUTO_TEMPLATE_ID,
+            schemaJson = normalizeSchemaId(template.schemaJson, SINGLE_AUTO_TEMPLATE_ID),
+            isBuiltIn = false,
+            isActive = true,
+            updatedAt = System.currentTimeMillis()
+        )
+        templateDao.insertOrUpdate(normalized)
+        templateDao.deleteAllExcept(normalized.id)
+    }
+
+    override suspend fun purgeBuiltInAndEnsureSingleActive() {
+        templateDao.deleteAllBuiltInTemplates()
+        val remaining = templateDao.getAllTemplatesSync()
+        if (remaining.isNotEmpty()) {
+            val chosen = remaining.find { it.isActive }
+                ?: remaining.maxByOrNull { it.updatedAt }
+                ?: remaining.first()
+            val normalized = chosen.copy(
+                id = SINGLE_AUTO_TEMPLATE_ID,
+                schemaJson = normalizeSchemaId(chosen.schemaJson, SINGLE_AUTO_TEMPLATE_ID),
+                isBuiltIn = false,
+                isActive = true
+            )
+            templateDao.insertOrUpdate(normalized)
+            templateDao.deleteAllExcept(SINGLE_AUTO_TEMPLATE_ID)
+        }
+    }
+
+    private fun normalizeSchemaId(schemaJson: String, targetId: String): String {
+        if (schemaJson.isBlank()) return schemaJson
+        return try {
+            val obj = org.json.JSONObject(schemaJson)
+            obj.put("id", targetId)
+            obj.toString(2)
+        } catch (_: Exception) {
+            schemaJson
+        }
     }
 
     override suspend fun deleteTemplate(id: String): Result<Unit> {
