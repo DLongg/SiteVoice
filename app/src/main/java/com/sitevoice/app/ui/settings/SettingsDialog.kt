@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -25,6 +27,15 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -317,13 +328,24 @@ fun SettingsDialog(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(
-                        text = "✨ Tự động nhận diện & Tạo Mẫu từ Doc này",
-                        fontSize = TextSizes.caption,
-                        lineHeight = TextSizes.captionLine,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = "Tự động nhận diện & Tạo Mẫu từ Doc này",
+                            fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(Spacing.lg))
@@ -423,14 +445,36 @@ fun SettingsDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "📑 " + (activeTemplateName ?: "Quản lý Thư viện Mẫu"),
-                            fontSize = TextSizes.body,
-                            lineHeight = TextSizes.bodyLine,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(text = "Đổi / Căn chỉnh →", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Description,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = activeTemplateName ?: "Quản lý Thư viện Mẫu",
+                                fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Text(text = "Đổi / Căn chỉnh", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
 
@@ -476,13 +520,24 @@ fun SettingsDialog(
 
                         if (devModeEnabled && activeTemplate != null) {
                             Spacer(modifier = Modifier.height(Spacing.md))
-                            Text(
-                                text = "🛠️ System Prompt hiện tại (${activeTemplate.name}):",
-                                fontSize = TextSizes.caption,
-                                lineHeight = TextSizes.captionLine,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Build,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "System Prompt hiện tại (${activeTemplate.name}):",
+                                    fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                             Spacer(modifier = Modifier.height(Spacing.xs))
                             OutlinedTextField(
                                 value = customPrompt,
@@ -513,7 +568,14 @@ fun SettingsDialog(
                                     modifier = Modifier.weight(1f),
                                     contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                 ) {
-                                    Text("💾 Lưu Prompt", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
+                                    Icon(
+                                        imageVector = Icons.Default.Save,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Spacer(modifier = Modifier.width(Spacing.xs))
+                                    Text("Lưu Prompt", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
                                 }
 
                                 OutlinedButton(
@@ -525,30 +587,59 @@ fun SettingsDialog(
                                     modifier = Modifier.weight(1f),
                                     contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                 ) {
-                                    Text("🔄 Khôi phục gốc", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Icon(
+                                        imageVector = Icons.Default.Refresh,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(Spacing.xs))
+                                    Text("Khôi phục gốc", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
 
                             promptSavedMessage?.let { msg ->
                                 Spacer(modifier = Modifier.height(Spacing.xs))
-                                Text(
-                                    text = "✓ $msg",
-                                    fontSize = TextSizes.caption,
-                                    lineHeight = TextSizes.captionLine,
-                                    color = SiteVoiceTheme.colors.success,
-                                    fontWeight = FontWeight.Medium
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = SiteVoiceTheme.colors.success
+                                    )
+                                    Text(
+                                        text = msg,
+                                        fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
+                                        color = SiteVoiceTheme.colors.success,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
 
                             if (!latestReportJson.isNullOrBlank()) {
                                 Spacer(modifier = Modifier.height(Spacing.lg))
-                                Text(
-                                    text = "📊 Dữ liệu JSON gần nhất do LLM trả về:",
-                                    fontSize = TextSizes.caption,
-                                    lineHeight = TextSizes.captionLine,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Analytics,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Dữ liệu JSON gần nhất do LLM trả về:",
+                                        fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
                                 Spacer(modifier = Modifier.height(Spacing.xs))
                                 val formattedJson = try {
                                     JSONObject(latestReportJson).toString(2)
