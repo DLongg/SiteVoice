@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,6 +45,11 @@ import com.sitevoice.app.llm.NoteClassifier
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.CircleShape
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 data class CategoryOption(
     val key: String,
@@ -80,33 +83,33 @@ fun NotesListScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF8FAFC)
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
         ) {
             // Header: Tiêu đề và tổng số lượng ghi chú
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = Spacing.md),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(id = R.string.notes_title),
-                    fontSize = 20.sp,
+                    fontSize = TextSizes.title,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
                     text = stringResource(id = R.string.notes_count, notes.size),
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF64748B)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -120,36 +123,36 @@ fun NotesListScreen(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(24.dp)
+                        modifier = Modifier.padding(Spacing.xl)
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(64.dp)
-                                .background(Color(0xFFE2E8F0), RoundedCornerShape(32.dp)),
+                                .background(MaterialTheme.colorScheme.outlineVariant, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "📝",
-                                fontSize = 28.sp
+                                fontSize = TextSizes.display
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing.lg))
 
                         Text(
                             text = stringResource(id = R.string.notes_empty_title),
-                            fontSize = 16.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF334155)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
 
                         Text(
                             text = stringResource(id = R.string.notes_empty_desc),
-                            fontSize = 13.sp,
-                            color = Color(0xFF64748B),
-                            lineHeight = 18.sp,
+                            fontSize = TextSizes.body,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = TextSizes.bodyLine,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
@@ -158,8 +161,8 @@ fun NotesListScreen(
                 // Danh sách ghi chú cuộn mượt
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 24.dp)
+                    verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                    contentPadding = PaddingValues(bottom = Spacing.xl)
                 ) {
                     items(notes, key = { it.id }) { note ->
                         val isPlaying = currentlyPlayingPath == note.audioPath
@@ -232,11 +235,11 @@ fun NoteItemCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder()
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(Spacing.lg)) {
             // Header item: Giờ ghi + Label Badge hoặc Queue Status Pill
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -245,39 +248,39 @@ fun NoteItemCard(
             ) {
                 Text(
                     text = timeStr,
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF475569)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 when {
                     note.error != null -> {
                         Box(
                             modifier = Modifier
-                                .background(Color(0xFFFEF2F2), RoundedCornerShape(6.dp))
-                                .border(1.dp, Color(0xFFFECACA), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.small)
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small)
+                                .padding(horizontal = Spacing.sm, vertical = 3.dp)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.queue_badge_error),
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFDC2626)
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
                     }
                     note.status == "RECORDED" -> {
                         Box(
                             modifier = Modifier
-                                .background(Color(0xFFFEF3C7), RoundedCornerShape(6.dp))
-                                .border(1.dp, Color(0xFFFDE68A), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(SiteVoiceTheme.colors.warningContainer, MaterialTheme.shapes.small)
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small)
+                                .padding(horizontal = Spacing.sm, vertical = 3.dp)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.queue_badge_waiting),
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFB45309)
+                                color = SiteVoiceTheme.colors.warning
                             )
                         }
                     }
@@ -285,21 +288,21 @@ fun NoteItemCard(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .background(Color(0xFFEFF6FF), RoundedCornerShape(6.dp))
-                                .border(1.dp, Color(0xFFBFDBFE), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .background(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small)
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small)
+                                .padding(horizontal = Spacing.sm, vertical = 3.dp)
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(10.dp),
                                 strokeWidth = 1.5.dp,
-                                color = Color(0xFF2563EB)
+                                color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
                                 text = stringResource(id = R.string.queue_badge_classifying),
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF1D4ED8)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
                     }
@@ -312,27 +315,27 @@ fun NoteItemCard(
                                 note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
                                 note.label == "unclassified"
 
-                        val labelBg = if (isUnclassified) Color(0xFFF1F5F9) else Color(0xFFEFF6FF)
-                        val labelColor = if (isUnclassified) Color(0xFF64748B) else Color(0xFF1D4ED8)
+                        val labelBg = if (isUnclassified) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer
+                        val labelColor = if (isUnclassified) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimaryContainer
 
                         Box {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .background(labelBg, RoundedCornerShape(6.dp))
+                                    .background(labelBg, MaterialTheme.shapes.small)
                                     .clickable { showLabelMenu = true }
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                             ) {
                                 Text(
                                     text = "${currentCategory.icon} ${currentCategory.title}",
-                                    fontSize = 12.sp,
+                                    fontSize = TextSizes.caption,
                                     fontWeight = FontWeight.Medium,
                                     color = labelColor
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(Spacing.xs))
                                 Text(
                                     text = "▾",
-                                    fontSize = 10.sp,
+                                    fontSize = TextSizes.caption,
                                     color = labelColor
                                 )
                             }
@@ -346,7 +349,7 @@ fun NoteItemCard(
                                         text = {
                                             Text(
                                                 text = "${option.icon} ${option.title}",
-                                                fontSize = 13.sp,
+                                                fontSize = TextSizes.body,
                                                 fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
                                             )
                                         },
@@ -362,7 +365,7 @@ fun NoteItemCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Nội dung văn bản hoặc trạng thái STT / hàng đợi
             when {
@@ -370,24 +373,24 @@ fun NoteItemCard(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFFEF2F2), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFFFCA5A5), RoundedCornerShape(6.dp))
-                            .padding(10.dp)
+                            .background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.small)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small)
+                            .padding(Spacing.md)
                     ) {
                         Text(
                             text = "Lỗi nhận diện: ${note.error}",
-                            fontSize = 13.sp,
-                            color = Color(0xFFDC2626)
+                            fontSize = TextSizes.body,
+                            color = MaterialTheme.colorScheme.error
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
                         OutlinedButton(
                             onClick = onRetryStt,
-                            shape = RoundedCornerShape(6.dp)
+                            shape = MaterialTheme.shapes.small
                         ) {
                             Text(
                                 text = stringResource(id = R.string.notes_retry_stt),
-                                fontSize = 12.sp,
-                                color = Color(0xFFDC2626)
+                                fontSize = TextSizes.caption,
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
                     }
@@ -396,29 +399,29 @@ fun NoteItemCard(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFF8FAFC), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(6.dp))
-                            .padding(10.dp),
+                            .background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.small)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small)
+                            .padding(Spacing.md),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp,
-                            color = Color(0xFF0284C7)
+                            color = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(Spacing.md))
                         Column {
                             Text(
                                 text = stringResource(id = R.string.queue_status_waiting_network),
-                                fontSize = 13.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF0369A1)
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = stringResource(id = R.string.queue_status_audio_saved_hint),
-                                fontSize = 11.sp,
-                                color = Color(0xFF64748B)
+                                fontSize = TextSizes.caption,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -426,14 +429,14 @@ fun NoteItemCard(
                 else -> {
                     Text(
                         text = note.text,
-                        fontSize = 14.sp,
-                        color = Color(0xFF0F172A),
-                        lineHeight = 20.sp
+                        fontSize = TextSizes.body,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = TextSizes.bodyLine
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Footer item: Nghe lại, Sửa, Xóa
             Row(
@@ -444,40 +447,40 @@ fun NoteItemCard(
                 // Nút nghe lại âm thanh gốc
                 OutlinedButton(
                     onClick = onPlayToggle,
-                    shape = RoundedCornerShape(6.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                    shape = MaterialTheme.shapes.small,
+                    contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.xs)
                 ) {
                     Text(
                         text = if (isPlaying) "■ Dừng" else "▶ ${durationSec}s",
-                        fontSize = 12.sp,
-                        color = Color(0xFF334155)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     // Nút Sửa
                     OutlinedButton(
                         onClick = onEditClick,
-                        shape = RoundedCornerShape(6.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.xs)
                     ) {
                         Text(
                             text = stringResource(id = R.string.notes_edit),
-                            fontSize = 12.sp,
-                            color = Color(0xFF2563EB)
+                            fontSize = TextSizes.caption,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
                     // Nút Xóa (Soft delete)
                     OutlinedButton(
                         onClick = onDeleteClick,
-                        shape = RoundedCornerShape(6.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.xs)
                     ) {
                         Text(
                             text = stringResource(id = R.string.notes_delete),
-                            fontSize = 12.sp,
-                            color = Color(0xFFDC2626)
+                            fontSize = TextSizes.caption,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
