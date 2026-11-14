@@ -28,10 +28,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -201,11 +208,28 @@ fun RecordScreen(
                     shape = shapes.medium,
                     colors = ButtonDefaults.outlinedButtonColors(containerColor = colors.surface)
                 ) {
-                    Text(
-                        text = if (activeTemplateName != null) "📑 Mẫu: $activeTemplateName (Sửa)" else "✨ Thiết lập Nhật ký tự động ▸",
-                        style = type.labelLarge,
-                        color = colors.onSurface
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(spacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = if (activeTemplateName != null) Icons.Default.Description else Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = colors.primary
+                        )
+                        Text(
+                            text = if (activeTemplateName != null) "Mẫu: $activeTemplateName (Sửa)" else "Thiết lập Nhật ký tự động",
+                            style = type.labelLarge,
+                            color = colors.onSurface
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = colors.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
@@ -385,6 +409,12 @@ fun RecordScreen(
                                 },
                                 shape = shapes.medium
                             ) {
+                                Icon(
+                                    imageVector = if (isPlayingLastRecord) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(spacing.xs))
                                 Text(
                                     text = if (isPlayingLastRecord)
                                         stringResource(id = R.string.record_stop)
