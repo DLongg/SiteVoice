@@ -146,7 +146,7 @@ fun DailyInputScreen(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "📑 " + (activeTemplateName ?: "Nhật ký thi công hằng ngày"),
+                            text = if (activeTemplateName != null) "📑 $activeTemplateName" else "✨ Chưa thiết lập Mẫu Google Doc",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF0F172A)
@@ -154,7 +154,7 @@ fun DailyInputScreen(
                     }
 
                     Text(
-                        text = "Đổi mẫu ▾",
+                        text = if (activeTemplateName != null) "Chỉnh sửa ▸" else "Tạo tự động ▸",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color(0xFF2563EB)

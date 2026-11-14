@@ -199,7 +199,7 @@ fun RecordScreen(
                     modifier = Modifier.height(34.dp)
                 ) {
                     Text(
-                        text = "📑 Mẫu: ${activeTemplateName ?: "Nhật ký thi công"} ▾",
+                        text = if (activeTemplateName != null) "📑 Mẫu: $activeTemplateName (Sửa)" else "✨ Thiết lập Nhật ký tự động ▸",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color(0xFF1E293B)

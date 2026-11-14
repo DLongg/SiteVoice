@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.sitevoice.app.R
-import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.export.GoogleAuthManager
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.ui.daily.DailyInputScreen
@@ -47,7 +46,6 @@ import com.sitevoice.app.ui.record.RecordScreen
 import com.sitevoice.app.ui.settings.SettingsDialog
 import com.sitevoice.app.ui.template.FormSetupDialog
 import com.sitevoice.app.ui.template.TemplateEditorScreen
-import com.sitevoice.app.ui.template.TemplateLibraryScreen
 
 @Composable
 fun MainScreen(
@@ -58,15 +56,12 @@ fun MainScreen(
     var selectedTab by remember { mutableIntStateOf(0) }
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showReportPreview by remember { mutableStateOf(false) }
-    var showTemplateLibrary by remember { mutableStateOf(false) }
-    var showTemplateEditor by remember { mutableStateOf(false) }
-    var editingTemplate by remember { mutableStateOf<TemplateItemEntity?>(null) }
+    var showAutoTemplateWorkspace by remember { mutableStateOf(false) }
     var showFormSetupDialog by remember { mutableStateOf(false) }
 
     val activeNotes by viewModel.activeNotes.collectAsState()
     val dailyInput by viewModel.dailyInput.collectAsState()
     val dailyReport by viewModel.dailyReport.collectAsState()
-    val templates by viewModel.templates.collectAsState()
     val activeTemplate by viewModel.activeTemplate.collectAsState()
     val isSynthesizing by viewModel.isSynthesizing.collectAsState()
     val synthesisError by viewModel.synthesisError.collectAsState()
@@ -84,13 +79,9 @@ fun MainScreen(
     ) { result ->
         viewModel.clearAuthConsentIntent()
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(context, "Đã cấp quyền! Đang hoàn tất xuất Google Doc...", Toast.LENGTH_SHORT).show()
-            viewModel.exportDailyReport(context) { docUrl ->
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(docUrl))
-                context.startActivity(browserIntent)
-            }
+            Toast.makeText(context, "✓ Đã cấp quyền Google! Bạn có thể bấm thực hiện lại thao tác.", Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(context, "Cần cấp quyền để xuất Google Doc", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Cần cấp quyền để thao tác với Google Doc", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -217,7 +208,7 @@ fun MainScreen(
                     securePreferences = securePreferences,
                     activeTemplateName = activeTemplate?.name,
                     onOpenSettings = { showSettingsDialog = true },
-                    onOpenTemplateLibrary = { showTemplateLibrary = true }
+                    onOpenTemplateLibrary = { showAutoTemplateWorkspace = true }
                 )
                 1 -> NotesListScreen(
                     notes = activeNotes,
@@ -270,7 +261,7 @@ fun MainScreen(
                             initialDailyInput = dailyInput,
                             dailyReport = dailyReport,
                             activeTemplateName = activeTemplate?.name,
-                            onOpenTemplateLibrary = { showTemplateLibrary = true },
+                            onOpenTemplateLibrary = { showAutoTemplateWorkspace = true },
                             onSaveDailyInput = { viewModel.saveDailyInput(it) },
                             onGenerateReportClick = {
                                 showReportPreview = true
@@ -306,10 +297,20 @@ fun MainScreen(
                 onResetPrompt = { templateId ->
                     viewModel.resetActiveTemplatePrompt(templateId)
                 },
-                onOpenTemplateLibrary = { showTemplateLibrary = true },
+                onOpenTemplateLibrary = {
+                    showSettingsDialog = false
+                    showAutoTemplateWorkspace = true
+                },
                 onAutoSetupFormClick = { docUrlOrId ->
-                    showFormSetupDialog = true
-                    viewModel.startFormSetup(context, docUrlOrId)
+                    showSettingsDialog = false
+                    showAutoTemplateWorkspace = true
+                    viewModel.autoCreateSingleTemplateFromDoc(context, docUrlOrId) { createdTemplate ->
+                        Toast.makeText(
+                            context,
+                            "✓ Đã tạo mẫu tự động '${createdTemplate.name}'! Bạn có thể chỉnh sửa ngay bên dưới.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 },
                 onSaveSettings = { newSttKey, newClassifyKey, newBaseUrl, newModel, newDocId, newClientId ->
                     securePreferences.groqApiKey = newSttKey
@@ -334,7 +335,7 @@ fun MainScreen(
             )
         }
 
-        // Hộp thoại Thiết lập Form Tự động (7 bước theo docs/10-thiet-lap-form.md)
+        // Hộp thoại Thiết lập Form dự phòng (nếu kích hoạt riêng)
         if (showFormSetupDialog) {
             FormSetupDialog(
                 analysis = formSetupAnalysis,
@@ -344,9 +345,7 @@ fun MainScreen(
                     viewModel.confirmFormSetup(context, templateName, candidates) { createdTemplate ->
                         showFormSetupDialog = false
                         showSettingsDialog = false
-                        if (showTemplateEditor) {
-                            editingTemplate = createdTemplate
-                        }
+                        showAutoTemplateWorkspace = true
                         Toast.makeText(context, "Đã tạo Mẫu '${createdTemplate.name}' và chèn placeholder thành công!", Toast.LENGTH_LONG).show()
                     }
                 },
@@ -360,62 +359,33 @@ fun MainScreen(
             )
         }
 
-        // Màn hình Thư viện Mẫu Báo cáo
-        if (showTemplateLibrary) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF8FAFC))
-            ) {
-                TemplateLibraryScreen(
-                    templates = templates,
-                    onClose = { showTemplateLibrary = false },
-                    onActivateTemplate = { id ->
-                        viewModel.setActiveTemplate(id)
-                        val name = templates.find { it.id == id }?.name ?: id
-                        Toast.makeText(context, "Đã áp dụng mẫu: $name", Toast.LENGTH_SHORT).show()
-                    },
-                    onCreateNewTemplate = {
-                        editingTemplate = null
-                        showTemplateEditor = true
-                    },
-                    onAutoSetupFromDoc = { docUrlOrId ->
-                        showFormSetupDialog = true
-                        viewModel.startFormSetup(context, docUrlOrId)
-                    },
-                    onEditTemplate = { t ->
-                        editingTemplate = t
-                        showTemplateEditor = true
-                    },
-                    onDuplicateTemplate = { t ->
-                        viewModel.duplicateTemplate(t) {
-                            Toast.makeText(context, "Đã nhân bản mẫu thành công", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    onDeleteTemplate = { id ->
-                        viewModel.deleteTemplate(id) {
-                            Toast.makeText(context, "Đã xóa mẫu tùy chỉnh", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                )
-            }
-        }
-
-        // Màn hình Tạo / Căn chỉnh Mẫu Báo cáo
-        if (showTemplateEditor) {
+        // Màn hình duy nhất: Nhật ký Tự động & Chỉnh sửa Bản Mẫu (theo Quyết định 0008)
+        if (showAutoTemplateWorkspace) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0xFFF8FAFC))
             ) {
                 TemplateEditorScreen(
-                    template = editingTemplate,
-                    onClose = { showTemplateEditor = false },
+                    template = activeTemplate,
+                    onClose = {
+                        showAutoTemplateWorkspace = false
+                        viewModel.dismissFormSetup()
+                    },
                     onSaveTemplate = { updatedTemplate ->
                         viewModel.saveCustomTemplate(updatedTemplate) {
-                            showTemplateEditor = false
-                            Toast.makeText(context, "Đã lưu mẫu vào thư viện!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "✓ Đã lưu chỉnh sửa bản mẫu!", Toast.LENGTH_SHORT).show()
                         }
+                    },
+                    isAutoCreating = isFormSettingUp,
+                    autoCreateError = formSetupError,
+                    currentTemperature = securePreferences.llmTemperature,
+                    onTemperatureChange = { newTemp ->
+                        securePreferences.llmTemperature = newTemp
+                    },
+                    onAutoCreateOneShot = { docUrlOrId, customName ->
+                        showFormSetupDialog = true
+                        viewModel.startFormSetup(context, docUrlOrId, customName)
                     },
                     onScanDocWithAi = { docUrlOrId ->
                         showFormSetupDialog = true
