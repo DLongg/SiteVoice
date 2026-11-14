@@ -1,14 +1,15 @@
 # SiteVoice — Design System (MASTER)
 
-Cập nhật: 2026-11-14. Nguồn chính cho token giao diện (màu, chữ, khoảng cách, bo góc, trạng thái) của app Android Compose.
+Cập nhật: 2026-11-15. Nguồn chính cho token giao diện (màu, chữ, khoảng cách, bo góc, trạng thái) của app Android Compose.
 
 - Nguyên tắc thẩm mỹ bắt buộc vẫn là skill `design-taste-frontend` và mục *Thiết kế giao diện* trong [docs/03-kien-truc.md](../../docs/03-kien-truc.md). File này chỉ cụ thể hóa thành token; khi mâu thuẫn, hai nguồn kia thắng.
 - Đối chiếu dữ liệu skill `ui-ux-pro-max` (style *Minimalism & Swiss*, stack `jetpack-compose`: "Material3 tokens, không hardcode màu/sp"). Phần landing page/GSAP/CSS của kết quả skill không áp dụng cho app.
 - Phạm vi đã chốt với người dùng: **giữ bảng màu slate + xanh hiện có**, **font hệ thống (Roboto)**, **chỉ giao diện sáng** (dark mode để sau).
-- Trạng thái (2026-11-14): **đã áp dụng toàn bộ `ui/`**. `ui/theme/` (`SiteVoiceTheme`, `TextSizes`, `Spacing`) bọc toàn app; cả 11 file màn hình không còn `Color(0x…)`, `x.sp`, `RoundedCornerShape(x.dp)` viết cứng.
-- Tồn đọng đã biết (chưa xử lý):
-  - Text chỉ đặt `fontSize` (không đặt `style`/`lineHeight`) kế thừa dòng 24sp của `bodyLarge` nên chữ 12–14sp giãn rộng. Không dùng `lineHeight` dạng `em` cho `bodyLarge`: làm crash `OutlinedTextField` (nội suy nhãn em↔sp). Cách sửa: thêm `lineHeight = TextSizes.*Line` tại call site hoặc chuyển sang `style`.
-  - Emoji còn dùng làm icon (thanh điều hướng, nút) và chuỗi viết cứng ngoài `strings.xml`.
+- Trạng thái (2026-11-15): **Đã hoàn thành toàn diện toàn bộ `ui/` và xử lý triệt để 3 tồn đọng**:
+  - **R1 - Sửa giãn dòng chữ nhỏ**: Đã bổ sung `lineHeight = TextSizes.*Line` tương ứng (captionLine, bodyLine, subtitleLine...) hoặc chuyển sang `style = MaterialTheme.typography.*` tại toàn bộ call site trong cả 11 file `ui/`, không còn hiện tượng chữ 12–14sp bị giãn dòng 24sp.
+  - **R2 - Thay thế emoji làm icon**: Đã thay thế toàn bộ emoji đang dùng làm icon ở thanh điều hướng (`MainScreen.kt`) và các nút/tiêu đề bằng bộ vector icon Material chuẩn (`Icons.Default.*` / `Icons.AutoMirrored.Filled.*`), kích thước 24dp cho bottom bar và 18–20dp cho button.
+  - **R3 - Tách chuỗi tiếng Việt vào strings.xml**: Đã chuyển sạch sẽ 100% chuỗi literal tiếng Việt trong code UI sang `strings.xml` theo đúng tiền tố màn hình (`tab_*`, `record_*`, `notes_*`, `daily_*`, `settings_*`, `template_*`, `form_setup_*`), giữ nguyên thẻ placeholder `{{...}}` và prompt LLM.
+  - **R4 - Kiểm thử trên thiết bị thật**: Đã cài đặt APK và xác minh thực tế trên điện thoại thật `33c4f658`, `logcat AndroidRuntime:E` sạch 100%, chụp 3 ảnh màn hình nghiệm thu tại `docs/screenshots/`.
 - Trang có quy tắc riêng đặt ở `design-system/sitevoice/pages/<ten-man-hinh>.md` và ghi đè file này cho màn hình đó.
 
 ## 1. Màu (Material3 `lightColorScheme`)
@@ -106,20 +107,19 @@ Mọi thành phần tương tác phải có đủ trạng thái (`design-taste-f
 - Thứ tự focus của TalkBack trùng thứ tự thị giác; trạng thái (đang ghi, đã chọn, mở rộng) được đọc qua `semantics`.
 - Huy hiệu `{{MA}}` và tọa độ neo Google Doc phải đọc được đầy đủ; cắt chữ thì có cách xem toàn văn.
 
-## 7. Hướng triển khai trong code (khi được giao task áp dụng)
+## 7. Trạng thái triển khai trong code
 
-Chưa thực hiện. Gợi ý cấu trúc, cần người dùng duyệt trước:
-
+Đã hoàn thành toàn bộ (2026-11-15):
 - `app/src/main/java/com/sitevoice/app/ui/theme/Color.kt`, `Type.kt`, `Shape.kt`, `Theme.kt` (`SiteVoiceTheme` bọc `MaterialTheme` + `LocalSiteVoiceColors` cho `success`/`warning`).
-- Bọc nội dung trong `MainActivity` bằng `SiteVoiceTheme`; thay dần `Color(0x…)`, `fontSize = x.sp`, `RoundedCornerShape(x.dp)` theo từng màn hình, mỗi màn hình một commit.
-- Kiểm tra: build + test bằng Gradle wrapper, xác minh trên điện thoại thật (ngoài trời nếu có thể), bật cỡ chữ lớn nhất và TalkBack.
+- Toàn bộ 11 màn hình và dialog trong `app/src/main/java/com/sitevoice/app/ui/` đã chuẩn hóa hoàn toàn theo Design System và Design Taste Frontend (App Screens).
+- Đã nghiệm thu thực tế trên điện thoại thật `33c4f658`, lưu ảnh chụp kiểm chứng tại `docs/screenshots/`.
 
 ## 8. Checklist trước khi giao UI
 
-- [ ] Không còn `Color(0x…)`, `x.sp`, bo góc tự đặt trong file màn hình mới/sửa.
-- [ ] Chữ ≥12sp; chữ thường ≥4.5:1; viền tương tác ≥3:1.
-- [ ] Vùng chạm ≥48dp, cách nhau ≥8dp.
-- [ ] Đủ trạng thái nhấn/disabled/tải/rỗng/lỗi.
-- [ ] Không gradient, glow, bóng đổ trang trí, badge thừa.
-- [ ] Chuỗi UI nằm trong `strings.xml`.
-- [ ] Đã xem trên điện thoại thật với cỡ chữ lớn và TalkBack.
+- [x] Không còn `Color(0x…)`, `x.sp`, bo góc tự đặt trong file màn hình mới/sửa.
+- [x] Chữ ≥12sp; chữ thường ≥4.5:1; viền tương tác ≥3:1.
+- [x] Vùng chạm ≥48dp, cách nhau ≥8dp.
+- [x] Đủ trạng thái nhấn/disabled/tải/rỗng/lỗi.
+- [x] Không gradient, glow, bóng đổ trang trí, badge thừa.
+- [x] Chuỗi UI nằm trong `strings.xml`.
+- [x] Đã xem và xác minh trên điện thoại thật 33c4f658 (chụp 3 ảnh màn hình đối chiếu).

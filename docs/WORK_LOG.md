@@ -744,3 +744,25 @@ A templates/schema-chung.md
   + Chạy `verify_strings.py` regex scan: 0 chuỗi UI tiếng Việt hardcoded còn sót lại trong toàn bộ package `ui`.
   + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon`: **BUILD SUCCESSFUL**, pass 100% unit tests (223/223), sinh file APK `app\build\outputs\apk\debug\app-debug.apk` (20,540,036 bytes).
 - Còn lại: Milestone R4 (QA & kiểm thử trên thiết bị thật `33c4f658`).
+
+## 2026-11-15 — Milestone R4: Kiểm thử trên thiết bị thật 33c4f658, chụp ảnh màn hình & Hoàn tất nghiệm thu UI — Hoàn thành
+- Kết quả: Đã hoàn tất toàn bộ 4 mục yêu cầu R1, R2, R3, R4:
+  + **R1 (Sửa giãn dòng chữ nhỏ)**: Bổ sung `lineHeight = TextSizes.*Line` tương ứng hoặc chuyển sang `style = MaterialTheme.typography.*` tại 251 vị trí trong 11 file `ui/` (commits `8a58470` đến `5246c8c`).
+  + **R2 (Thay emoji bằng vector icon)**: Tích hợp `material-icons-extended` (commit `35635c3`) và thay thế 100% emoji làm icon trên thanh điều hướng `MainScreen` cùng toàn bộ nút/tiêu đề các màn hình sang vector icons (commits `fd8827c` đến `6115517`).
+  + **R3 (Tách chuỗi tiếng Việt vào strings.xml)**: Tách toàn bộ literal UI tiếng Việt hardcoded sang ~130 khóa `strings.xml` (commits `58b6ba5` đến `40ce73b`), giữ nguyên LLM prompts và thẻ placeholder `{{...}}`.
+  + **R4 (Kiểm thử thực tế & Ảnh chụp màn hình)**: Đã kết nối thành công thiết bị thật `33c4f658`, cài đặt file APK `app-debug.apk` qua `adb install -r`, khởi chạy `com.sitevoice.app/.MainActivity`. Kiểm tra logcat runtime error `adb logcat -d AndroidRuntime:E *:S` hoàn toàn sạch, không có crash/exception. Đã điều hướng và chụp 3 ảnh màn hình thực tế lưu tại `docs/screenshots/`:
+    * `docs/screenshots/template_editor.png` (Màn hình Sửa mẫu - `TemplateEditorScreen`)
+    * `docs/screenshots/daily_report.png` (Màn hình Nhật ký cuối ngày - `DailyInputScreen` / `DailyReportPreviewScreen`)
+    * `docs/screenshots/notes_list.png` (Màn hình Ghi chú - `NotesListScreen`)
+    * Tuân thủ nghiêm ngặt guardrail: không chụp/lưu ảnh SettingsDialog chứa API key.
+- Files tạo/cập nhật:
+  + `docs/screenshots/template_editor.png`, `docs/screenshots/daily_report.png`, `docs/screenshots/notes_list.png`
+  + `design-system/sitevoice/MASTER.md`
+  + `docs/WORK_LOG.md`, `docs/SUMMARY.md`
+- Kiểm tra:
+  + Unit tests: `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon` chạy thành công (exit 0), pass 100% unit tests (223/223).
+  + Kiểm thử thiết bị: `adb -s 33c4f658 install -r app\build\outputs\apk\debug\app-debug.apk` trả về `Success`.
+  + Khởi chạy app: `adb -s 33c4f658 shell am start -n com.sitevoice.app/.MainActivity`.
+  + Kiểm tra crash: `adb -s 33c4f658 logcat -d AndroidRuntime:E *:S` không có exception/crash.
+  + Chụp ảnh thực tế: 3 ảnh PNG hiển thị đầy đủ vector icons, giãn dòng chuẩn, chuỗi UI tiếng Việt từ strings.xml.
+- Còn lại: Toàn bộ 4 gói nâng cấp giao diện R1, R2, R3, R4 đã hoàn thành 100% và sẵn sàng bàn giao cho người dùng.
