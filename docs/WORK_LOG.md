@@ -706,3 +706,9 @@ A templates/schema-chung.md
 - Liên kết: thêm dẫn chiếu trong `docs/03-kien-truc.md`, cập nhật `docs/SUMMARY.md`.
 - Kiểm tra: tài liệu; tỉ lệ tương phản tính bằng script Python. Không có thay đổi code nên không chạy build/test.
 - Còn lại: Áp dụng token vào code (`ui/theme/`, thay giá trị viết cứng theo từng màn hình) là task riêng, chờ người dùng giao.
+
+## 2026-11-14 — Áp dụng design system: SiteVoiceTheme + màn hình Ghi âm — Hoàn thành (bước 1)
+- Kết quả: Tạo `ui/theme/` (`Color.kt`, `Type.kt`, `Shape.kt`, `Theme.kt`) theo `design-system/sitevoice/MASTER.md`; `MainActivity` dùng `SiteVoiceTheme` thay `MaterialTheme` mặc định (màn hình dùng mặc định M3 đổi theo: tím → xanh, dialog bo 12dp). `RecordScreen` bỏ hết `Color(0x…)`/`sp`/`RoundedCornerShape` viết cứng; nút ghi âm lúc chờ màu primary, ký hiệu ●/■ thay bằng hình vẽ 32/28dp, đồng hồ 28sp số tabular, card bỏ viền mảnh.
+- Lỗi và xử lý: Lần cài đầu ký hiệu ● trong nút ghi âm bị nhỏ (giảm 34sp → 28sp); sửa bằng hình vẽ không phụ thuộc font.
+- Kiểm tra: `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon` thành công (exit 0); cài lên `33c4f658` (`Success`), logcat `AndroidRuntime:E` trống, chụp màn hình trạng thái sẵn sàng hiển thị đúng. Chưa kiểm tra trạng thái đang ghi/kết quả STT/lỗi trên máy (cần ghi âm thật), chưa thử cỡ chữ lớn và TalkBack.
+- Còn lại: Người dùng duyệt giao diện Ghi âm; chuyển 10 file `ui/` còn lại; chuỗi viết cứng trong `RecordScreen` chưa đưa vào `strings.xml`, emoji 📑 ✨ ở nút Mẫu và thanh điều hướng chưa thay icon (ngoài phạm vi bước này).
