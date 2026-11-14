@@ -53,6 +53,7 @@ fun EditNoteDialog(
                 Text(
                     text = stringResource(id = R.string.edit_dialog_title),
                     fontSize = TextSizes.title,
+                    lineHeight = TextSizes.titleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -69,7 +70,8 @@ fun EditNoteDialog(
                         Text(
                             text = stringResource(id = R.string.edit_dialog_hint),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = TextSizes.body
+                            fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine
                         )
                     },
                     shape = MaterialTheme.shapes.medium,
