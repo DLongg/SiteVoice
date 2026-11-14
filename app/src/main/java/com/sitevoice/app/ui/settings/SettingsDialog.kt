@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +43,10 @@ import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.settings.SecurePreferences
 import org.json.JSONObject
 import java.util.Locale
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 @Composable
 fun SettingsDialog(
@@ -97,108 +99,108 @@ fun SettingsDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(Spacing.xl)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = "Cài đặt hệ thống",
-                    fontSize = 18.sp,
+                    fontSize = TextSizes.title,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF111827)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Text(
                     text = "Dữ liệu được mã hóa an toàn trên thiết bị bằng EncryptedSharedPreferences.",
-                    fontSize = 12.sp,
-                    color = Color(0xFF6B7280)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Phần 1: Groq API Key (STT)
                 Text(
                     text = "1. API Chuyển giọng nói STT (Groq Whisper)",
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = "Nhận diện âm thanh nói ngoài công trường thành văn bản.",
-                    fontSize = 11.sp,
-                    color = Color(0xFF64748B)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 OutlinedTextField(
                     value = inputSttKey,
                     onValueChange = { inputSttKey = it },
-                    placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx", fontSize = 12.sp) },
+                    placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Phần 2: Gemini API Phân loại (Vilao AI)
                 Text(
                     text = "2. API Gemini Phân loại (Vilao AI / Gemini)",
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = "Đọc hiểu và phân loại các ghi chú vào đúng các mục nhật ký thi công.",
-                    fontSize = 11.sp,
-                    color = Color(0xFF64748B)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 OutlinedTextField(
                     value = inputClassifyKey,
                     onValueChange = { inputClassifyKey = it },
-                    label = { Text("Gemini API Key phân loại", fontSize = 12.sp) },
-                    placeholder = { Text("sk-xxxxxxxxxxxxxxxxxxxx", fontSize = 12.sp) },
+                    label = { Text("Gemini API Key phân loại", fontSize = TextSizes.caption) },
+                    placeholder = { Text("sk-xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
                     OutlinedTextField(
                         value = inputClassifyBaseUrl,
                         onValueChange = { inputClassifyBaseUrl = it },
-                        label = { Text("Endpoint", fontSize = 11.sp) },
+                        label = { Text("Endpoint", fontSize = TextSizes.caption) },
                         singleLine = true,
                         modifier = Modifier.weight(1.3f),
-                        shape = RoundedCornerShape(8.dp),
-                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                        shape = MaterialTheme.shapes.medium,
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption)
                     )
                     OutlinedTextField(
                         value = inputClassifyModel,
                         onValueChange = { inputClassifyModel = it },
-                        label = { Text("Model", fontSize = 11.sp) },
+                        label = { Text("Model", fontSize = TextSizes.caption) },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                        shape = MaterialTheme.shapes.medium,
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Nhiệt độ biên tập (Temperature)
                 Row(
@@ -208,34 +210,34 @@ fun SettingsDialog(
                 ) {
                     Text(
                         text = stringResource(R.string.settings_temperature_title),
-                        fontSize = 13.sp,
+                        fontSize = TextSizes.body,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1E293B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Surface(
-                        shape = RoundedCornerShape(4.dp),
-                        color = Color(0xFFEFF6FF),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE))
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
                         Text(
                             text = String.format(Locale.US, "%.2f", temperature),
-                            fontSize = 12.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1D4ED8),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = stringResource(R.string.settings_temperature_subtitle),
-                    fontSize = 11.sp,
-                    color = Color(0xFF64748B)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Slider(
                     value = temperature,
                     onValueChange = { newTemp ->
@@ -247,9 +249,9 @@ fun SettingsDialog(
                     valueRange = 0.0f..0.8f,
                     steps = 15,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color(0xFF2563EB),
-                        activeTrackColor = Color(0xFF2563EB),
-                        inactiveTrackColor = Color(0xFFE2E8F0)
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -260,86 +262,86 @@ fun SettingsDialog(
                 ) {
                     Text(
                         text = "0.0: Bám sát nguyên văn",
-                        fontSize = 10.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "0.8: Viết lại mượt mà",
-                        fontSize = 10.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Phần 3: Link Google Doc mẫu
                 Text(
                     text = "3. Google Doc mẫu (A4 ≤ 2 trang)",
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 OutlinedTextField(
                     value = inputDocId,
                     onValueChange = { inputDocId = it },
-                    placeholder = { Text("Dán link hoặc Doc ID mẫu", fontSize = 12.sp) },
+                    placeholder = { Text("Dán link hoặc Doc ID mẫu", fontSize = TextSizes.caption) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = "ID mẫu mặc định: ${SecurePreferences.DEFAULT_DOC_TEMPLATE_ID}",
-                    fontSize = 11.sp,
-                    color = Color(0xFF94A3B8)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 Button(
                     onClick = { onAutoSetupFormClick(inputDocId) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
-                    shape = RoundedCornerShape(8.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
                         text = "✨ Tự động nhận diện & Tạo Mẫu từ Doc này",
-                        fontSize = 12.sp,
+                        fontSize = TextSizes.caption,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Phần 4: Google Account & Web Client ID
                 Text(
                     text = stringResource(id = R.string.settings_google_section),
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
 
                 OutlinedTextField(
                     value = inputWebClientId,
                     onValueChange = { inputWebClientId = it },
-                    label = { Text(stringResource(id = R.string.settings_google_client_id), fontSize = 12.sp) },
-                    placeholder = { Text(stringResource(id = R.string.settings_google_client_id_hint), fontSize = 12.sp) },
+                    label = { Text(stringResource(id = R.string.settings_google_client_id), fontSize = TextSizes.caption) },
+                    placeholder = { Text(stringResource(id = R.string.settings_google_client_id_hint), fontSize = TextSizes.caption) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 // Thẻ trạng thái tài khoản Google
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFF8FAFC), RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
-                        .padding(12.dp)
+                        .background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
+                        .padding(Spacing.md)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -349,54 +351,54 @@ fun SettingsDialog(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = stringResource(id = R.string.settings_google_account),
-                                fontSize = 11.sp,
-                                color = Color(0xFF64748B)
+                                fontSize = TextSizes.caption,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = currentGoogleAccountEmail ?: stringResource(id = R.string.settings_google_not_signed_in),
-                                fontSize = 13.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.SemiBold,
-                                color = if (currentGoogleAccountEmail != null) Color(0xFF15803D) else Color(0xFF94A3B8)
+                                color = if (currentGoogleAccountEmail != null) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
                         if (currentGoogleAccountEmail != null) {
                             OutlinedButton(
                                 onClick = onSignOutGoogleClick,
-                                shape = RoundedCornerShape(6.dp)
+                                shape = MaterialTheme.shapes.small
                             ) {
-                                Text(text = stringResource(id = R.string.settings_btn_sign_out_google), fontSize = 11.sp)
+                                Text(text = stringResource(id = R.string.settings_btn_sign_out_google), fontSize = TextSizes.caption)
                             }
                         } else {
                             Button(
                                 onClick = onSignInGoogleClick,
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                                shape = RoundedCornerShape(6.dp)
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                shape = MaterialTheme.shapes.small
                             ) {
-                                Text(text = stringResource(id = R.string.settings_btn_sign_in_google), fontSize = 11.sp)
+                                Text(text = stringResource(id = R.string.settings_btn_sign_in_google), fontSize = TextSizes.caption)
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Phần 5: Thư viện Mẫu
                 Text(
                     text = "5. Thư viện Mẫu Báo cáo",
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 OutlinedButton(
                     onClick = {
                         onDismiss()
                         onOpenTemplateLibrary()
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -405,23 +407,23 @@ fun SettingsDialog(
                     ) {
                         Text(
                             text = "📑 " + (activeTemplateName ?: "Quản lý Thư viện Mẫu"),
-                            fontSize = 13.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFF1E293B)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Text(text = "Đổi / Căn chỉnh →", fontSize = 12.sp, color = Color(0xFF2563EB))
+                        Text(text = "Đổi / Căn chỉnh →", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // Phần 6: Chế độ Nhà phát triển (Developer Mode)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFF8FAFC), RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
-                        .padding(12.dp)
+                        .background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
+                        .padding(Spacing.md)
                 ) {
                     Column {
                         Row(
@@ -432,14 +434,14 @@ fun SettingsDialog(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = "6. Chế độ Nhà phát triển (Developer Mode)",
-                                    fontSize = 13.sp,
+                                    fontSize = TextSizes.body,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF1E293B)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "Xem & chỉnh sửa trực tiếp System Prompt của AI",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF64748B)
+                                    fontSize = TextSizes.caption,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Switch(
@@ -452,14 +454,14 @@ fun SettingsDialog(
                         }
 
                         if (devModeEnabled && activeTemplate != null) {
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(Spacing.md))
                             Text(
                                 text = "🛠️ System Prompt hiện tại (${activeTemplate.name}):",
-                                fontSize = 12.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0F172A)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             OutlinedTextField(
                                 value = customPrompt,
                                 onValueChange = {
@@ -469,14 +471,14 @@ fun SettingsDialog(
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 7,
                                 maxLines = 14,
-                                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 11.sp)
+                                textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption)
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(Spacing.sm))
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Button(
@@ -484,12 +486,12 @@ fun SettingsDialog(
                                         onSavePrompt(activeTemplate.id, customPrompt)
                                         promptSavedMessage = "Đã lưu prompt thành công!"
                                     },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                                    shape = RoundedCornerShape(6.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                    shape = MaterialTheme.shapes.small,
                                     modifier = Modifier.weight(1f),
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                 ) {
-                                    Text("💾 Lưu Prompt", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                                    Text("💾 Lưu Prompt", fontSize = TextSizes.caption, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
                                 }
 
                                 OutlinedButton(
@@ -497,33 +499,33 @@ fun SettingsDialog(
                                         onResetPrompt(activeTemplate.id)
                                         promptSavedMessage = "Đã khôi phục prompt gốc!"
                                     },
-                                    shape = RoundedCornerShape(6.dp),
+                                    shape = MaterialTheme.shapes.small,
                                     modifier = Modifier.weight(1f),
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                 ) {
-                                    Text("🔄 Khôi phục gốc", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF475569))
+                                    Text("🔄 Khôi phục gốc", fontSize = TextSizes.caption, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
 
                             promptSavedMessage?.let { msg ->
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(Spacing.xs))
                                 Text(
                                     text = "✓ $msg",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF15803D),
+                                    fontSize = TextSizes.caption,
+                                    color = SiteVoiceTheme.colors.success,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
 
                             if (!latestReportJson.isNullOrBlank()) {
-                                Spacer(modifier = Modifier.height(14.dp))
+                                Spacer(modifier = Modifier.height(Spacing.lg))
                                 Text(
                                     text = "📊 Dữ liệu JSON gần nhất do LLM trả về:",
-                                    fontSize = 12.sp,
+                                    fontSize = TextSizes.caption,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0F172A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(Spacing.xs))
                                 val formattedJson = try {
                                     JSONObject(latestReportJson).toString(2)
                                 } catch (_: Exception) {
@@ -537,7 +539,7 @@ fun SettingsDialog(
                                     minLines = 6,
                                     maxLines = 12,
                                     textStyle = androidx.compose.ui.text.TextStyle(
-                                        fontSize = 10.sp,
+                                        fontSize = TextSizes.caption,
                                         fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                                     )
                                 )
@@ -546,7 +548,7 @@ fun SettingsDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(Spacing.xl))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -555,12 +557,12 @@ fun SettingsDialog(
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Text("Đóng")
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.sm))
 
                     Button(
                         onClick = {
@@ -576,8 +578,8 @@ fun SettingsDialog(
                             )
                             onDismiss()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
-                        shape = RoundedCornerShape(8.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Text("Lưu cài đặt")
                     }
