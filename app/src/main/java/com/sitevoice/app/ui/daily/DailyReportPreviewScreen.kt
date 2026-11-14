@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,11 +20,22 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -160,7 +172,17 @@ fun DailyReportPreviewScreen(
                     onClick = onBackToEditClick,
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = "← " + stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(Spacing.xs))
+                    Text(
+                        text = stringResource(id = R.string.report_btn_back_to_edit),
+                        fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine
+                    )
                 }
 
                 // Status Chip
@@ -196,7 +218,12 @@ fun DailyReportPreviewScreen(
                         .padding(Spacing.md)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "✓", fontSize = TextSizes.subtitle, lineHeight = TextSizes.subtitleLine, fontWeight = FontWeight.Bold, color = SiteVoiceTheme.colors.success)
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = SiteVoiceTheme.colors.success
+                        )
                         Spacer(modifier = Modifier.width(Spacing.sm))
                         Text(
                             text = stringResource(id = R.string.report_approved_banner),
@@ -237,9 +264,9 @@ fun DailyReportPreviewScreen(
                             val isAfternoonRain = content.allFields["c_m"] == true || content.allFields["c_m"] == "true" || dailyInput?.weatherAfternoon == "mua"
                             val isEveningRain = content.allFields["t_m"] == true || content.allFields["t_m"] == "true" || dailyInput?.weatherEvening == "mua"
 
-                            val morning = if (isMorningRain) "🌧️ Mưa" else "☀️ Nắng"
-                            val afternoon = if (isAfternoonRain) "🌧️ Mưa" else "☀️ Nắng"
-                            val evening = if (isEveningRain) "🌧️ Mưa" else "🌙 Bình thường"
+                            val morning = if (isMorningRain) "Mưa" else "Nắng"
+                            val afternoon = if (isAfternoonRain) "Mưa" else "Nắng"
+                            val evening = if (isEveningRain) "Mưa" else "Bình thường"
 
                             append("Sáng: $morning  •  Chiều: $afternoon  •  Tối: $evening")
                             if (!tq.isNullOrBlank() && tq != "...") {
@@ -386,13 +413,24 @@ fun DailyReportPreviewScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "⚠️ " + stringResource(id = R.string.report_section_unclassified),
-                                fontSize = TextSizes.body,
-                                lineHeight = TextSizes.bodyLine,
-                                fontWeight = FontWeight.Bold,
-                                color = SiteVoiceTheme.colors.warning
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = SiteVoiceTheme.colors.warning
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.report_section_unclassified),
+                                    fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SiteVoiceTheme.colors.warning
+                                )
+                            }
                             Text(
                                 text = "${content.chuaPhanLoai.size} mục",
                                 fontSize = TextSizes.caption,
@@ -457,7 +495,13 @@ fun DailyReportPreviewScreen(
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(text = "🔄 " + stringResource(id = R.string.report_btn_resynthesize), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(Spacing.xs))
+                        Text(text = stringResource(id = R.string.report_btn_resynthesize), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                     }
 
                     OutlinedButton(
@@ -482,13 +526,24 @@ fun DailyReportPreviewScreen(
                         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
                         Column(modifier = Modifier.padding(Spacing.lg)) {
-                            Text(
-                                text = "✓ " + stringResource(id = R.string.report_export_success),
-                                fontSize = TextSizes.body,
-                                lineHeight = TextSizes.bodyLine,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.report_export_success),
+                                    fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
                             Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = "Bản sao đã được tạo tại Google Drive cá nhân của bạn.",
@@ -538,18 +593,25 @@ fun DailyReportPreviewScreen(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        val exportBtnText = if (docUrl.isNullOrBlank()) {
-                            "📄 " + stringResource(id = R.string.report_btn_export_doc)
-                        } else {
-                            "🔄 Xuất lại bản Google Doc mới"
+                        val isDocExported = !docUrl.isNullOrBlank()
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = if (isDocExported) Icons.Default.Refresh else Icons.Default.Description,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Text(
+                                text = if (isDocExported) "Xuất lại bản Google Doc mới" else stringResource(id = R.string.report_btn_export_doc),
+                                fontSize = TextSizes.subtitle,
+                                lineHeight = TextSizes.subtitleLine,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
                         }
-                        Text(
-                            text = exportBtnText,
-                            fontSize = TextSizes.subtitle,
-                            lineHeight = TextSizes.subtitleLine,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
                     }
                 }
 
@@ -592,13 +654,24 @@ fun DailyReportPreviewScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "🛠️ Dữ liệu JSON do LLM trả về:",
-                                fontSize = TextSizes.body,
-                                lineHeight = TextSizes.bodyLine,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Build,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "Dữ liệu JSON do LLM trả về:",
+                                    fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
 
                             TextButton(
                                 onClick = {
@@ -606,7 +679,14 @@ fun DailyReportPreviewScreen(
                                     saveMessage = "Đã sao chép JSON vào bộ nhớ tạm!"
                                 }
                             ) {
-                                Text("📋 Sao chép", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
+                                Icon(
+                                    imageVector = Icons.Default.ContentCopy,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.width(Spacing.xs))
+                                Text("Sao chép", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
                             }
                         }
 
@@ -648,19 +728,37 @@ fun DailyReportPreviewScreen(
                                 shape = MaterialTheme.shapes.small,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("💾 Lưu sửa đổi JSON vào Báo cáo", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                                Icon(
+                                    imageVector = Icons.Default.Save,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                                Spacer(modifier = Modifier.width(Spacing.xs))
+                                Text("Lưu sửa đổi JSON vào Báo cáo", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
 
                         saveMessage?.let { msg ->
                             Spacer(modifier = Modifier.height(Spacing.xs))
-                            Text(
-                                text = "✓ $msg",
-                                fontSize = TextSizes.caption,
-                                lineHeight = TextSizes.captionLine,
-                                color = SiteVoiceTheme.colors.success,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = SiteVoiceTheme.colors.success
+                                )
+                                Text(
+                                    text = msg,
+                                    fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
+                                    color = SiteVoiceTheme.colors.success,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
