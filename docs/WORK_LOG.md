@@ -693,3 +693,8 @@ A templates/schema-chung.md
 
 
 
+
+## 2026-11-14 — Cài skill ui-ux-pro-max (project) — Hoàn thành
+- Kết quả: Cài `nextlevelbuilder/ui-ux-pro-max-skill` bằng `npx ui-ux-pro-max-cli init --ai claude` vào `.claude/skills/` (ui-ux-pro-max kèm dữ liệu stack `jetpack-compose`, cùng các skill đi kèm: design, design-system, ui-styling, brand, banner-design, slides). Chỉ là công cụ tham khảo bổ sung; quy tắc bắt buộc dùng `design-taste-frontend` trong AGENTS.md giữ nguyên.
+- Kiểm tra: `python .claude/skills/ui-ux-pro-max/scripts/search.py "mobile app form" --domain ux` trả kết quả đúng (Python 3.11.7, Node v22.17.0). Chưa chạy bộ test nội bộ của skill.
+- Còn lại: Khởi động lại Claude Code để nạp skill mới.
