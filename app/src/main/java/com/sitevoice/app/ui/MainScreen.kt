@@ -120,7 +120,8 @@ fun MainScreen(
                     icon = {
                         Text(
                             text = "🎙️",
-                            fontSize = TextSizes.title
+                            fontSize = TextSizes.title,
+                            lineHeight = TextSizes.titleLine
                         )
                     },
                     label = {
@@ -155,7 +156,8 @@ fun MainScreen(
                         ) {
                             Text(
                                 text = "📋",
-                                fontSize = TextSizes.title
+                                fontSize = TextSizes.title,
+                                lineHeight = TextSizes.titleLine
                             )
                         }
                     },
@@ -179,7 +181,8 @@ fun MainScreen(
                     icon = {
                         Text(
                             text = "📑",
-                            fontSize = TextSizes.title
+                            fontSize = TextSizes.title,
+                            lineHeight = TextSizes.titleLine
                         )
                     },
                     label = {
