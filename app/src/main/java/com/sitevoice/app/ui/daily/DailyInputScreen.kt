@@ -436,7 +436,7 @@ fun DailyInputScreen(
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 val btnText = if (dailyReport != null) {
                     "🔄 " + stringResource(id = R.string.report_btn_resynthesize)
