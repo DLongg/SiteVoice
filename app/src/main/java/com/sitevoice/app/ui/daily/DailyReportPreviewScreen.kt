@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -126,7 +127,7 @@ fun DailyReportPreviewScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "Chưa có bản tổng hợp nào cho ngày $currentDate",
+                        text = stringResource(id = R.string.report_empty_for_date, currentDate),
                         fontSize = TextSizes.body,
                         lineHeight = TextSizes.bodyLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -199,9 +200,9 @@ fun DailyReportPreviewScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            val templateDisplayName = activeTemplateName ?: (if (reportEntity.templateId == "nhat-ky-ca-nhan") "Nhật ký cá nhân" else "Nhật ký thi công công trường")
+            val templateDisplayName = activeTemplateName ?: (if (reportEntity.templateId == "nhat-ky-ca-nhan") stringResource(id = R.string.report_template_personal_fallback) else stringResource(id = R.string.report_template_construction_fallback))
             Text(
-                text = "Ngày: $currentDate • Mẫu: $templateDisplayName",
+                text = stringResource(id = R.string.report_header_meta, currentDate, templateDisplayName),
                 fontSize = TextSizes.caption,
                 lineHeight = TextSizes.captionLine,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -264,28 +265,29 @@ fun DailyReportPreviewScreen(
                             val isAfternoonRain = content.allFields["c_m"] == true || content.allFields["c_m"] == "true" || dailyInput?.weatherAfternoon == "mua"
                             val isEveningRain = content.allFields["t_m"] == true || content.allFields["t_m"] == "true" || dailyInput?.weatherEvening == "mua"
 
-                            val morning = if (isMorningRain) "Mưa" else "Nắng"
-                            val afternoon = if (isAfternoonRain) "Mưa" else "Nắng"
-                            val evening = if (isEveningRain) "Mưa" else "Bình thường"
+                            val morning = if (isMorningRain) stringResource(id = R.string.report_weather_rainy_short) else stringResource(id = R.string.report_weather_sunny_short)
+                            val afternoon = if (isAfternoonRain) stringResource(id = R.string.report_weather_rainy_short) else stringResource(id = R.string.report_weather_sunny_short)
+                            val evening = if (isEveningRain) stringResource(id = R.string.report_weather_rainy_short) else stringResource(id = R.string.report_weather_normal_short)
 
-                            append("Sáng: $morning  •  Chiều: $afternoon  •  Tối: $evening")
+                            append(stringResource(id = R.string.report_weather_summary_format, morning, afternoon, evening))
                             if (!tq.isNullOrBlank() && tq != "...") {
                                 append(" ($tq)")
                             }
                         }
-                        Text(text = "Thời tiết: $weatherText", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = stringResource(id = R.string.report_weather_line, weatherText), fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         Spacer(modifier = Modifier.height(Spacing.xs))
                         val bch = content.allFields["ng_ch"]?.toString()?.toIntOrNull() ?: dailyInput?.commandStaffCount ?: 0
                         val cn = content.allFields["ng_cn"]?.toString()?.toIntOrNull() ?: dailyInput?.workerCount ?: 0
-                        Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = stringResource(id = R.string.report_staff_line, bch, cn), fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         Spacer(modifier = Modifier.height(Spacing.xs))
                         val mayMocFromLlm = content.allFields["may_moc"]?.let {
                             if (it is List<*>) it.filterNotNull().joinToString(", ") else it.toString()
                         }
-                        val eq = if (!mayMocFromLlm.isNullOrBlank()) mayMocFromLlm else (dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính")
-                        Text(text = "Thiết bị: $eq", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        val defaultNoEq = stringResource(id = R.string.report_equipment_none)
+                        val eq = if (!mayMocFromLlm.isNullOrBlank()) mayMocFromLlm else (dailyInput?.equipmentList?.ifBlank { defaultNoEq } ?: defaultNoEq)
+                        Text(text = stringResource(id = R.string.report_equipment_line, eq), fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -294,7 +296,7 @@ fun DailyReportPreviewScreen(
                 // Khối 2: Công việc thi công (Ngân sách: ≤ 15 dòng)
                 ReportSectionList(
                     title = stringResource(id = R.string.report_section_construction),
-                    badgeText = "{{CONG_VIEC_THI_CONG}} • ${content.congViecThiCong.size}/15 dòng",
+                    badgeText = "{{CONG_VIEC_THI_CONG}} • " + stringResource(id = R.string.report_budget_lines, content.congViecThiCong.size, 15),
                     items = content.congViecThiCong
                 )
 
@@ -303,7 +305,7 @@ fun DailyReportPreviewScreen(
                 // Khối 3: Nghiệm thu công việc (Ngân sách: ≤ 6 dòng)
                 ReportSectionList(
                     title = stringResource(id = R.string.report_section_inspection),
-                    badgeText = "{{NGHIEM_THU}} • ${content.nghiemThu.size}/6 dòng",
+                    badgeText = "{{NGHIEM_THU}} • " + stringResource(id = R.string.report_budget_lines, content.nghiemThu.size, 6),
                     items = content.nghiemThu
                 )
 
@@ -312,7 +314,7 @@ fun DailyReportPreviewScreen(
                 // Khối 4: An toàn lao động & VSMT (Ngân sách: ≤ 3 dòng)
                 ReportSectionList(
                     title = stringResource(id = R.string.report_section_safety),
-                    badgeText = "{{AN_TOAN}} • ${content.anToan.size}/3 dòng",
+                    badgeText = "{{AN_TOAN}} • " + stringResource(id = R.string.report_budget_lines, content.anToan.size, 3),
                     items = content.anToan
                 )
 
@@ -352,7 +354,7 @@ fun DailyReportPreviewScreen(
                         val stringList = value.mapNotNull { it?.toString() }
                         ReportSectionList(
                             title = readableTitle,
-                            badgeText = "$placeholderTag • ${stringList.size} mục",
+                            badgeText = stringResource(id = R.string.report_items_count_badge, placeholderTag, stringList.size),
                             items = stringList
                         )
                         Spacer(modifier = Modifier.height(Spacing.md))
@@ -432,7 +434,7 @@ fun DailyReportPreviewScreen(
                                 )
                             }
                             Text(
-                                text = "${content.chuaPhanLoai.size} mục",
+                                text = stringResource(id = R.string.report_items_count, content.chuaPhanLoai.size),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
@@ -546,7 +548,7 @@ fun DailyReportPreviewScreen(
                             }
                             Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
-                                text = "Bản sao đã được tạo tại Google Drive cá nhân của bạn.",
+                                text = stringResource(id = R.string.report_export_copy_drive_note),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.primary
@@ -605,7 +607,7 @@ fun DailyReportPreviewScreen(
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
-                                text = if (isDocExported) "Xuất lại bản Google Doc mới" else stringResource(id = R.string.report_btn_export_doc),
+                                text = if (isDocExported) stringResource(id = R.string.report_btn_re_export_doc) else stringResource(id = R.string.report_btn_export_doc),
                                 fontSize = TextSizes.subtitle,
                                 lineHeight = TextSizes.subtitleLine,
                                 fontWeight = FontWeight.Bold,
@@ -641,6 +643,7 @@ fun DailyReportPreviewScreen(
                 var isEditingRaw by remember { mutableStateOf(false) }
                 var saveMessage by remember { mutableStateOf<String?>(null) }
                 val clipboardManager = LocalClipboardManager.current
+                val context = LocalContext.current
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -665,7 +668,7 @@ fun DailyReportPreviewScreen(
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Dữ liệu JSON do LLM trả về:",
+                                    text = stringResource(id = R.string.report_dev_json_title),
                                     fontSize = TextSizes.body,
                                     lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.Bold,
@@ -676,7 +679,7 @@ fun DailyReportPreviewScreen(
                             TextButton(
                                 onClick = {
                                     clipboardManager.setText(AnnotatedString(rawJsonText))
-                                    saveMessage = "Đã sao chép JSON vào bộ nhớ tạm!"
+                                    saveMessage = context.getString(R.string.report_dev_json_copied)
                                 }
                             ) {
                                 Icon(
@@ -686,12 +689,12 @@ fun DailyReportPreviewScreen(
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.width(Spacing.xs))
-                                Text("Sao chép", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
+                                Text(stringResource(id = R.string.report_dev_btn_copy_json), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
                             }
                         }
 
                         Text(
-                            text = "Dữ liệu JSON nguyên bản bóc tách từ ghi chú. Bạn có thể sửa trực tiếp rồi bấm Lưu.",
+                            text = stringResource(id = R.string.report_dev_json_hint),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -722,7 +725,7 @@ fun DailyReportPreviewScreen(
                                 onClick = {
                                     onUpdateRawJson?.invoke(rawJsonText)
                                     isEditingRaw = false
-                                    saveMessage = "Đã cập nhật JSON vào báo cáo!"
+                                    saveMessage = context.getString(R.string.report_dev_json_saved)
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 shape = MaterialTheme.shapes.small,
@@ -735,7 +738,7 @@ fun DailyReportPreviewScreen(
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Spacer(modifier = Modifier.width(Spacing.xs))
-                                Text("Lưu sửa đổi JSON vào Báo cáo", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                                Text(stringResource(id = R.string.report_dev_btn_save_json), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
 
