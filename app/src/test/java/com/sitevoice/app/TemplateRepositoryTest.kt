@@ -68,6 +68,20 @@ class FakeTemplateDao : TemplateDao {
         }
     }
 
+    override suspend fun deleteAllBuiltInTemplates(): Int {
+        val builtInIds = templates.filterValues { it.isBuiltIn }.keys.toList()
+        builtInIds.forEach { templates.remove(it) }
+        updateFlow()
+        return builtInIds.size
+    }
+
+    override suspend fun deleteAllExcept(keepId: String): Int {
+        val removeIds = templates.keys.filter { it != keepId }
+        removeIds.forEach { templates.remove(it) }
+        updateFlow()
+        return removeIds.size
+    }
+
     override suspend fun deactivateAll() {
         templates.forEach { (k, v) ->
             templates[k] = v.copy(isActive = false)
@@ -203,5 +217,44 @@ class TemplateRepositoryTest {
         val deleteCustomResult = repository.deleteTemplate("custom_test_temp")
         assertTrue(deleteCustomResult.isSuccess)
         assertEquals(2, fakeDao.countTemplates())
+    }
+
+    @Test
+    fun testPurgeBuiltInAndSaveSingleAutoTemplate() = runBlocking {
+        repository.ensureBuiltInTemplatesSeeded()
+        assertEquals(2, fakeDao.countTemplates())
+
+        // Dọn sạch 2 mẫu mặc định (Nhật ký công trường & Nhật ký cá nhân)
+        repository.purgeBuiltInAndEnsureSingleActive()
+        assertEquals(0, fakeDao.countTemplates())
+
+        // Tạo mẫu tự động đầu tiên (kể cả khi schemaJson có id cũ/tạm) -> lưu & chuẩn hóa id thành SINGLE_AUTO_TEMPLATE_ID
+        val firstAuto = TemplateItemEntity(
+            id = "temp_1",
+            name = "Nhật ký tự động A",
+            description = "Bản 1",
+            docTemplateUrl = "https://docs.google.com/document/d/docA/edit",
+            systemPrompt = "Prompt A",
+            schemaJson = """{"id":"custom_auto_12345","ten":"Nhật ký tự động A","truong_tong_hop":{}}""",
+            isBuiltIn = false,
+            isActive = true
+        )
+        repository.saveSingleAutoTemplate(firstAuto)
+        assertEquals(1, fakeDao.countTemplates())
+        assertEquals(DefaultTemplateRepository.SINGLE_AUTO_TEMPLATE_ID, repository.getActiveTemplateSync()?.id)
+        assertEquals(DefaultTemplateRepository.SINGLE_AUTO_TEMPLATE_ID, repository.getActiveSchemaSync().id)
+        assertEquals("Nhật ký tự động A", repository.getActiveTemplateSync()?.name)
+
+        // Khi dán link Google Doc mới -> ghi đè thành bản mẫu duy nhất mới, không tạo rác nhiều mẫu
+        val secondAuto = firstAuto.copy(
+            id = "temp_2",
+            name = "Nhật ký tự động B",
+            docTemplateUrl = "https://docs.google.com/document/d/docB/edit",
+            systemPrompt = "Prompt B"
+        )
+        repository.saveSingleAutoTemplate(secondAuto)
+        assertEquals(1, fakeDao.countTemplates())
+        assertEquals("Nhật ký tự động B", repository.getActiveTemplateSync()?.name)
+        assertEquals("Prompt B", repository.getActiveTemplateSync()?.systemPrompt)
     }
 }
