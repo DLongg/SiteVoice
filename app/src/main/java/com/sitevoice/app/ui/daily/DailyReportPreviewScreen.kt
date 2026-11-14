@@ -119,7 +119,7 @@ fun DailyReportPreviewScreen(
                     Spacer(modifier = Modifier.height(Spacing.lg))
                     Button(
                         onClick = onResynthesizeClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.medium
                     ) {
                         Text(text = stringResource(id = R.string.btn_generate_report))
@@ -419,7 +419,7 @@ fun DailyReportPreviewScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
