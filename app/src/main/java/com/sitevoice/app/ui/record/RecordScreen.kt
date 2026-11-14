@@ -22,13 +22,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,13 +53,13 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.sitevoice.app.R
 import com.sitevoice.app.audio.AudioRecorder
 import com.sitevoice.app.settings.SecurePreferences
 import com.sitevoice.app.ui.CurrentSttStatus
 import com.sitevoice.app.ui.MainViewModel
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -82,6 +82,12 @@ fun RecordScreen(
     val recorder = remember { AudioRecorder(context) }
     val audioPlayer = viewModel.audioPlayer
     val sttStatus by viewModel.currentSttStatus.collectAsState()
+
+    val colors = MaterialTheme.colorScheme
+    val extraColors = SiteVoiceTheme.colors
+    val type = MaterialTheme.typography
+    val shapes = MaterialTheme.shapes
+    val spacing = SiteVoiceTheme.spacing
 
     var hasPermission by remember {
         mutableStateOf(
@@ -130,12 +136,12 @@ fun RecordScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF6F7F9)
+        color = colors.background
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp)
+                .padding(spacing.xl)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -144,42 +150,40 @@ fun RecordScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .padding(top = spacing.sm),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(id = R.string.app_name),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF111827)
+                        style = type.titleLarge,
+                        color = colors.onBackground
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(spacing.xs))
                     Text(
                         text = stringResource(id = R.string.welcome_subtitle),
-                        fontSize = 13.sp,
-                        color = Color(0xFF6B7280)
+                        style = type.bodyMedium,
+                        color = colors.onSurfaceVariant
                     )
                 }
 
                 val hasStt = !securePreferences.groqApiKey.isNullOrBlank()
                 val hasClassify = !securePreferences.geminiApiKey.isNullOrBlank()
                 val (statusText, statusColor) = when {
-                    hasStt && hasClassify -> "STT ✓ | Gemini ✓" to Color(0xFF16A34A)
-                    hasStt -> "STT ✓ | Phân loại: Groq" to Color(0xFF16A34A)
-                    hasClassify -> "Thiếu STT Key" to Color(0xFFD97706)
-                    else -> "Cài API Key" to Color(0xFFDC2626)
+                    hasStt && hasClassify -> "STT ✓ | Gemini ✓" to extraColors.success
+                    hasStt -> "STT ✓ | Phân loại: Groq" to extraColors.success
+                    hasClassify -> "Thiếu STT Key" to extraColors.warning
+                    else -> "Cài API Key" to colors.error
                 }
 
                 OutlinedButton(
                     onClick = onOpenSettings,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = shapes.medium
                 ) {
                     Text(
                         text = statusText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
+                        style = type.labelMedium,
                         color = statusColor
                     )
                 }
@@ -189,25 +193,23 @@ fun RecordScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp),
+                    .padding(top = spacing.md),
                 horizontalArrangement = Arrangement.Start
             ) {
                 OutlinedButton(
                     onClick = onOpenTemplateLibrary,
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White),
-                    modifier = Modifier.height(34.dp)
+                    shape = shapes.medium,
+                    colors = ButtonDefaults.outlinedButtonColors(containerColor = colors.surface)
                 ) {
                     Text(
                         text = if (activeTemplateName != null) "📑 Mẫu: $activeTemplateName (Sửa)" else "✨ Thiết lập Nhật ký tự động ▸",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF1E293B)
+                        style = type.labelLarge,
+                        color = colors.onSurface
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(spacing.xl))
 
             // Phần trung tâm: Nút ghi âm một chạm
             Column(
@@ -216,24 +218,27 @@ fun RecordScreen(
             ) {
                 if (!hasPermission) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7)),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.padding(16.dp)
+                        colors = CardDefaults.cardColors(containerColor = extraColors.warningContainer),
+                        shape = shapes.large,
+                        modifier = Modifier.padding(spacing.lg)
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(spacing.lg),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
                                 text = stringResource(id = R.string.record_permission_required),
-                                fontSize = 14.sp,
-                                color = Color(0xFF92400E)
+                                style = type.bodyMedium,
+                                color = extraColors.onWarningContainer
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(spacing.md))
                             Button(
                                 onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706)),
-                                shape = RoundedCornerShape(8.dp)
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = extraColors.warning,
+                                    contentColor = extraColors.onWarning
+                                ),
+                                shape = shapes.medium
                             ) {
                                 Text(text = stringResource(id = R.string.record_btn_grant_permission))
                             }
@@ -246,27 +251,26 @@ fun RecordScreen(
                         val seconds = recordingTimerSeconds % 60
                         Text(
                             text = String.format("%02d:%02d", minutes, seconds),
-                            fontSize = 38.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFDC2626)
+                            style = type.displaySmall.copy(fontFeatureSettings = "tnum"),
+                            color = colors.error
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(spacing.sm))
                         Text(
                             text = stringResource(id = R.string.record_status_recording),
-                            fontSize = 15.sp,
+                            style = type.bodyLarge,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFFDC2626)
+                            color = colors.error
                         )
                     } else {
                         Text(
                             text = stringResource(id = R.string.record_hint_ready),
-                            fontSize = 15.sp,
+                            style = type.bodyLarge,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFF4B5563)
+                            color = colors.onSurfaceVariant
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(spacing.xl))
 
                     // Nút nhấn giữ ghi âm trung tâm
                     Box(
@@ -276,11 +280,11 @@ fun RecordScreen(
                             .scale(buttonScale)
                             .clip(CircleShape)
                             .background(
-                                if (isRecording) Color(0xFFDC2626) else Color(0xFF1E293B)
+                                if (isRecording) colors.error else colors.primary
                             )
                             .border(
-                                width = if (isRecording) 4.dp else 2.dp,
-                                color = if (isRecording) Color(0xFFFCA5A5) else Color(0xFF94A3B8),
+                                width = if (isRecording) 4.dp else 0.dp,
+                                color = if (isRecording) colors.errorContainer else Color.Transparent,
                                 shape = CircleShape
                             )
                             .pointerInput(hasPermission) {
@@ -325,27 +329,26 @@ fun RecordScreen(
                     ) {
                         Text(
                             text = if (isRecording) "■" else "●",
-                            color = Color.White,
-                            fontSize = if (isRecording) 28.sp else 34.sp,
+                            color = if (isRecording) colors.onError else colors.onPrimary,
+                            style = type.displaySmall,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(spacing.xxl))
 
             // Phần kết quả: Thẻ bản ghi âm và kết quả STT
             lastRecordedItem?.let { item ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp),
-                    border = CardDefaults.outlinedCardBorder()
+                        .padding(bottom = spacing.lg),
+                    colors = CardDefaults.cardColors(containerColor = colors.surface),
+                    shape = shapes.large
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(spacing.lg)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -354,15 +357,14 @@ fun RecordScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = stringResource(id = R.string.record_recent_card_title),
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF111827)
+                                    style = type.titleMedium,
+                                    color = colors.onSurface
                                 )
-                                Spacer(modifier = Modifier.height(2.dp))
+                                Spacer(modifier = Modifier.height(spacing.xs))
                                 Text(
                                     text = stringResource(id = R.string.record_duration, item.durationSeconds),
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF6B7280)
+                                    style = type.bodyMedium,
+                                    color = colors.onSurfaceVariant
                                 )
                             }
 
@@ -378,7 +380,7 @@ fun RecordScreen(
                                         isPlayingLastRecord = true
                                     }
                                 },
-                                shape = RoundedCornerShape(8.dp)
+                                shape = shapes.medium
                             ) {
                                 Text(
                                     text = if (isPlayingLastRecord)
@@ -389,35 +391,35 @@ fun RecordScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(spacing.md))
 
                         // Khối hiển thị trạng thái STT
                         when (val state = sttStatus) {
                             is CurrentSttStatus.Idle -> {
                                 Text(
                                     text = "Đã lưu vào danh sách ghi chú",
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF64748B)
+                                    style = type.bodyMedium,
+                                    color = colors.onSurfaceVariant
                                 )
                             }
                             is CurrentSttStatus.Transcribing -> {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFF1F5F9), RoundedCornerShape(8.dp))
-                                        .padding(12.dp),
+                                        .background(colors.surfaceVariant, shapes.medium)
+                                        .padding(spacing.md),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(20.dp),
                                         strokeWidth = 2.dp,
-                                        color = Color(0xFF2563EB)
+                                        color = colors.primary
                                     )
-                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Spacer(modifier = Modifier.width(spacing.md))
                                     Text(
                                         text = "Đang chuyển văn bản qua Groq Whisper...",
-                                        fontSize = 13.sp,
-                                        color = Color(0xFF334155)
+                                        style = type.bodyMedium,
+                                        color = colors.onSurface
                                     )
                                 }
                             }
@@ -425,22 +427,20 @@ fun RecordScreen(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFF8FAFC), RoundedCornerShape(8.dp))
-                                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(8.dp))
-                                        .padding(12.dp)
+                                        .background(colors.surfaceVariant, shapes.medium)
+                                        .padding(spacing.md)
                                 ) {
                                     Text(
                                         text = "Văn bản nhận diện (STT):",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF16A34A)
+                                        style = type.labelMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = extraColors.success
                                     )
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(spacing.xs))
                                     Text(
                                         text = state.text,
-                                        fontSize = 14.sp,
-                                        color = Color(0xFF0F172A),
-                                        lineHeight = 20.sp
+                                        style = type.bodyMedium,
+                                        color = colors.onSurface
                                     )
                                 }
                             }
@@ -448,22 +448,22 @@ fun RecordScreen(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFFEF2F2), RoundedCornerShape(8.dp))
-                                        .padding(12.dp)
+                                        .background(colors.errorContainer, shapes.medium)
+                                        .padding(spacing.md)
                                 ) {
                                     Text(
                                         text = "Lỗi STT: ${state.message}",
-                                        fontSize = 13.sp,
-                                        color = Color(0xFFB91C1C)
+                                        style = type.bodyMedium,
+                                        color = colors.onErrorContainer
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(spacing.sm))
                                     OutlinedButton(
                                         onClick = {
                                             viewModel.onRecordFinished(item.file, item.durationSeconds * 1000)
                                         },
-                                        shape = RoundedCornerShape(6.dp)
+                                        shape = shapes.small
                                     ) {
-                                        Text("Thử lại STT", fontSize = 12.sp)
+                                        Text("Thử lại STT")
                                     }
                                 }
                             }
@@ -471,22 +471,25 @@ fun RecordScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFFFFBEB), RoundedCornerShape(8.dp))
-                                        .padding(12.dp),
+                                        .background(extraColors.warningContainer, shapes.medium)
+                                        .padding(spacing.md),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
                                         text = "Chưa có Groq API Key",
-                                        fontSize = 13.sp,
-                                        color = Color(0xFFB45309)
+                                        style = type.bodyMedium,
+                                        color = extraColors.onWarningContainer
                                     )
                                     Button(
                                         onClick = onOpenSettings,
-                                        shape = RoundedCornerShape(6.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706))
+                                        shape = shapes.small,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = extraColors.warning,
+                                            contentColor = extraColors.onWarning
+                                        )
                                     ) {
-                                        Text("Cài đặt key", fontSize = 12.sp)
+                                        Text("Cài đặt key")
                                     }
                                 }
                             }
