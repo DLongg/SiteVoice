@@ -103,7 +103,7 @@ fun EditNoteDialog(
                         enabled = text.isNotBlank(),
                         shape = MaterialTheme.shapes.medium,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onSurface,
+                            containerColor = MaterialTheme.colorScheme.primary,
                             disabledContainerColor = MaterialTheme.colorScheme.outlineVariant
                         )
                     ) {
