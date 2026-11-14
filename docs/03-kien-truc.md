@@ -48,4 +48,4 @@ Nạp form (Picker / chọn DOCX)  [DOCX: import thành Google Doc]  bản sao l
   - **Kiểu chữ (Typography)**: Tối đa 2 font, 3–5 cấp kích cỡ, văn bản chính dùng màu mực đầy đủ (độ tương phản cao, dễ nhìn ngoài công trường nắng gắt), không dùng xám nhạt khó đọc.
   - **Bố cục & Khung**: Lưới nhất quán, lề hai bên đối xứng, phân chia bề mặt bằng bước chuyển tông màu nhẹ (tone step) thay vì viền mảnh hairline hoặc bóng mờ.
   - **Trạng thái & Phản hồi**: Mọi thành phần tương tác (nút bấm, ghi âm, card, chip lọc) phải có phản hồi thị giác rõ rệt khi nhấn (press), rỗng (empty), đang tải (loading) và lỗi (error).
-- Token cụ thể (màu, kiểu chữ, khoảng cách, bo góc, trạng thái) ở [design-system/sitevoice/MASTER.md](../design-system/sitevoice/MASTER.md); mới là đặc tả, chưa áp dụng vào code.
+- Token cụ thể (màu, kiểu chữ, khoảng cách, bo góc, trạng thái) ở [design-system/sitevoice/MASTER.md](../design-system/sitevoice/MASTER.md); triển khai trong `ui/theme/` (`SiteVoiceTheme`), màn hình mới/sửa phải dùng token thay vì giá trị viết cứng.
