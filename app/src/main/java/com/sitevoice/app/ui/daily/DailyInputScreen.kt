@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,10 +21,22 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.NightsStay
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -115,13 +128,24 @@ fun DailyInputScreen(
                 }
 
                 if (isSavedNotification) {
-                    Text(
-                        text = "✓ Đã lưu",
-                        fontSize = TextSizes.caption,
-                        lineHeight = TextSizes.captionLine,
-                        fontWeight = FontWeight.Bold,
-                        color = SiteVoiceTheme.colors.success
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = SiteVoiceTheme.colors.success
+                        )
+                        Text(
+                            text = "Đã lưu",
+                            fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
+                            fontWeight = FontWeight.Bold,
+                            color = SiteVoiceTheme.colors.success
+                        )
+                    }
                 }
             }
 
@@ -151,22 +175,44 @@ fun DailyInputScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(Spacing.xs))
-                        Text(
-                            text = if (activeTemplateName != null) "📑 $activeTemplateName" else "✨ Chưa thiết lập Mẫu Google Doc",
-                            fontSize = TextSizes.body,
-                            lineHeight = TextSizes.bodyLine,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = if (activeTemplateName != null) Icons.Default.Description else Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = if (activeTemplateName != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = if (activeTemplateName != null) activeTemplateName else "Chưa thiết lập Mẫu Google Doc",
+                                fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
 
-                    Text(
-                        text = if (activeTemplateName != null) "Chỉnh sửa ▸" else "Tạo tự động ▸",
-                        fontSize = TextSizes.caption,
-                        lineHeight = TextSizes.captionLine,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                    ) {
+                        Text(
+                            text = if (activeTemplateName != null) "Chỉnh sửa" else "Tạo tự động",
+                            fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
 
@@ -194,14 +240,25 @@ fun DailyInputScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            val badgeTitle = if (isApproved) "✓ Đã duyệt nhật ký" else "📑 Bản dự thảo sẵn sàng"
-                            Text(
-                                text = badgeTitle,
-                                fontSize = TextSizes.body,
-                                lineHeight = TextSizes.bodyLine,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isApproved) SiteVoiceTheme.colors.onSuccessContainer else MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            val badgeTitle = if (isApproved) "Đã duyệt nhật ký" else "Bản dự thảo sẵn sàng"
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = if (isApproved) Icons.Default.CheckCircle else Icons.Default.Description,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = if (isApproved) SiteVoiceTheme.colors.onSuccessContainer else MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = badgeTitle,
+                                    fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isApproved) SiteVoiceTheme.colors.onSuccessContainer else MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
                             Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = if (isApproved) "Nhật ký đã được duyệt 1 lần duy nhất." else "Bấm để xem và duyệt trước khi xuất Doc.",
@@ -262,9 +319,11 @@ fun DailyInputScreen(
                         periodLabel = stringResource(id = R.string.weather_morning),
                         currentSelection = weatherMorning,
                         option1Key = "nang",
-                        option1Label = "☀️ Trời nắng",
+                        option1Icon = Icons.Default.WbSunny,
+                        option1Label = "Trời nắng",
                         option2Key = "mua",
-                        option2Label = "🌧️ Trời mưa",
+                        option2Icon = Icons.Default.WaterDrop,
+                        option2Label = "Trời mưa",
                         onSelect = { weatherMorning = it }
                     )
 
@@ -275,9 +334,11 @@ fun DailyInputScreen(
                         periodLabel = stringResource(id = R.string.weather_afternoon),
                         currentSelection = weatherAfternoon,
                         option1Key = "nang",
-                        option1Label = "☀️ Trời nắng",
+                        option1Icon = Icons.Default.WbSunny,
+                        option1Label = "Trời nắng",
                         option2Key = "mua",
-                        option2Label = "🌧️ Trời mưa",
+                        option2Icon = Icons.Default.WaterDrop,
+                        option2Label = "Trời mưa",
                         onSelect = { weatherAfternoon = it }
                     )
 
@@ -288,9 +349,11 @@ fun DailyInputScreen(
                         periodLabel = stringResource(id = R.string.weather_evening),
                         currentSelection = weatherEvening,
                         option1Key = "binh_thuong",
-                        option1Label = "🌙 Bình thường",
+                        option1Icon = Icons.Default.NightsStay,
+                        option1Label = "Bình thường",
                         option2Key = "mua",
-                        option2Label = "🌧️ Trời mưa",
+                        option2Icon = Icons.Default.WaterDrop,
+                        option2Label = "Trời mưa",
                         onSelect = { weatherEvening = it }
                     )
                 }
@@ -453,18 +516,28 @@ fun DailyInputScreen(
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                val btnText = if (dailyReport != null) {
-                    "🔄 " + stringResource(id = R.string.report_btn_resynthesize)
-                } else {
-                    "⚡ " + stringResource(id = R.string.btn_generate_report)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                ) {
+                    Icon(
+                        imageVector = if (dailyReport != null) Icons.Default.Refresh else Icons.Default.AutoAwesome,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        text = if (dailyReport != null) {
+                            stringResource(id = R.string.report_btn_resynthesize)
+                        } else {
+                            stringResource(id = R.string.btn_generate_report)
+                        },
+                        fontSize = TextSizes.subtitle,
+                        lineHeight = TextSizes.subtitleLine,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
-                Text(
-                    text = btnText,
-                    fontSize = TextSizes.subtitle,
-                    lineHeight = TextSizes.subtitleLine,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
             }
 
             Spacer(modifier = Modifier.height(Spacing.xxl))
@@ -477,8 +550,10 @@ fun WeatherRow(
     periodLabel: String,
     currentSelection: String,
     option1Key: String,
+    option1Icon: ImageVector,
     option1Label: String,
     option2Key: String,
+    option2Icon: ImageVector,
     option2Label: String,
     onSelect: (String) -> Unit
 ) {
@@ -501,6 +576,7 @@ fun WeatherRow(
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             WeatherChip(
+                icon = option1Icon,
                 label = option1Label,
                 isSelected = currentSelection == option1Key,
                 onClick = { onSelect(option1Key) },
@@ -508,6 +584,7 @@ fun WeatherRow(
             )
 
             WeatherChip(
+                icon = option2Icon,
                 label = option2Label,
                 isSelected = currentSelection == option2Key,
                 onClick = { onSelect(option2Key) },
@@ -519,6 +596,7 @@ fun WeatherRow(
 
 @Composable
 fun WeatherChip(
+    icon: ImageVector,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -536,12 +614,23 @@ fun WeatherChip(
             .padding(vertical = Spacing.sm),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = label,
-            fontSize = TextSizes.caption,
-            lineHeight = TextSizes.captionLine,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = textCol
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = textCol
+            )
+            Text(
+                text = label,
+                fontSize = TextSizes.caption,
+                lineHeight = TextSizes.captionLine,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                color = textCol
+            )
+        }
     }
 }
