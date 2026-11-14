@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.material3.MaterialTheme
 import androidx.lifecycle.lifecycleScope
 import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.data.DefaultDailyInputRepository
@@ -16,6 +15,7 @@ import com.sitevoice.app.template.TemplateSchema
 import com.sitevoice.app.ui.MainScreen
 import com.sitevoice.app.ui.MainViewModel
 import com.sitevoice.app.ui.MainViewModelFactory
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            MaterialTheme {
+            SiteVoiceTheme {
                 MainScreen(
                     viewModel = viewModel,
                     securePreferences = securePreferences
