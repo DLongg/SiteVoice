@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,7 @@ fun TemplateLibraryScreen(
     onAutoSetupFromDoc: (String) -> Unit = {}
 ) {
     var templateToDelete by remember { mutableStateOf<TemplateItemEntity?>(null) }
+    val context = LocalContext.current
     var docUrlInput by remember { mutableStateOf("") }
     var docUrlError by remember { mutableStateOf<String?>(null) }
 
@@ -133,7 +135,7 @@ fun TemplateLibraryScreen(
                     docUrlInput = it
                     docUrlError = null
                 },
-                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                placeholder = { Text(stringResource(id = R.string.template_doc_input_placeholder), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium
@@ -164,7 +166,7 @@ fun TemplateLibraryScreen(
                 Button(
                     onClick = {
                         if (docUrlInput.isBlank()) {
-                            docUrlError = "Vui lòng dán link hoặc ID Google Doc trước khi quét."
+                            docUrlError = context.getString(R.string.template_doc_input_empty_error)
                         } else {
                             onAutoSetupFromDoc(docUrlInput.trim())
                         }
@@ -374,7 +376,7 @@ fun TemplateCardItem(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Giới hạn: $maxPages trang • Có $fieldCount trường tổng hợp: ${s.summaryFields.keys.take(3).joinToString(", ")}${if (fieldCount > 3) "..." else ""}",
+                    text = stringResource(id = R.string.template_stats_summary, maxPages, fieldCount, "${s.summaryFields.keys.take(3).joinToString(", ")}${if (fieldCount > 3) "..." else ""}"),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
