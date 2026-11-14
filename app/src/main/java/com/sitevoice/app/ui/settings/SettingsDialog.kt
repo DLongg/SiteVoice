@@ -113,6 +113,7 @@ fun SettingsDialog(
                 Text(
                     text = "Cài đặt hệ thống",
                     fontSize = TextSizes.title,
+                    lineHeight = TextSizes.titleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -122,6 +123,7 @@ fun SettingsDialog(
                 Text(
                     text = "Dữ liệu được mã hóa an toàn trên thiết bị bằng EncryptedSharedPreferences.",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -131,6 +133,7 @@ fun SettingsDialog(
                 Text(
                     text = "1. API Chuyển giọng nói STT (Groq Whisper)",
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -138,13 +141,14 @@ fun SettingsDialog(
                 Text(
                     text = "Nhận diện âm thanh nói ngoài công trường thành văn bản.",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 OutlinedTextField(
                     value = inputSttKey,
                     onValueChange = { inputSttKey = it },
-                    placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption) },
+                    placeholder = { Text("gsk_xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
@@ -156,6 +160,7 @@ fun SettingsDialog(
                 Text(
                     text = "2. API Gemini Phân loại (Vilao AI / Gemini)",
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -163,14 +168,15 @@ fun SettingsDialog(
                 Text(
                     text = "Đọc hiểu và phân loại các ghi chú vào đúng các mục nhật ký thi công.",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(Spacing.sm))
                 OutlinedTextField(
                     value = inputClassifyKey,
                     onValueChange = { inputClassifyKey = it },
-                    label = { Text("Gemini API Key phân loại", fontSize = TextSizes.caption) },
-                    placeholder = { Text("sk-xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption) },
+                    label = { Text("Gemini API Key phân loại", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                    placeholder = { Text("sk-xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
@@ -183,20 +189,20 @@ fun SettingsDialog(
                     OutlinedTextField(
                         value = inputClassifyBaseUrl,
                         onValueChange = { inputClassifyBaseUrl = it },
-                        label = { Text("Endpoint", fontSize = TextSizes.caption) },
+                        label = { Text("Endpoint", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         modifier = Modifier.weight(1.3f),
                         shape = MaterialTheme.shapes.medium,
-                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption)
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                     )
                     OutlinedTextField(
                         value = inputClassifyModel,
                         onValueChange = { inputClassifyModel = it },
-                        label = { Text("Model", fontSize = TextSizes.caption) },
+                        label = { Text("Model", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.medium,
-                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption)
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                     )
                 }
 
@@ -211,6 +217,7 @@ fun SettingsDialog(
                     Text(
                         text = stringResource(R.string.settings_temperature_title),
                         fontSize = TextSizes.body,
+                        lineHeight = TextSizes.bodyLine,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -223,6 +230,7 @@ fun SettingsDialog(
                         Text(
                             text = String.format(Locale.US, "%.2f", temperature),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
@@ -234,6 +242,7 @@ fun SettingsDialog(
                 Text(
                     text = stringResource(R.string.settings_temperature_subtitle),
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -263,11 +272,13 @@ fun SettingsDialog(
                     Text(
                         text = "0.0: Bám sát nguyên văn",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "0.8: Viết lại mượt mà",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -278,6 +289,7 @@ fun SettingsDialog(
                 Text(
                     text = "3. Google Doc mẫu (A4 ≤ 2 trang)",
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -285,7 +297,7 @@ fun SettingsDialog(
                 OutlinedTextField(
                     value = inputDocId,
                     onValueChange = { inputDocId = it },
-                    placeholder = { Text("Dán link hoặc Doc ID mẫu", fontSize = TextSizes.caption) },
+                    placeholder = { Text("Dán link hoặc Doc ID mẫu", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
@@ -294,6 +306,7 @@ fun SettingsDialog(
                 Text(
                     text = "ID mẫu mặc định: ${SecurePreferences.DEFAULT_DOC_TEMPLATE_ID}",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -307,6 +320,7 @@ fun SettingsDialog(
                     Text(
                         text = "✨ Tự động nhận diện & Tạo Mẫu từ Doc này",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -318,6 +332,7 @@ fun SettingsDialog(
                 Text(
                     text = stringResource(id = R.string.settings_google_section),
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -326,8 +341,8 @@ fun SettingsDialog(
                 OutlinedTextField(
                     value = inputWebClientId,
                     onValueChange = { inputWebClientId = it },
-                    label = { Text(stringResource(id = R.string.settings_google_client_id), fontSize = TextSizes.caption) },
-                    placeholder = { Text(stringResource(id = R.string.settings_google_client_id_hint), fontSize = TextSizes.caption) },
+                    label = { Text(stringResource(id = R.string.settings_google_client_id), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                    placeholder = { Text(stringResource(id = R.string.settings_google_client_id_hint), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
@@ -352,12 +367,14 @@ fun SettingsDialog(
                             Text(
                                 text = stringResource(id = R.string.settings_google_account),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = currentGoogleAccountEmail ?: stringResource(id = R.string.settings_google_not_signed_in),
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.SemiBold,
                                 color = if (currentGoogleAccountEmail != null) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -368,7 +385,7 @@ fun SettingsDialog(
                                 onClick = onSignOutGoogleClick,
                                 shape = MaterialTheme.shapes.small
                             ) {
-                                Text(text = stringResource(id = R.string.settings_btn_sign_out_google), fontSize = TextSizes.caption)
+                                Text(text = stringResource(id = R.string.settings_btn_sign_out_google), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                             }
                         } else {
                             Button(
@@ -376,7 +393,7 @@ fun SettingsDialog(
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 shape = MaterialTheme.shapes.small
                             ) {
-                                Text(text = stringResource(id = R.string.settings_btn_sign_in_google), fontSize = TextSizes.caption)
+                                Text(text = stringResource(id = R.string.settings_btn_sign_in_google), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                             }
                         }
                     }
@@ -388,6 +405,7 @@ fun SettingsDialog(
                 Text(
                     text = "5. Thư viện Mẫu Báo cáo",
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -408,10 +426,11 @@ fun SettingsDialog(
                         Text(
                             text = "📑 " + (activeTemplateName ?: "Quản lý Thư viện Mẫu"),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        Text(text = "Đổi / Căn chỉnh →", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.primary)
+                        Text(text = "Đổi / Căn chỉnh →", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -435,12 +454,14 @@ fun SettingsDialog(
                                 Text(
                                     text = "6. Chế độ Nhà phát triển (Developer Mode)",
                                     fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "Xem & chỉnh sửa trực tiếp System Prompt của AI",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -458,6 +479,7 @@ fun SettingsDialog(
                             Text(
                                 text = "🛠️ System Prompt hiện tại (${activeTemplate.name}):",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -471,7 +493,7 @@ fun SettingsDialog(
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 7,
                                 maxLines = 14,
-                                textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption)
+                                textStyle = androidx.compose.ui.text.TextStyle(fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                             )
 
                             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -491,7 +513,7 @@ fun SettingsDialog(
                                     modifier = Modifier.weight(1f),
                                     contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                 ) {
-                                    Text("💾 Lưu Prompt", fontSize = TextSizes.caption, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
+                                    Text("💾 Lưu Prompt", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
                                 }
 
                                 OutlinedButton(
@@ -503,7 +525,7 @@ fun SettingsDialog(
                                     modifier = Modifier.weight(1f),
                                     contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                 ) {
-                                    Text("🔄 Khôi phục gốc", fontSize = TextSizes.caption, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("🔄 Khôi phục gốc", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
 
@@ -512,6 +534,7 @@ fun SettingsDialog(
                                 Text(
                                     text = "✓ $msg",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = SiteVoiceTheme.colors.success,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -522,6 +545,7 @@ fun SettingsDialog(
                                 Text(
                                     text = "📊 Dữ liệu JSON gần nhất do LLM trả về:",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -540,6 +564,7 @@ fun SettingsDialog(
                                     maxLines = 12,
                                     textStyle = androidx.compose.ui.text.TextStyle(
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                                     )
                                 )
