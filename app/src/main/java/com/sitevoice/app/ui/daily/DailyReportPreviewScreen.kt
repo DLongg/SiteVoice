@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -45,6 +43,10 @@ import com.sitevoice.app.data.DailyInputEntity
 import com.sitevoice.app.data.DailyReportEntity
 import com.sitevoice.app.template.DailyReportContent
 import org.json.JSONObject
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 @Composable
 fun DailyReportPreviewScreen(
@@ -65,13 +67,13 @@ fun DailyReportPreviewScreen(
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF8FAFC)
+        color = MaterialTheme.colorScheme.background
     ) {
         if (isSynthesizing) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
+                    .padding(Spacing.xl),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -79,21 +81,21 @@ fun DailyReportPreviewScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator(
-                        color = Color(0xFF0F172A),
+                        color = MaterialTheme.colorScheme.onSurface,
                         strokeWidth = 3.dp
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xl))
                     Text(
                         text = stringResource(id = R.string.report_synthesizing_loading),
-                        fontSize = 15.sp,
+                        fontSize = TextSizes.subtitle,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(Spacing.sm))
                     Text(
                         text = stringResource(id = R.string.report_synthesizing_budget_note),
-                        fontSize = 12.sp,
-                        color = Color(0xFF64748B),
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
@@ -105,27 +107,27 @@ fun DailyReportPreviewScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
+                    .padding(Spacing.xl),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "Chưa có bản tổng hợp nào cho ngày $currentDate",
-                        fontSize = 14.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.body,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing.lg))
                     Button(
                         onClick = onResynthesizeClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                        shape = RoundedCornerShape(8.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Text(text = stringResource(id = R.string.btn_generate_report))
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(Spacing.sm))
                     OutlinedButton(
                         onClick = onBackToEditClick,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Text(text = stringResource(id = R.string.report_btn_back_to_edit))
                     }
@@ -140,10 +142,10 @@ fun DailyReportPreviewScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = Spacing.lg)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Thanh điều hướng trên cùng
             Row(
@@ -153,55 +155,55 @@ fun DailyReportPreviewScreen(
             ) {
                 OutlinedButton(
                     onClick = onBackToEditClick,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = "← " + stringResource(id = R.string.report_btn_back_to_edit), fontSize = 12.sp)
+                    Text(text = "← " + stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption)
                 }
 
                 // Status Chip
                 StatusBadge(status = reportEntity.status)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             // Tiêu đề
             Text(
                 text = stringResource(id = R.string.report_preview_title),
-                fontSize = 20.sp,
+                fontSize = TextSizes.title,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF0F172A)
+                color = MaterialTheme.colorScheme.onSurface
             )
             val templateDisplayName = activeTemplateName ?: (if (reportEntity.templateId == "nhat-ky-ca-nhan") "Nhật ký cá nhân" else "Nhật ký thi công công trường")
             Text(
                 text = "Ngày: $currentDate • Mẫu: $templateDisplayName",
-                fontSize = 12.sp,
-                color = Color(0xFF64748B)
+                fontSize = TextSizes.caption,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             // Banner phê duyệt nếu đã duyệt
             if (isApproved) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFDCFCE7), RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFF86EFAC), RoundedCornerShape(8.dp))
-                        .padding(12.dp)
+                        .background(SiteVoiceTheme.colors.successContainer, MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
+                        .padding(Spacing.md)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "✓", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF15803D))
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "✓", fontSize = TextSizes.subtitle, fontWeight = FontWeight.Bold, color = SiteVoiceTheme.colors.success)
+                        Spacer(modifier = Modifier.width(Spacing.sm))
                         Text(
                             text = stringResource(id = R.string.report_approved_banner),
-                            fontSize = 13.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFF166534)
+                            color = SiteVoiceTheme.colors.onSuccessContainer
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
             val isConstruction = reportEntity.templateId == "nhat-ky-cong-truong" || reportEntity.templateId.isBlank()
 
@@ -209,18 +211,18 @@ fun DailyReportPreviewScreen(
                 // Khối 1: Thông tin hiện trường (Thời tiết, Nhân lực, Máy móc)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(10.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = MaterialTheme.shapes.medium,
                     border = CardDefaults.outlinedCardBorder()
                 ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    Column(modifier = Modifier.padding(Spacing.lg)) {
                         Text(
                             text = stringResource(id = R.string.report_section_general),
-                            fontSize = 14.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
 
                         val weatherText = buildString {
                             val tq = content.allFields["tong_quan_thoi_tiet"]?.toString()?.trim()
@@ -237,23 +239,23 @@ fun DailyReportPreviewScreen(
                                 append(" ($tq)")
                             }
                         }
-                        Text(text = "Thời tiết: $weatherText", fontSize = 13.sp, color = Color(0xFF334155))
+                        Text(text = "Thời tiết: $weatherText", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         val bch = content.allFields["ng_ch"]?.toString()?.toIntOrNull() ?: dailyInput?.commandStaffCount ?: 0
                         val cn = content.allFields["ng_cn"]?.toString()?.toIntOrNull() ?: dailyInput?.workerCount ?: 0
-                        Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = 13.sp, color = Color(0xFF334155))
+                        Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         val mayMocFromLlm = content.allFields["may_moc"]?.let {
                             if (it is List<*>) it.filterNotNull().joinToString(", ") else it.toString()
                         }
                         val eq = if (!mayMocFromLlm.isNullOrBlank()) mayMocFromLlm else (dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính")
-                        Text(text = "Thiết bị: $eq", fontSize = 13.sp, color = Color(0xFF334155))
+                        Text(text = "Thiết bị: $eq", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 // Khối 2: Công việc thi công (Ngân sách: ≤ 15 dòng)
                 ReportSectionList(
@@ -262,7 +264,7 @@ fun DailyReportPreviewScreen(
                     items = content.congViecThiCong
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 // Khối 3: Nghiệm thu công việc (Ngân sách: ≤ 6 dòng)
                 ReportSectionList(
@@ -271,7 +273,7 @@ fun DailyReportPreviewScreen(
                     items = content.nghiemThu
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 // Khối 4: An toàn lao động & VSMT (Ngân sách: ≤ 3 dòng)
                 ReportSectionList(
@@ -280,28 +282,28 @@ fun DailyReportPreviewScreen(
                     items = content.anToan
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 // Khối 5: Ý kiến các bên (Tối đa 200 ký tự mỗi bên)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(10.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = MaterialTheme.shapes.medium,
                     border = CardDefaults.outlinedCardBorder()
                 ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    Column(modifier = Modifier.padding(Spacing.lg)) {
                         Text(
                             text = stringResource(id = R.string.report_section_opinions),
-                            fontSize = 14.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
 
                         OpinionRow(label = stringResource(id = R.string.report_opinion_cdt) + " ({{Y_KIEN_CDT}})", content = content.yKienCdt)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
                         OpinionRow(label = stringResource(id = R.string.report_opinion_tvgs) + " ({{Y_KIEN_TVGS}})", content = content.yKienTvgs)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
                         OpinionRow(label = stringResource(id = R.string.report_opinion_contractor) + " ({{Y_KIEN_NHA_THAU}})", content = content.yKienNhaThau)
                     }
                 }
@@ -318,15 +320,15 @@ fun DailyReportPreviewScreen(
                             badgeText = "$placeholderTag • ${stringList.size} mục",
                             items = stringList
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
                     } else {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            shape = MaterialTheme.shapes.medium,
                             border = CardDefaults.outlinedCardBorder()
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
+                            Column(modifier = Modifier.padding(Spacing.lg)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -334,40 +336,40 @@ fun DailyReportPreviewScreen(
                                 ) {
                                     Text(
                                         text = readableTitle,
-                                        fontSize = 14.sp,
+                                        fontSize = TextSizes.body,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF0F172A)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = placeholderTag,
-                                        fontSize = 11.sp,
+                                        fontSize = TextSizes.caption,
                                         fontFamily = FontFamily.Monospace,
-                                        color = Color(0xFF2563EB)
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(Spacing.sm))
                                 Text(
                                     text = value.toString().ifBlank { stringResource(id = R.string.report_empty_field) },
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF334155)
+                                    fontSize = TextSizes.body,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(Spacing.md))
                     }
                 }
             }
 
             // Khối 6: Ghi chú chưa phân loại (nếu có)
             if (content.chuaPhanLoai.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
-                    shape = RoundedCornerShape(10.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFDE68A))
+                    colors = CardDefaults.cardColors(containerColor = SiteVoiceTheme.colors.warningContainer),
+                    shape = MaterialTheme.shapes.medium,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                 ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    Column(modifier = Modifier.padding(Spacing.lg)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -375,39 +377,39 @@ fun DailyReportPreviewScreen(
                         ) {
                             Text(
                                 text = "⚠️ " + stringResource(id = R.string.report_section_unclassified),
-                                fontSize = 14.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFB45309)
+                                color = SiteVoiceTheme.colors.warning
                             )
                             Text(
                                 text = "${content.chuaPhanLoai.size} mục",
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFB45309)
+                                color = SiteVoiceTheme.colors.warning
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         Text(
                             text = stringResource(id = R.string.report_unclassified_hint),
-                            fontSize = 11.sp,
-                            color = Color(0xFF92400E)
+                            fontSize = TextSizes.caption,
+                            color = SiteVoiceTheme.colors.onWarningContainer
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
                         content.chuaPhanLoai.forEach { item ->
                             Text(
                                 text = "• $item",
-                                fontSize = 13.sp,
-                                color = Color(0xFF78350F),
-                                modifier = Modifier.padding(vertical = 2.dp)
+                                fontSize = TextSizes.body,
+                                color = SiteVoiceTheme.colors.onWarningContainer,
+                                modifier = Modifier.padding(vertical = Spacing.xs)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(Spacing.xl))
 
             // Các nút hành động chính
             if (!isApproved) {
@@ -417,37 +419,37 @@ fun DailyReportPreviewScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                    shape = RoundedCornerShape(10.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
                         text = stringResource(id = R.string.report_btn_approve),
-                        fontSize = 15.sp,
+                        fontSize = TextSizes.subtitle,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
                     OutlinedButton(
                         onClick = onResynthesizeClick,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(text = "🔄 " + stringResource(id = R.string.report_btn_resynthesize), fontSize = 12.sp)
+                        Text(text = "🔄 " + stringResource(id = R.string.report_btn_resynthesize), fontSize = TextSizes.caption)
                     }
 
                     OutlinedButton(
                         onClick = onBackToEditClick,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(text = stringResource(id = R.string.report_btn_back_to_edit), fontSize = 12.sp)
+                        Text(text = stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption)
                     }
                 }
             } else {
@@ -458,36 +460,36 @@ fun DailyReportPreviewScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF)),
-                        shape = RoundedCornerShape(10.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF93C5FD))
+                            .padding(bottom = Spacing.md),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                        shape = MaterialTheme.shapes.medium,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
+                        Column(modifier = Modifier.padding(Spacing.lg)) {
                             Text(
                                 text = "✓ " + stringResource(id = R.string.report_export_success),
-                                fontSize = 14.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1D4ED8)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = "Bản sao đã được tạo tại Google Drive cá nhân của bạn.",
-                                fontSize = 12.sp,
-                                color = Color(0xFF3B82F6)
+                                fontSize = TextSizes.caption,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(Spacing.md))
                             Button(
                                 onClick = { onOpenDocClick?.invoke(docUrl) },
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                                shape = RoundedCornerShape(8.dp)
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                shape = MaterialTheme.shapes.medium
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.report_btn_open_doc),
-                                    fontSize = 13.sp,
+                                    fontSize = TextSizes.body,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -501,19 +503,19 @@ fun DailyReportPreviewScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = if (docUrl.isNullOrBlank()) Color(0xFF2563EB) else Color(0xFF0F172A)),
-                    shape = RoundedCornerShape(10.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = if (docUrl.isNullOrBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     if (isExporting) {
                         CircularProgressIndicator(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.dp,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = Spacing.sm)
                         )
                         Text(
                             text = stringResource(id = R.string.report_exporting_loading),
-                            fontSize = 13.sp,
-                            color = Color.White
+                            fontSize = TextSizes.body,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
                         val exportBtnText = if (docUrl.isNullOrBlank()) {
@@ -523,27 +525,27 @@ fun DailyReportPreviewScreen(
                         }
                         Text(
                             text = exportBtnText,
-                            fontSize = 15.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
 
                 OutlinedButton(
                     onClick = onResynthesizeClick,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = stringResource(id = R.string.report_edit_again), fontSize = 12.sp)
+                    Text(text = stringResource(id = R.string.report_edit_again), fontSize = TextSizes.caption)
                 }
             }
 
             // Khối Chế độ Nhà phát triển: Xem & Sửa dữ liệu JSON do LLM trả về
             if (isDeveloperMode) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 var rawJsonText by remember(reportEntity.contentJson) {
                     val formatted = try {
@@ -559,11 +561,11 @@ fun DailyReportPreviewScreen(
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1))
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier.padding(Spacing.md)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -571,9 +573,9 @@ fun DailyReportPreviewScreen(
                         ) {
                             Text(
                                 text = "🛠️ Dữ liệu JSON do LLM trả về:",
-                                fontSize = 13.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0F172A)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
 
                             TextButton(
@@ -582,17 +584,17 @@ fun DailyReportPreviewScreen(
                                     saveMessage = "Đã sao chép JSON vào bộ nhớ tạm!"
                                 }
                             ) {
-                                Text("📋 Sao chép", fontSize = 11.sp, color = Color(0xFF2563EB))
+                                Text("📋 Sao chép", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.primary)
                             }
                         }
 
                         Text(
                             text = "Dữ liệu JSON nguyên bản bóc tách từ ghi chú. Bạn có thể sửa trực tiếp rồi bấm Lưu.",
-                            fontSize = 11.sp,
-                            color = Color(0xFF64748B)
+                            fontSize = TextSizes.caption,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(Spacing.sm))
 
                         OutlinedTextField(
                             value = rawJsonText,
@@ -605,33 +607,33 @@ fun DailyReportPreviewScreen(
                             minLines = 8,
                             maxLines = 18,
                             textStyle = androidx.compose.ui.text.TextStyle(
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontFamily = FontFamily.Monospace
                             )
                         )
 
                         if (isEditingRaw) {
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(Spacing.sm))
                             Button(
                                 onClick = {
                                     onUpdateRawJson?.invoke(rawJsonText)
                                     isEditingRaw = false
                                     saveMessage = "Đã cập nhật JSON vào báo cáo!"
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                                shape = RoundedCornerShape(6.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                shape = MaterialTheme.shapes.small,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("💾 Lưu sửa đổi JSON vào Báo cáo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                Text("💾 Lưu sửa đổi JSON vào Báo cáo", fontSize = TextSizes.caption, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
 
                         saveMessage?.let { msg ->
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = "✓ $msg",
-                                fontSize = 11.sp,
-                                color = Color(0xFF15803D),
+                                fontSize = TextSizes.caption,
+                                color = SiteVoiceTheme.colors.success,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -639,7 +641,7 @@ fun DailyReportPreviewScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(Spacing.xxl))
         }
     }
 }
@@ -647,20 +649,20 @@ fun DailyReportPreviewScreen(
 @Composable
 fun StatusBadge(status: String) {
     val (label, bg, textCol, borderCol) = when (status) {
-        "APPROVED" -> Quadruple(stringResource(id = R.string.report_status_approved), Color(0xFFDCFCE7), Color(0xFF15803D), Color(0xFF86EFAC))
-        "EXPORTED" -> Quadruple(stringResource(id = R.string.report_status_exported), Color(0xFFDBEAFE), Color(0xFF1D4ED8), Color(0xFF93C5FD))
-        else -> Quadruple(stringResource(id = R.string.report_status_draft), Color(0xFFFEF3C7), Color(0xFFB45309), Color(0xFFFCD34D))
+        "APPROVED" -> Quadruple(stringResource(id = R.string.report_status_approved), SiteVoiceTheme.colors.successContainer, SiteVoiceTheme.colors.success, MaterialTheme.colorScheme.outlineVariant)
+        "EXPORTED" -> Quadruple(stringResource(id = R.string.report_status_exported), MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, MaterialTheme.colorScheme.outlineVariant)
+        else -> Quadruple(stringResource(id = R.string.report_status_draft), SiteVoiceTheme.colors.warningContainer, SiteVoiceTheme.colors.warning, MaterialTheme.colorScheme.outlineVariant)
     }
 
     Box(
         modifier = Modifier
-            .background(bg, RoundedCornerShape(6.dp))
-            .border(1.dp, borderCol, RoundedCornerShape(6.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .background(bg, MaterialTheme.shapes.small)
+            .border(1.dp, borderCol, MaterialTheme.shapes.small)
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
     ) {
         Text(
             text = label,
-            fontSize = 11.sp,
+            fontSize = TextSizes.caption,
             fontWeight = FontWeight.Bold,
             color = textCol
         )
@@ -677,11 +679,11 @@ fun ReportSectionList(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = MaterialTheme.shapes.medium,
         border = CardDefaults.outlinedCardBorder()
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(Spacing.lg)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -689,26 +691,26 @@ fun ReportSectionList(
             ) {
                 Text(
                     text = title,
-                    fontSize = 14.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = badgeText,
-                    fontSize = 11.sp,
+                    fontSize = TextSizes.caption,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF64748B)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             if (items.isEmpty()) {
                 Text(
                     text = stringResource(id = R.string.report_empty_field),
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                    color = Color(0xFF94A3B8)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 items.forEach { item ->
@@ -720,16 +722,16 @@ fun ReportSectionList(
                     ) {
                         Text(
                             text = "•",
-                            fontSize = 14.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2563EB),
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.width(14.dp)
                         )
                         Text(
                             text = item,
-                            fontSize = 13.sp,
-                            color = Color(0xFF1E293B),
-                            lineHeight = 18.sp
+                            fontSize = TextSizes.body,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            lineHeight = TextSizes.bodyLine
                         )
                     }
                 }
@@ -743,15 +745,15 @@ fun OpinionRow(label: String, content: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
-            fontSize = 12.sp,
+            fontSize = TextSizes.caption,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF475569)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         Text(
             text = content.ifBlank { stringResource(id = R.string.report_empty_field) },
-            fontSize = 13.sp,
-            color = if (content.isNotBlank()) Color(0xFF1E293B) else Color(0xFF94A3B8),
+            fontSize = TextSizes.body,
+            color = if (content.isNotBlank()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
             fontStyle = if (content.isNotBlank()) androidx.compose.ui.text.font.FontStyle.Normal else androidx.compose.ui.text.font.FontStyle.Italic
         )
     }
