@@ -85,9 +85,9 @@ fun MainScreen(
     ) { result ->
         viewModel.clearAuthConsentIntent()
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(context, "✓ Đã cấp quyền Google! Bạn có thể bấm thực hiện lại thao tác.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.main_toast_google_permission_granted), Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(context, "Cần cấp quyền để thao tác với Google Doc", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.main_toast_google_permission_required), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -106,10 +106,10 @@ fun MainScreen(
             val account = task.getResult(ApiException::class.java)
             if (account != null) {
                 securePreferences.googleAccountEmail = account.email
-                Toast.makeText(context, "Đăng nhập Google thành công: ${account.email}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.main_toast_google_sign_in_success, account.email), Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Lỗi đăng nhập Google: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.main_toast_google_sign_in_error, e.message ?: ""), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -242,7 +242,7 @@ fun MainScreen(
                             },
                             onApproveClick = {
                                 viewModel.approveDailyReport()
-                                Toast.makeText(context, "✓ Đã phê duyệt báo cáo!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.main_toast_report_approved), Toast.LENGTH_SHORT).show()
                             },
                             onResynthesizeClick = {
                                 viewModel.synthesizeDailyReport()
@@ -252,7 +252,7 @@ fun MainScreen(
                             },
                             onExportDocClick = {
                                 viewModel.exportDailyReport(context) { docUrl ->
-                                    Toast.makeText(context, "✓ Đã xuất Google Doc thành công!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.main_toast_report_exported), Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onOpenDocClick = { docUrl ->
@@ -260,7 +260,7 @@ fun MainScreen(
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(docUrl))
                                     context.startActivity(intent)
                                 } catch (e: Exception) {
-                                    Toast.makeText(context, "Không thể mở trình duyệt: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.main_toast_open_browser_error, e.message ?: ""), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         )
@@ -316,7 +316,7 @@ fun MainScreen(
                     viewModel.autoCreateSingleTemplateFromDoc(context, docUrlOrId) { createdTemplate ->
                         Toast.makeText(
                             context,
-                            "✓ Đã tạo mẫu tự động '${createdTemplate.name}'! Bạn có thể chỉnh sửa ngay bên dưới.",
+                            context.getString(R.string.main_toast_auto_template_created, createdTemplate.name),
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -337,7 +337,7 @@ fun MainScreen(
                     GoogleAuthManager.signOut(context) {
                         securePreferences.googleAccountEmail = null
                         securePreferences.googleAccessToken = null
-                        Toast.makeText(context, "Đã đăng xuất tài khoản Google", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.main_toast_google_signed_out), Toast.LENGTH_SHORT).show()
                     }
                 },
                 onDismiss = { showSettingsDialog = false }
@@ -355,7 +355,7 @@ fun MainScreen(
                         showFormSetupDialog = false
                         showSettingsDialog = false
                         showAutoTemplateWorkspace = true
-                        Toast.makeText(context, "Đã tạo Mẫu '${createdTemplate.name}' và chèn placeholder thành công!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context.getString(R.string.main_toast_form_setup_success, createdTemplate.name), Toast.LENGTH_LONG).show()
                     }
                 },
                 onRescan = {
@@ -383,7 +383,7 @@ fun MainScreen(
                     },
                     onSaveTemplate = { updatedTemplate ->
                         viewModel.saveCustomTemplate(updatedTemplate) {
-                            Toast.makeText(context, "✓ Đã lưu chỉnh sửa bản mẫu!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.main_toast_template_saved), Toast.LENGTH_SHORT).show()
                         }
                     },
                     isAutoCreating = isFormSettingUp,
@@ -411,13 +411,13 @@ fun MainScreen(
         if (synthesisError != null) {
             AlertDialog(
                 onDismissRequest = { viewModel.clearSynthesisError() },
-                title = { Text("Thông báo", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.common_dialog_title_notice), fontWeight = FontWeight.Bold) },
                 text = { Text(synthesisError ?: "") },
                 confirmButton = {
                     TextButton(
                         onClick = { viewModel.clearSynthesisError() }
                     ) {
-                        Text("Đóng")
+                        Text(stringResource(id = R.string.common_close))
                     }
                 }
             )
@@ -427,13 +427,13 @@ fun MainScreen(
         if (exportError != null) {
             AlertDialog(
                 onDismissRequest = { viewModel.clearExportError() },
-                title = { Text("Lỗi xuất tài liệu", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.main_dialog_title_export_error), fontWeight = FontWeight.Bold) },
                 text = { Text(exportError ?: "") },
                 confirmButton = {
                     TextButton(
                         onClick = { viewModel.clearExportError() }
                     ) {
-                        Text("Đóng")
+                        Text(stringResource(id = R.string.common_close))
                     }
                 }
             )
