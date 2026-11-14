@@ -337,7 +337,7 @@ fun TemplateCardItem(
             if (!isActive) {
                 Button(
                     onClick = onActivate,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(36.dp)
                 ) {
