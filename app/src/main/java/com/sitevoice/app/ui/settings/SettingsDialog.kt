@@ -122,7 +122,7 @@ fun SettingsDialog(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Cài đặt hệ thống",
+                    text = stringResource(id = R.string.settings_dialog_title),
                     fontSize = TextSizes.title,
                     lineHeight = TextSizes.titleLine,
                     fontWeight = FontWeight.Bold,
@@ -132,7 +132,7 @@ fun SettingsDialog(
                 Spacer(modifier = Modifier.height(Spacing.xs))
 
                 Text(
-                    text = "Dữ liệu được mã hóa an toàn trên thiết bị bằng EncryptedSharedPreferences.",
+                    text = stringResource(id = R.string.settings_security_note),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -142,7 +142,7 @@ fun SettingsDialog(
 
                 // Phần 1: Groq API Key (STT)
                 Text(
-                    text = "1. API Chuyển giọng nói STT (Groq Whisper)",
+                    text = stringResource(id = R.string.settings_stt_title),
                     fontSize = TextSizes.body,
                     lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
@@ -150,7 +150,7 @@ fun SettingsDialog(
                 )
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
-                    text = "Nhận diện âm thanh nói ngoài công trường thành văn bản.",
+                    text = stringResource(id = R.string.settings_stt_desc),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -169,7 +169,7 @@ fun SettingsDialog(
 
                 // Phần 2: Gemini API Phân loại (Vilao AI)
                 Text(
-                    text = "2. API Gemini Phân loại (Vilao AI / Gemini)",
+                    text = stringResource(id = R.string.settings_gemini_title),
                     fontSize = TextSizes.body,
                     lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
@@ -177,7 +177,7 @@ fun SettingsDialog(
                 )
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
-                    text = "Đọc hiểu và phân loại các ghi chú vào đúng các mục nhật ký thi công.",
+                    text = stringResource(id = R.string.settings_gemini_desc),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -186,7 +186,7 @@ fun SettingsDialog(
                 OutlinedTextField(
                     value = inputClassifyKey,
                     onValueChange = { inputClassifyKey = it },
-                    label = { Text("Gemini API Key phân loại", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                    label = { Text(stringResource(id = R.string.settings_gemini_key_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     placeholder = { Text("sk-xxxxxxxxxxxxxxxxxxxx", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -281,13 +281,13 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "0.0: Bám sát nguyên văn",
+                        text = stringResource(id = R.string.settings_temperature_exact),
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "0.8: Viết lại mượt mà",
+                        text = stringResource(id = R.string.settings_temperature_creative),
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -298,7 +298,7 @@ fun SettingsDialog(
 
                 // Phần 3: Link Google Doc mẫu
                 Text(
-                    text = "3. Google Doc mẫu (A4 ≤ 2 trang)",
+                    text = stringResource(id = R.string.settings_doc_template_title),
                     fontSize = TextSizes.body,
                     lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
@@ -308,14 +308,14 @@ fun SettingsDialog(
                 OutlinedTextField(
                     value = inputDocId,
                     onValueChange = { inputDocId = it },
-                    placeholder = { Text("Dán link hoặc Doc ID mẫu", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                    placeholder = { Text(stringResource(id = R.string.settings_doc_template_hint), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
                 )
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
-                    text = "ID mẫu mặc định: ${SecurePreferences.DEFAULT_DOC_TEMPLATE_ID}",
+                    text = stringResource(id = R.string.settings_doc_default_id, SecurePreferences.DEFAULT_DOC_TEMPLATE_ID),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -339,7 +339,7 @@ fun SettingsDialog(
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = "Tự động nhận diện & Tạo Mẫu từ Doc này",
+                            text = stringResource(id = R.string.settings_btn_auto_setup),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.SemiBold,
@@ -425,7 +425,7 @@ fun SettingsDialog(
 
                 // Phần 5: Thư viện Mẫu
                 Text(
-                    text = "5. Thư viện Mẫu Báo cáo",
+                    text = stringResource(id = R.string.settings_template_library_title),
                     fontSize = TextSizes.body,
                     lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.SemiBold,
@@ -456,7 +456,7 @@ fun SettingsDialog(
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = activeTemplateName ?: "Quản lý Thư viện Mẫu",
+                                text = activeTemplateName ?: stringResource(id = R.string.settings_template_manage_fallback),
                                 fontSize = TextSizes.body,
                                 lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Medium,
@@ -467,7 +467,7 @@ fun SettingsDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
                         ) {
-                            Text(text = "Đổi / Căn chỉnh", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
+                            Text(text = stringResource(id = R.string.settings_template_action), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
                             Icon(
                                 imageVector = Icons.Default.ArrowForward,
                                 contentDescription = null,
@@ -496,14 +496,14 @@ fun SettingsDialog(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "6. Chế độ Nhà phát triển (Developer Mode)",
+                                    text = stringResource(id = R.string.settings_dev_mode_title),
                                     fontSize = TextSizes.body,
                                     lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Xem & chỉnh sửa trực tiếp System Prompt của AI",
+                                    text = stringResource(id = R.string.settings_dev_mode_desc),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -531,7 +531,7 @@ fun SettingsDialog(
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "System Prompt hiện tại (${activeTemplate.name}):",
+                                    text = stringResource(id = R.string.settings_dev_current_prompt, activeTemplate.name),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Bold,
@@ -561,7 +561,7 @@ fun SettingsDialog(
                                 Button(
                                     onClick = {
                                         onSavePrompt(activeTemplate.id, customPrompt)
-                                        promptSavedMessage = "Đã lưu prompt thành công!"
+                                        promptSavedMessage = context.getString(R.string.settings_prompt_saved)
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                     shape = MaterialTheme.shapes.small,
@@ -575,13 +575,13 @@ fun SettingsDialog(
                                         tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                     Spacer(modifier = Modifier.width(Spacing.xs))
-                                    Text("Lưu Prompt", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
+                                    Text(stringResource(id = R.string.settings_btn_save_prompt), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
                                 }
 
                                 OutlinedButton(
                                     onClick = {
                                         onResetPrompt(activeTemplate.id)
-                                        promptSavedMessage = "Đã khôi phục prompt gốc!"
+                                        promptSavedMessage = context.getString(R.string.settings_prompt_reset)
                                     },
                                     shape = MaterialTheme.shapes.small,
                                     modifier = Modifier.weight(1f),
@@ -594,7 +594,7 @@ fun SettingsDialog(
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.width(Spacing.xs))
-                                    Text("Khôi phục gốc", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(stringResource(id = R.string.settings_btn_reset_prompt), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
 
@@ -633,7 +633,7 @@ fun SettingsDialog(
                                         tint = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "Dữ liệu JSON gần nhất do LLM trả về:",
+                                        text = stringResource(id = R.string.settings_dev_json_title),
                                         fontSize = TextSizes.caption,
                                         lineHeight = TextSizes.captionLine,
                                         fontWeight = FontWeight.Bold,
@@ -675,7 +675,7 @@ fun SettingsDialog(
                         onClick = onDismiss,
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text("Đóng")
+                        Text(stringResource(id = R.string.common_close))
                     }
 
                     Spacer(modifier = Modifier.width(Spacing.sm))
@@ -697,7 +697,7 @@ fun SettingsDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text("Lưu cài đặt")
+                        Text(stringResource(id = R.string.settings_btn_save))
                     }
                 }
             }
