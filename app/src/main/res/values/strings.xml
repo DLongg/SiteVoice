@@ -51,6 +51,7 @@
     <string name="edit_dialog_hint">Nhập hoặc sửa nội dung phát sinh...</string>
     <string name="btn_save">Lưu</string>
     <string name="btn_cancel">Hủy</string>
+    <string name="btn_close">Đóng</string>
 
     <!-- Delete Dialog -->
     <string name="delete_dialog_title">Xác nhận xóa ghi chú</string>
