@@ -8,13 +8,28 @@ import androidx.compose.ui.unit.sp
 
 // Type scale: design-system/sitevoice/MASTER.md §2. System font, 5 sizes (28/20/16/14/12), min 12sp.
 
+/** Raw size tokens, for call sites that set fontSize/lineHeight directly instead of a full style. */
+object TextSizes {
+    val display = 28.sp
+    val title = 20.sp
+    val subtitle = 16.sp
+    val body = 14.sp
+    val caption = 12.sp
+
+    val displayLine = 36.sp
+    val titleLine = 28.sp
+    val subtitleLine = 24.sp
+    val bodyLine = 20.sp
+    val captionLine = 16.sp
+}
+
 private val Base = TextStyle(fontFamily = FontFamily.Default)
 
-private val Display = Base.copy(fontSize = 28.sp, lineHeight = 36.sp, fontWeight = FontWeight.SemiBold)
-private val Title = Base.copy(fontSize = 20.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold)
-private val Subtitle = Base.copy(fontSize = 16.sp, lineHeight = 24.sp)
-private val Body = Base.copy(fontSize = 14.sp, lineHeight = 20.sp)
-private val Caption = Base.copy(fontSize = 12.sp, lineHeight = 16.sp)
+private val Display = Base.copy(fontSize = TextSizes.display, lineHeight = TextSizes.displayLine, fontWeight = FontWeight.SemiBold)
+private val Title = Base.copy(fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, fontWeight = FontWeight.SemiBold)
+private val Subtitle = Base.copy(fontSize = TextSizes.subtitle, lineHeight = TextSizes.subtitleLine)
+private val Body = Base.copy(fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine)
+private val Caption = Base.copy(fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
 
 internal val SiteVoiceTypography = Typography(
     displayLarge = Display,
