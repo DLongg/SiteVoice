@@ -45,6 +45,7 @@ fun DeleteConfirmDialog(
                 Text(
                     text = stringResource(id = R.string.delete_dialog_title),
                     fontSize = TextSizes.title,
+                    lineHeight = TextSizes.titleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.error
                 )
