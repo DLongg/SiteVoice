@@ -24,9 +24,23 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Apartment
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Rule
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,17 +68,17 @@ import com.sitevoice.app.ui.theme.Spacing
 data class CategoryOption(
     val key: String,
     val title: String,
-    val icon: String
+    val icon: ImageVector
 )
 
 val CATEGORY_OPTIONS = listOf(
-    CategoryOption(NoteClassifier.LABEL_THI_CONG, "Thi công", "🏗️"),
-    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, "Nghiệm thu", "📐"),
-    CategoryOption(NoteClassifier.LABEL_AN_TOAN, "An toàn & Vệ sinh", "🦺"),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, "Ý kiến Chủ đầu tư", "🏛️"),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, "Ý kiến TVGS", "📋"),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, "Ý kiến Nhà thầu", "🏢"),
-    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, "Chưa phân loại", "❓")
+    CategoryOption(NoteClassifier.LABEL_THI_CONG, "Thi công", Icons.Default.Engineering),
+    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, "Nghiệm thu", Icons.Default.Rule),
+    CategoryOption(NoteClassifier.LABEL_AN_TOAN, "An toàn & Vệ sinh", Icons.Default.HealthAndSafety),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, "Ý kiến Chủ đầu tư", Icons.Default.AccountBalance),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, "Ý kiến TVGS", Icons.Default.Assignment),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, "Ý kiến Nhà thầu", Icons.Default.Apartment),
+    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, "Chưa phân loại", Icons.Default.HelpOutline)
 )
 
 @Composable
@@ -133,10 +147,11 @@ fun NotesListScreen(
                                 .background(MaterialTheme.colorScheme.outlineVariant, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "📝",
-                                fontSize = TextSizes.display,
-                                lineHeight = TextSizes.displayLine
+                            Icon(
+                                imageVector = Icons.Default.Description,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -317,7 +332,7 @@ fun NoteItemCard(
                     else -> {
                         // Nhãn mục có thể bấm để đổi khi đã hoàn thành phân loại
                         val currentCategory = CATEGORY_OPTIONS.find { it.key == note.label }
-                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), "❓")
+                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), Icons.Default.HelpOutline)
 
                         val isUnclassified = note.label.isNullOrBlank() ||
                                 note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
@@ -334,19 +349,26 @@ fun NoteItemCard(
                                     .clickable { showLabelMenu = true }
                                     .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                             ) {
+                                Icon(
+                                    imageVector = currentCategory.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = labelColor
+                                )
+                                Spacer(modifier = Modifier.width(Spacing.xs))
                                 Text(
-                                    text = "${currentCategory.icon} ${currentCategory.title}",
+                                    text = currentCategory.title,
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Medium,
                                     color = labelColor
                                 )
                                 Spacer(modifier = Modifier.width(Spacing.xs))
-                                Text(
-                                    text = "▾",
-                                    fontSize = TextSizes.caption,
-                                    lineHeight = TextSizes.captionLine,
-                                    color = labelColor
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = labelColor
                                 )
                             }
 
@@ -357,12 +379,23 @@ fun NoteItemCard(
                                 CATEGORY_OPTIONS.forEach { option ->
                                     DropdownMenuItem(
                                         text = {
-                                            Text(
-                                                text = "${option.icon} ${option.title}",
-                                                fontSize = TextSizes.body,
-                                                lineHeight = TextSizes.bodyLine,
-                                                fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
-                                            )
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                                            ) {
+                                                Icon(
+                                                    imageVector = option.icon,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(16.dp),
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                                Text(
+                                                    text = option.title,
+                                                    fontSize = TextSizes.body,
+                                                    lineHeight = TextSizes.bodyLine,
+                                                    fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
+                                                )
+                                            }
                                         },
                                         onClick = {
                                             onSelectLabel(option.key)
@@ -465,8 +498,15 @@ fun NoteItemCard(
                     shape = MaterialTheme.shapes.small,
                     contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.xs)
                 ) {
+                    Icon(
+                        imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
-                        text = if (isPlaying) "■ Dừng" else "▶ ${durationSec}s",
+                        text = if (isPlaying) "Dừng" else "${durationSec}s",
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
