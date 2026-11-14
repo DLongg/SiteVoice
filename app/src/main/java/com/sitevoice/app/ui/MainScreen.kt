@@ -28,12 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.sitevoice.app.R
@@ -46,6 +44,8 @@ import com.sitevoice.app.ui.record.RecordScreen
 import com.sitevoice.app.ui.settings.SettingsDialog
 import com.sitevoice.app.ui.template.FormSetupDialog
 import com.sitevoice.app.ui.template.TemplateEditorScreen
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.TextSizes
 
 @Composable
 fun MainScreen(
@@ -110,7 +110,7 @@ fun MainScreen(
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surface,
                 tonalElevation = 4.dp
             ) {
                 // Tab 0: Ghi âm
@@ -120,7 +120,7 @@ fun MainScreen(
                     icon = {
                         Text(
                             text = "🎙️",
-                            fontSize = 18.sp
+                            fontSize = TextSizes.title
                         )
                     },
                     label = {
@@ -130,9 +130,9 @@ fun MainScreen(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = Color(0xFF1E293B),
-                        selectedIconColor = Color(0xFF1E293B),
-                        indicatorColor = Color(0xFFE2E8F0)
+                        selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedIconColor = MaterialTheme.colorScheme.onSurface,
+                        indicatorColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
 
@@ -145,8 +145,8 @@ fun MainScreen(
                             badge = {
                                 if (activeNotes.isNotEmpty()) {
                                     Badge(
-                                        containerColor = Color(0xFF2563EB),
-                                        contentColor = Color.White
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
                                     ) {
                                         Text(text = activeNotes.size.toString())
                                     }
@@ -155,7 +155,7 @@ fun MainScreen(
                         ) {
                             Text(
                                 text = "📋",
-                                fontSize = 18.sp
+                                fontSize = TextSizes.title
                             )
                         }
                     },
@@ -166,9 +166,9 @@ fun MainScreen(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = Color(0xFF1E293B),
-                        selectedIconColor = Color(0xFF1E293B),
-                        indicatorColor = Color(0xFFE2E8F0)
+                        selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedIconColor = MaterialTheme.colorScheme.onSurface,
+                        indicatorColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
 
@@ -179,7 +179,7 @@ fun MainScreen(
                     icon = {
                         Text(
                             text = "📑",
-                            fontSize = 18.sp
+                            fontSize = TextSizes.title
                         )
                     },
                     label = {
@@ -189,9 +189,9 @@ fun MainScreen(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = Color(0xFF1E293B),
-                        selectedIconColor = Color(0xFF1E293B),
-                        indicatorColor = Color(0xFFE2E8F0)
+                        selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedIconColor = MaterialTheme.colorScheme.onSurface,
+                        indicatorColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
             }
@@ -364,7 +364,7 @@ fun MainScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF8FAFC))
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 TemplateEditorScreen(
                     template = activeTemplate,
