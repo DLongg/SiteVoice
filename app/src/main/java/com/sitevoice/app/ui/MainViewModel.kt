@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.UserRecoverableAuthException
+import com.sitevoice.app.R
 import com.sitevoice.app.audio.AudioPlayer
 import com.sitevoice.app.data.AppDatabase
 import com.sitevoice.app.data.DailyInputEntity
@@ -201,7 +202,7 @@ class MainViewModel(
         val file = File(note.audioPath)
         if (!file.exists()) {
             viewModelScope.launch {
-                repository.updateNote(note.copy(error = "Tệp âm thanh không tồn tại"))
+                repository.updateNote(note.copy(error = appContext.getString(R.string.vm_error_audio_file_not_found)))
             }
             return
         }
@@ -258,13 +259,13 @@ class MainViewModel(
     fun synthesizeDailyReport(onSuccess: (() -> Unit)? = null) {
         val hasKey = !securePreferences.geminiApiKey.isNullOrBlank() || !securePreferences.groqApiKey.isNullOrBlank()
         if (!hasKey) {
-            _synthesisError.value = "Chưa cài đặt API Key phân loại / LLM trong Cài đặt."
+            _synthesisError.value = appContext.getString(R.string.vm_error_missing_llm_key)
             return
         }
 
         val notes = activeNotes.value
         if (notes.isEmpty()) {
-            _synthesisError.value = "Chưa có ghi chú nào hôm nay để tổng hợp báo cáo."
+            _synthesisError.value = appContext.getString(R.string.report_empty_notes_warning)
             return
         }
 
@@ -308,10 +309,10 @@ class MainViewModel(
                     dailyReportRepository.saveReport(reportEntity)
                     onSuccess?.invoke()
                 } else {
-                    _synthesisError.value = result.exceptionOrNull()?.message ?: "Lỗi khi tổng hợp báo cáo"
+                    _synthesisError.value = result.exceptionOrNull()?.message ?: appContext.getString(R.string.vm_error_synthesis_failed)
                 }
             } catch (e: Exception) {
-                _synthesisError.value = e.message ?: "Lỗi hệ thống khi tổng hợp"
+                _synthesisError.value = e.message ?: appContext.getString(R.string.vm_error_synthesis_system)
             } finally {
                 _isSynthesizing.value = false
             }
@@ -331,13 +332,13 @@ class MainViewModel(
     fun exportDailyReport(context: Context, onSuccess: (docUrl: String) -> Unit) {
         val account = GoogleAuthManager.getLastSignedInAccount(context)
         if (account == null) {
-            _exportError.value = "Chưa đăng nhập tài khoản Google. Vui lòng mở Cài đặt và bấm 'Đăng nhập Google' trước."
+            _exportError.value = appContext.getString(R.string.vm_error_google_sign_in_required)
             return
         }
 
         val report = dailyReport.value
         if (report == null) {
-            _exportError.value = "Chưa có bản tổng hợp nhật ký để xuất."
+            _exportError.value = appContext.getString(R.string.vm_error_no_report_to_export)
             return
         }
 
@@ -350,7 +351,7 @@ class MainViewModel(
             try {
                 val acc = account.account
                 if (acc == null) {
-                    _exportError.value = "Không tìm thấy thông tin tài khoản Google."
+                    _exportError.value = appContext.getString(R.string.vm_error_google_account_not_found)
                     return@launch
                 }
                 val tokenResult = GoogleAuthManager.fetchAccessToken(context, acc)
@@ -361,7 +362,7 @@ class MainViewModel(
                         _authConsentIntent.value = ex.intent
                         return@launch
                     }
-                    _exportError.value = "Không thể lấy quyền truy cập Google: ${ex?.message}"
+                    _exportError.value = appContext.getString(R.string.vm_error_google_access_token, ex?.message ?: "")
                     return@launch
                 }
                 val token = tokenResult.getOrThrow()
@@ -385,10 +386,10 @@ class MainViewModel(
                     dailyReportRepository.markExported(currentDate, result.docUrl)
                     onSuccess(result.docUrl)
                 } else {
-                    _exportError.value = exportResult.exceptionOrNull()?.message ?: "Lỗi khi xuất Google Doc"
+                    _exportError.value = exportResult.exceptionOrNull()?.message ?: appContext.getString(R.string.vm_error_export_failed)
                 }
             } catch (e: Exception) {
-                _exportError.value = e.message ?: "Lỗi hệ thống khi xuất Doc"
+                _exportError.value = e.message ?: appContext.getString(R.string.vm_error_export_system)
             } finally {
                 _isExporting.value = false
             }
@@ -424,13 +425,13 @@ class MainViewModel(
     ) {
         val docId = PlaceholderMapper.extractDocId(docUrlOrId)
         if (docId.isBlank()) {
-            _formSetupError.value = "Link hoặc ID Google Doc không hợp lệ."
+            _formSetupError.value = appContext.getString(R.string.vm_error_invalid_doc_id)
             return
         }
 
         val account = GoogleAuthManager.getLastSignedInAccount(context)
         if (account == null || account.account == null) {
-            _formSetupError.value = "Chưa đăng nhập tài khoản Google. Vui lòng bấm 'Đăng nhập Google' trong Cài đặt trước."
+            _formSetupError.value = appContext.getString(R.string.vm_error_google_sign_in_doc)
             return
         }
 
@@ -446,7 +447,7 @@ class MainViewModel(
                     _authConsentIntent.value = ex.intent
                     return@launch
                 }
-                _formSetupError.value = "Không thể lấy quyền truy cập Google: ${ex?.message}"
+                _formSetupError.value = appContext.getString(R.string.vm_error_google_access_token, ex?.message ?: "")
                 _isFormSettingUp.value = false
                 return@launch
             }
@@ -468,7 +469,7 @@ class MainViewModel(
                 }
                 onSuccess(created)
             } else {
-                _formSetupError.value = createResult.exceptionOrNull()?.message ?: "Lỗi tạo mẫu tự động từ Google Doc"
+                _formSetupError.value = createResult.exceptionOrNull()?.message ?: appContext.getString(R.string.vm_error_create_template_failed)
             }
         }
     }
@@ -477,7 +478,7 @@ class MainViewModel(
         viewModelScope.launch {
             val duplicated = template.copy(
                 id = "custom_" + System.currentTimeMillis(),
-                name = "${template.name} (Bản sao)",
+                name = "${template.name} ${appContext.getString(R.string.template_duplicate_suffix)}",
                 isBuiltIn = false,
                 isActive = false,
                 createdAt = System.currentTimeMillis(),
@@ -498,13 +499,13 @@ class MainViewModel(
     fun startFormSetup(context: Context, docUrlOrId: String, customName: String? = null) {
         val docId = PlaceholderMapper.extractDocId(docUrlOrId)
         if (docId.isBlank()) {
-            _formSetupError.value = "Link hoặc ID Google Doc không hợp lệ."
+            _formSetupError.value = appContext.getString(R.string.vm_error_invalid_doc_id)
             return
         }
 
         val account = GoogleAuthManager.getLastSignedInAccount(context)
         if (account == null || account.account == null) {
-            _formSetupError.value = "Chưa đăng nhập tài khoản Google. Vui lòng bấm 'Đăng nhập Google' trong Cài đặt trước."
+            _formSetupError.value = appContext.getString(R.string.vm_error_google_sign_in_doc)
             return
         }
 
@@ -521,7 +522,7 @@ class MainViewModel(
                     _authConsentIntent.value = ex.intent
                     return@launch
                 }
-                _formSetupError.value = "Không thể lấy quyền truy cập Google: ${ex?.message}"
+                _formSetupError.value = appContext.getString(R.string.vm_error_google_access_token, ex?.message ?: "")
                 _isFormSettingUp.value = false
                 return@launch
             }
@@ -535,7 +536,7 @@ class MainViewModel(
                 val effectiveTitle = customName?.trim()?.takeIf { it.isNotBlank() } ?: analysis.originalDocTitle
                 _formSetupAnalysis.value = analysis.copy(originalDocTitle = effectiveTitle)
             } else {
-                _formSetupError.value = analysisResult.exceptionOrNull()?.message ?: "Lỗi phân tích biểu mẫu"
+                _formSetupError.value = analysisResult.exceptionOrNull()?.message ?: appContext.getString(R.string.vm_error_analyze_form_failed)
             }
         }
     }
@@ -544,7 +545,7 @@ class MainViewModel(
         val analysis = _formSetupAnalysis.value ?: return
         val account = GoogleAuthManager.getLastSignedInAccount(context)
         if (account == null || account.account == null) {
-            _formSetupError.value = "Chưa đăng nhập tài khoản Google."
+            _formSetupError.value = appContext.getString(R.string.vm_error_google_not_signed_in)
             return
         }
 
@@ -554,7 +555,7 @@ class MainViewModel(
 
             val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
             if (tokenResult.isFailure) {
-                _formSetupError.value = "Không thể lấy quyền truy cập Google"
+                _formSetupError.value = appContext.getString(R.string.vm_error_google_access_token_generic)
                 _isFormSettingUp.value = false
                 return@launch
             }
@@ -570,7 +571,7 @@ class MainViewModel(
             if (result.isSuccess) {
                 _formSetupAnalysis.value = result.getOrThrow()
             } else {
-                _formSetupError.value = result.exceptionOrNull()?.message ?: "Lỗi quét lại biểu mẫu"
+                _formSetupError.value = result.exceptionOrNull()?.message ?: appContext.getString(R.string.vm_error_rescan_form_failed)
             }
         }
     }
@@ -582,12 +583,12 @@ class MainViewModel(
     ) {
         val docId = PlaceholderMapper.extractDocId(docUrlOrId)
         if (docId.isBlank()) {
-            onResult(Result.failure(IllegalArgumentException("Link hoặc ID Google Doc không hợp lệ.")))
+            onResult(Result.failure(IllegalArgumentException(appContext.getString(R.string.vm_error_invalid_doc_id))))
             return
         }
         val account = GoogleAuthManager.getLastSignedInAccount(context)
         if (account == null || account.account == null) {
-            onResult(Result.failure(IllegalStateException("Chưa đăng nhập tài khoản Google. Vui lòng bấm 'Đăng nhập Google' trong Cài đặt trước.")))
+            onResult(Result.failure(IllegalStateException(appContext.getString(R.string.vm_error_google_sign_in_doc))))
             return
         }
 
@@ -598,20 +599,20 @@ class MainViewModel(
                 if (ex is UserRecoverableAuthException) {
                     _authConsentIntent.value = ex.intent
                 }
-                onResult(Result.failure(ex ?: IllegalStateException("Không thể lấy quyền truy cập Google")))
+                onResult(Result.failure(ex ?: IllegalStateException(appContext.getString(R.string.vm_error_google_access_token_generic))))
                 return@launch
             }
 
             val token = tokenResult.getOrThrow()
             val result = formSetupService.rescanWorkingDoc(
                 workingDocId = docId,
-                workingTitle = "Bản mẫu",
+                workingTitle = appContext.getString(R.string.vm_default_template_name),
                 accessToken = token
             )
             if (result.isSuccess) {
                 onResult(Result.success(result.getOrThrow().candidates))
             } else {
-                onResult(Result.failure(result.exceptionOrNull() ?: IllegalStateException("Lỗi đồng bộ trường từ Google Doc")))
+                onResult(Result.failure(result.exceptionOrNull() ?: IllegalStateException(appContext.getString(R.string.vm_error_sync_fields_failed))))
             }
         }
     }
@@ -636,7 +637,7 @@ class MainViewModel(
 
             val tokenResult = GoogleAuthManager.fetchAccessToken(context, account.account!!)
             if (tokenResult.isFailure) {
-                _formSetupError.value = "Không thể lấy quyền truy cập Google"
+                _formSetupError.value = appContext.getString(R.string.vm_error_google_access_token_generic)
                 _isFormSettingUp.value = false
                 return@launch
             }
@@ -668,7 +669,7 @@ class MainViewModel(
                 _formSetupAnalysis.value = null
                 onSuccess(template)
             } else {
-                _formSetupError.value = result.exceptionOrNull()?.message ?: "Lỗi chèn placeholder"
+                _formSetupError.value = result.exceptionOrNull()?.message ?: appContext.getString(R.string.vm_error_insert_placeholders_failed)
             }
         }
     }
