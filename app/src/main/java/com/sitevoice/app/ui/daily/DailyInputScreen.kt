@@ -101,6 +101,7 @@ fun DailyInputScreen(
                     Text(
                         text = stringResource(id = R.string.tab_report),
                         fontSize = TextSizes.title,
+                        lineHeight = TextSizes.titleLine,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -108,6 +109,7 @@ fun DailyInputScreen(
                     Text(
                         text = "Ngày: $currentDate",
                         fontSize = TextSizes.body,
+                        lineHeight = TextSizes.bodyLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -116,6 +118,7 @@ fun DailyInputScreen(
                     Text(
                         text = "✓ Đã lưu",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         fontWeight = FontWeight.Bold,
                         color = SiteVoiceTheme.colors.success
                     )
@@ -143,6 +146,7 @@ fun DailyInputScreen(
                         Text(
                             text = "MẪU BÁO CÁO ÁP DỤNG",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -150,6 +154,7 @@ fun DailyInputScreen(
                         Text(
                             text = if (activeTemplateName != null) "📑 $activeTemplateName" else "✨ Chưa thiết lập Mẫu Google Doc",
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -158,6 +163,7 @@ fun DailyInputScreen(
                     Text(
                         text = if (activeTemplateName != null) "Chỉnh sửa ▸" else "Tạo tự động ▸",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -192,6 +198,7 @@ fun DailyInputScreen(
                             Text(
                                 text = badgeTitle,
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isApproved) SiteVoiceTheme.colors.onSuccessContainer else MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -199,6 +206,7 @@ fun DailyInputScreen(
                             Text(
                                 text = if (isApproved) "Nhật ký đã được duyệt 1 lần duy nhất." else "Bấm để xem và duyệt trước khi xuất Doc.",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = if (isApproved) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.primary
                             )
                         }
@@ -210,7 +218,7 @@ fun DailyInputScreen(
                             ),
                             shape = MaterialTheme.shapes.medium
                         ) {
-                            Text(text = "Xem", fontSize = TextSizes.caption, fontWeight = FontWeight.Bold)
+                            Text(text = "Xem", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -234,12 +242,14 @@ fun DailyInputScreen(
                         Text(
                             text = stringResource(id = R.string.weather_title),
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "{{SANG_*}} • {{CHIEU_*}} • {{TOI_*}}",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -304,12 +314,14 @@ fun DailyInputScreen(
                         Text(
                             text = stringResource(id = R.string.staff_title),
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "{{BAN_CHI_HUY}} • {{CONG_NHAN}}",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -326,7 +338,7 @@ fun DailyInputScreen(
                             onValueChange = {
                                 commandStaffCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
                             },
-                            label = { Text("Ban chỉ huy", fontSize = TextSizes.caption) },
+                            label = { Text("Ban chỉ huy", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = MaterialTheme.shapes.medium,
                             modifier = Modifier.weight(1f)
@@ -337,7 +349,7 @@ fun DailyInputScreen(
                             onValueChange = {
                                 workerCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
                             },
-                            label = { Text("Công nhân", fontSize = TextSizes.caption) },
+                            label = { Text("Công nhân", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = MaterialTheme.shapes.medium,
                             modifier = Modifier.weight(1f)
@@ -355,12 +367,14 @@ fun DailyInputScreen(
                         Text(
                             text = stringResource(id = R.string.equipment_title),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "{{MAY_MOC}}",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -375,6 +389,7 @@ fun DailyInputScreen(
                             Text(
                                 text = stringResource(id = R.string.equipment_hint),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
@@ -446,6 +461,7 @@ fun DailyInputScreen(
                 Text(
                     text = btnText,
                     fontSize = TextSizes.subtitle,
+                    lineHeight = TextSizes.subtitleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
@@ -474,6 +490,7 @@ fun WeatherRow(
         Text(
             text = periodLabel,
             fontSize = TextSizes.body,
+            lineHeight = TextSizes.bodyLine,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(60.dp)
@@ -522,6 +539,7 @@ fun WeatherChip(
         Text(
             text = label,
             fontSize = TextSizes.caption,
+            lineHeight = TextSizes.captionLine,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             color = textCol
         )
