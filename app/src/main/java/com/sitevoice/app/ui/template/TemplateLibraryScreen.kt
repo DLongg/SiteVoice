@@ -73,17 +73,19 @@ fun TemplateLibraryScreen(
                 Text(
                     text = stringResource(id = R.string.template_library_title),
                     fontSize = TextSizes.title,
+                    lineHeight = TextSizes.titleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = stringResource(id = R.string.template_library_subtitle),
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onClose) {
-                Text(text = "✕", fontSize = TextSizes.title, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = "✕", fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
@@ -100,6 +102,7 @@ fun TemplateLibraryScreen(
             Text(
                 text = stringResource(id = R.string.template_library_auto_setup_card_title),
                 fontSize = TextSizes.subtitle,
+                lineHeight = TextSizes.subtitleLine,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -107,6 +110,7 @@ fun TemplateLibraryScreen(
             Text(
                 text = stringResource(id = R.string.template_library_auto_setup_card_desc),
                 fontSize = TextSizes.caption,
+                lineHeight = TextSizes.captionLine,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -117,7 +121,7 @@ fun TemplateLibraryScreen(
                     docUrlInput = it
                     docUrlError = null
                 },
-                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = TextSizes.caption) },
+                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium
@@ -125,7 +129,7 @@ fun TemplateLibraryScreen(
 
             docUrlError?.let { err ->
                 Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(text = "⚠️ $err", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.error)
+                Text(text = "⚠️ $err", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.error)
             }
 
             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -150,6 +154,7 @@ fun TemplateLibraryScreen(
                         text = stringResource(id = R.string.template_library_auto_setup_btn),
                         fontWeight = FontWeight.Bold,
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
@@ -163,6 +168,7 @@ fun TemplateLibraryScreen(
                         text = stringResource(id = R.string.template_btn_create_new),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -261,6 +267,7 @@ fun TemplateCardItem(
                 Text(
                     text = template.name,
                     fontSize = TextSizes.subtitle,
+                    lineHeight = TextSizes.subtitleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -269,6 +276,7 @@ fun TemplateCardItem(
                     Text(
                         text = template.description,
                         fontSize = TextSizes.body,
+                        lineHeight = TextSizes.bodyLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -287,6 +295,7 @@ fun TemplateCardItem(
                         Text(
                             text = "✓ " + stringResource(id = R.string.template_badge_active),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
                             color = SiteVoiceTheme.colors.success
                         )
@@ -306,6 +315,7 @@ fun TemplateCardItem(
                             id = if (template.isBuiltIn) R.string.template_badge_builtin else R.string.template_badge_custom
                         ),
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         fontWeight = FontWeight.Medium,
                         color = if (template.isBuiltIn) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                     )
@@ -322,6 +332,7 @@ fun TemplateCardItem(
             Text(
                 text = "📄 Giới hạn: $maxPages trang • Có $fieldCount trường tổng hợp: ${s.summaryFields.keys.take(3).joinToString(", ")}${if (fieldCount > 3) "..." else ""}",
                 fontSize = TextSizes.caption,
+                lineHeight = TextSizes.captionLine,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -344,6 +355,7 @@ fun TemplateCardItem(
                     Text(
                         text = stringResource(id = R.string.template_btn_activate),
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -358,6 +370,7 @@ fun TemplateCardItem(
                 Text(
                     text = stringResource(id = R.string.template_btn_edit),
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -372,6 +385,7 @@ fun TemplateCardItem(
                 Text(
                     text = stringResource(id = R.string.template_btn_duplicate),
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -382,7 +396,7 @@ fun TemplateCardItem(
                     onClick = onDelete,
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Text(text = "🗑️", fontSize = TextSizes.body)
+                    Text(text = "🗑️", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine)
                 }
             }
         }
