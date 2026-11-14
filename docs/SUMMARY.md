@@ -20,7 +20,7 @@ Cập nhật: 2026-11-14. Đây là trạng thái hiện tại; quy tắc ở [A
   - **Một Bản Mẫu Tự Động Duy Nhất (`SINGLE_AUTO_TEMPLATE_ID = "auto_single_template"`)**: `MainActivity` gọi `purgeBuiltInAndEnsureSingleActive()` dọn sạch 2 mẫu mặc định cũ và chỉ giữ duy nhất 1 bản mẫu tự động đang kích hoạt; mở thẳng `TemplateEditorScreen` cho bản mẫu duy nhất này.
   - **Duyệt 2 Bước (`FormSetupDialog`) trước khi ghi Google Doc**: Khi dán link/ID Google Doc, ứng dụng tạo bản sao làm việc trên Google Drive, quét chỗ điền bằng code (`FormCandidateScanner`), gọi AI đề xuất thẻ `{{MA}}` & System Prompt rồi mở hộp thoại **Thiết lập Biểu mẫu 2 Bước** để người dùng duyệt trước khi ghi placeholder vào bản sao Google Doc và lưu `saveSingleAutoTemplate`.
   - **Đồng bộ ID xuyên suốt (`TemplateItemEntity` ↔ `schemaJson` ↔ `DailyReportEntity` ↔ `ExportWorker`)**: `FormSetupService` và `DefaultTemplateRepository.normalizeSchemaId()` chuẩn hóa `"id"` trong `schemaJson` về `"auto_single_template"`; `DailyReportEntity` và `MainViewModel.synthesizeDailyReport` lưu đúng `SINGLE_AUTO_TEMPLATE_ID` để `ExportWorker` luôn tra cứu chính xác bản mẫu trong Room.
-- **Ưu tiên tiếp theo**: Cài đặt `app-debug.apk` lên điện thoại thật khi kết nối ADB và kiểm thử thực tế luồng tạo/duyệt mẫu tự động duy nhất.
+- **Ưu tiên tiếp theo**: Đã cài đặt `app\build\outputs\apk\debug\app-debug.apk` (`Success`) và mở ứng dụng trực tiếp trên điện thoại thật `33c4f658` (`model:PKS110`); sẵn sàng cho người dùng kiểm thử thực tế luồng tạo/duyệt mẫu tự động duy nhất.
 
 ## Quyết định phải giữ
 

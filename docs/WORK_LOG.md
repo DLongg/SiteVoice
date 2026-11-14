@@ -687,8 +687,8 @@ A templates/schema-chung.md
   + `app/src/test/java/com/sitevoice/app/TemplateRepositoryTest.kt`
 - Kiểm tra:
   + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon`: **BUILD SUCCESSFUL** (mã thoát `0`), pass 100% toàn bộ unit tests (bao gồm `TemplateRepositoryTest.testPurgeBuiltInAndSaveSingleAutoTemplate`) và tạo `app\build\outputs\apk\debug\app-debug.apk`.
-  + Chưa cài đặt/chạy kiểm tra bản build mới này trên thiết bị thật trong phiên hiện tại (cần kết nối ADB thiết bị thật khi người dùng muốn cài đặt).
-- Còn lại: Người dùng kiểm thử luồng tạo & duyệt 2 bước bản mẫu tự động duy nhất trên thiết bị.
+  + Đã cài đặt (`adb -s 33c4f658 install -r app\build\outputs\apk\debug\app-debug.apk` -> `Performing Streamed Install / Success`) và khởi chạy `com.sitevoice.app/.MainActivity` thành công trên điện thoại thật `33c4f658` (`model:PKS110`), logcat sạch không có lỗi crash (`AndroidRuntime:E` trống).
+- Còn lại: Người dùng kiểm thử thực tế luồng tạo & duyệt 2 bước bản mẫu tự động duy nhất trên thiết bị.
 
 
 
