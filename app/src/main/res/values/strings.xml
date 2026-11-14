@@ -190,4 +190,242 @@
     <string name="settings_temperature_subtitle">Điều chỉnh mức độ mượt mà khi viết lại khẩu ngữ rời rạc ngoài hiện trường thành văn bản báo cáo.</string>
     <string name="settings_temperature_desc">0.0: Bám sát nguyên văn | 0.8: Viết lại mượt mà</string>
     <string name="settings_temperature_badge">Nhiệt độ: %1$s</string>
+
+    <!-- ==================== COMMON & MAIN SCREEN ==================== -->
+    <string name="common_close">Đóng</string>
+    <string name="common_dialog_title_notice">Thông báo</string>
+    <string name="common_warning_prefix">⚠️ %1$s</string>
+    <string name="main_dialog_title_export_error">Lỗi xuất tài liệu</string>
+    <string name="main_toast_google_permission_granted">✓ Đã cấp quyền Google! Bạn có thể bấm thực hiện lại thao tác.</string>
+    <string name="main_toast_google_permission_required">Cần cấp quyền để thao tác với Google Doc</string>
+    <string name="main_toast_google_sign_in_success">Đăng nhập Google thành công: %1$s</string>
+    <string name="main_toast_google_sign_in_error">Lỗi đăng nhập Google: %1$s</string>
+    <string name="main_toast_report_approved">✓ Đã phê duyệt báo cáo!</string>
+    <string name="main_toast_report_exported">✓ Đã xuất Google Doc thành công!</string>
+    <string name="main_toast_open_browser_error">Không thể mở trình duyệt: %1$s</string>
+    <string name="main_toast_auto_template_created">✓ Đã tạo mẫu tự động \'%1$s\'! Bạn có thể chỉnh sửa ngay bên dưới.</string>
+    <string name="main_toast_google_signed_out">Đã đăng xuất tài khoản Google</string>
+    <string name="main_toast_form_setup_success">Đã tạo Mẫu \'%1$s\' và chèn placeholder thành công!</string>
+    <string name="main_toast_template_saved">✓ Đã lưu chỉnh sửa bản mẫu!</string>
+
+    <!-- ==================== RECORD SCREEN ==================== -->
+    <string name="record_status_ready_all">STT OK | Gemini OK</string>
+    <string name="record_status_ready_groq">STT OK | Phân loại: Groq</string>
+    <string name="record_status_missing_stt_key">Thiếu STT Key</string>
+    <string name="record_status_no_keys">Cài API Key</string>
+    <string name="record_btn_active_template">Mẫu: %1$s (Sửa)</string>
+    <string name="record_btn_setup_auto_template">Thiết lập Nhật ký tự động</string>
+    <string name="record_stt_idle_saved">Đã lưu vào danh sách ghi chú</string>
+    <string name="record_stt_transcribing_groq">Đang chuyển văn bản qua Groq Whisper...</string>
+    <string name="record_stt_result_title">Văn bản nhận diện (STT):</string>
+    <string name="record_stt_error_message">Lỗi STT: %1$s</string>
+    <string name="record_btn_retry_stt">Thử lại STT</string>
+    <string name="record_stt_missing_key_warning">Chưa có Groq API Key</string>
+    <string name="record_btn_setup_key">Cài đặt key</string>
+
+    <!-- ==================== NOTES LIST SCREEN ==================== -->
+    <string name="notes_category_thi_cong">Thi công</string>
+    <string name="notes_category_nghiem_thu">Nghiệm thu</string>
+    <string name="notes_category_an_toan">An toàn &amp; Vệ sinh</string>
+    <string name="notes_category_y_kien_cdt">Ý kiến Chủ đầu tư</string>
+    <string name="notes_category_y_kien_tvgs">Ý kiến TVGS</string>
+    <string name="notes_category_y_kien_nha_thau">Ý kiến Nhà thầu</string>
+    <string name="notes_stt_error_prefix">Lỗi nhận diện: %1$s</string>
+    <string name="notes_audio_stop">Dừng</string>
+    <string name="notes_audio_play_duration">%1$ds</string>
+
+    <!-- ==================== DAILY INPUT SCREEN ==================== -->
+    <string name="daily_date_label">Ngày: %1$s</string>
+    <string name="daily_saved_badge">Đã lưu</string>
+    <string name="daily_template_banner_header">MẪU BÁO CÁO ÁP DỤNG</string>
+    <string name="daily_active_template_prefix">📑 %1$s</string>
+    <string name="daily_template_not_set">Chưa thiết lập Mẫu Google Doc</string>
+    <string name="daily_template_btn_edit">Chỉnh sửa</string>
+    <string name="daily_template_btn_create_auto">Tạo tự động</string>
+    <string name="daily_report_badge_approved">Đã duyệt nhật ký</string>
+    <string name="daily_report_badge_draft">Bản dự thảo sẵn sàng</string>
+    <string name="daily_report_approved_desc">Nhật ký đã được duyệt 1 lần duy nhất.</string>
+    <string name="daily_report_draft_desc">Bấm để xem và duyệt trước khi xuất Doc.</string>
+    <string name="daily_btn_view_report">Xem</string>
+    <string name="daily_weather_sunny">☀️ Trời nắng</string>
+    <string name="daily_weather_rainy">🌧️ Trời mưa</string>
+    <string name="daily_weather_normal">🌙 Bình thường</string>
+    <string name="daily_staff_command_label">Ban chỉ huy</string>
+    <string name="daily_staff_workers_label">Công nhân</string>
+
+    <!-- ==================== DAILY REPORT PREVIEW SCREEN ==================== -->
+    <string name="report_empty_for_date">Chưa có bản tổng hợp nào cho ngày %1$s</string>
+    <string name="report_template_personal_fallback">Nhật ký cá nhân</string>
+    <string name="report_template_construction_fallback">Nhật ký thi công công trường</string>
+    <string name="report_header_meta">Ngày: %1$s • Mẫu: %2$s</string>
+    <string name="report_weather_sunny_short">Nắng</string>
+    <string name="report_weather_rainy_short">Mưa</string>
+    <string name="report_weather_normal_short">Bình thường</string>
+    <string name="report_weather_summary_format">Sáng: %1$s  •  Chiều: %2$s  •  Tối: %3$s</string>
+    <string name="report_weather_line">Thời tiết: %1$s</string>
+    <string name="report_staff_line">Lực lượng: Ban chỉ huy: %1$d người  |  Công nhân: %2$d người</string>
+    <string name="report_equipment_none">Không ghi nhận máy móc chính</string>
+    <string name="report_equipment_line">Thiết bị: %1$s</string>
+    <string name="report_budget_lines">%1$d/%2$d dòng</string>
+    <string name="report_items_count_badge">%1$s • %2$d mục</string>
+    <string name="report_items_count">%1$d mục</string>
+    <string name="report_export_copy_drive_note">Bản sao đã được tạo tại Google Drive cá nhân của bạn.</string>
+    <string name="report_btn_re_export_doc">Xuất lại bản Google Doc mới</string>
+    <string name="report_dev_json_title">Dữ liệu JSON do LLM trả về:</string>
+    <string name="report_dev_json_copied">Đã sao chép JSON vào bộ nhớ tạm!</string>
+    <string name="report_dev_btn_copy_json">Sao chép</string>
+    <string name="report_dev_json_hint">Dữ liệu JSON nguyên bản bóc tách từ ghi chú. Bạn có thể sửa trực tiếp rồi bấm Lưu.</string>
+    <string name="report_dev_json_saved">Đã cập nhật JSON vào báo cáo!</string>
+    <string name="report_dev_btn_save_json">Lưu sửa đổi JSON vào Báo cáo</string>
+
+    <!-- ==================== SETTINGS DIALOG ==================== -->
+    <string name="settings_dialog_title">Cài đặt hệ thống</string>
+    <string name="settings_security_note">Dữ liệu được mã hóa an toàn trên thiết bị bằng EncryptedSharedPreferences.</string>
+    <string name="settings_stt_title">1. API Chuyển giọng nói STT (Groq Whisper)</string>
+    <string name="settings_stt_desc">Nhận diện âm thanh nói ngoài công trường thành văn bản.</string>
+    <string name="settings_gemini_title">2. API Gemini Phân loại (Vilao AI / Gemini)</string>
+    <string name="settings_gemini_desc">Đọc hiểu và phân loại các ghi chú vào đúng các mục nhật ký thi công.</string>
+    <string name="settings_gemini_key_label">Gemini API Key phân loại</string>
+    <string name="settings_endpoint_label">Endpoint</string>
+    <string name="settings_model_label">Model</string>
+    <string name="settings_temperature_exact">0.0: Bám sát nguyên văn</string>
+    <string name="settings_temperature_creative">0.8: Viết lại mượt mà</string>
+    <string name="settings_doc_template_title">3. Google Doc mẫu (A4 ≤ 2 trang)</string>
+    <string name="settings_doc_template_hint">Dán link hoặc Doc ID mẫu</string>
+    <string name="settings_doc_default_id">ID mẫu mặc định: %1$s</string>
+    <string name="settings_btn_auto_setup">Tự động nhận diện &amp; Tạo Mẫu từ Doc này</string>
+    <string name="settings_template_library_title">5. Thư viện Mẫu Báo cáo</string>
+    <string name="settings_template_manage_fallback">Quản lý Thư viện Mẫu</string>
+    <string name="settings_template_action">Đổi / Căn chỉnh</string>
+    <string name="settings_dev_mode_title">6. Chế độ Nhà phát triển (Developer Mode)</string>
+    <string name="settings_dev_mode_desc">Xem &amp; chỉnh sửa trực tiếp System Prompt của AI</string>
+    <string name="settings_dev_current_prompt">System Prompt hiện tại (%1$s):</string>
+    <string name="settings_prompt_saved">Đã lưu prompt thành công!</string>
+    <string name="settings_btn_save_prompt">Lưu Prompt</string>
+    <string name="settings_prompt_reset">Đã khôi phục prompt gốc!</string>
+    <string name="settings_btn_reset_prompt">Khôi phục gốc</string>
+    <string name="settings_dev_json_title">Dữ liệu JSON gần nhất do LLM trả về:</string>
+    <string name="settings_btn_save">Lưu cài đặt</string>
+
+    <!-- ==================== TEMPLATE LIBRARY SCREEN ==================== -->
+    <string name="template_doc_input_placeholder">Dán link hoặc ID Google Doc biểu mẫu vào đây...</string>
+    <string name="template_doc_input_empty_error">Vui lòng dán link hoặc ID Google Doc trước khi quét.</string>
+    <string name="template_stats_summary">Giới hạn: %1$d trang • Có %2$d trường tổng hợp: %3$s</string>
+
+    <!-- ==================== TEMPLATE EDITOR SCREEN ==================== -->
+    <string name="template_source_thi_cong">Thi công</string>
+    <string name="template_source_nghiem_thu">Nghiệm thu</string>
+    <string name="template_source_an_toan">An toàn &amp; VSMT</string>
+    <string name="template_source_nhap_tay">Nhập tay cuối ngày</string>
+    <string name="template_source_y_kien_cdt">Ý kiến CĐT</string>
+    <string name="template_source_y_kien_tvgs">Ý kiến TVGS</string>
+    <string name="template_source_y_kien_nha_thau">Ý kiến Nhà thầu</string>
+    <string name="template_default_name">Nhật ký tự động</string>
+    <string name="template_setup_auto_title">Thiết lập Nhật ký tự động</string>
+    <string name="template_edit_title">Nhật ký tự động &amp; Chỉnh sửa Mẫu</string>
+    <string name="template_setup_auto_subtitle">Dán link Google Doc để tạo bản mẫu tự động một lần</string>
+    <string name="template_edit_subtitle">Một bản mẫu duy nhất • Sửa Form, các thẻ {{MA}} và System Prompt</string>
+    <string name="template_create_auto_header">Tạo Mẫu Tự Động Từ Google Doc</string>
+    <string name="template_btn_collapse">Đóng</string>
+    <string name="template_transparency_note">Lưu ý minh bạch: Ứng dụng sẽ tạo 1 bản sao trên Google Drive của bạn (tuyệt đối không sửa file gốc), quét các chỗ điền (...) và gửi danh sách vị trí cho nhà cung cấp AI (LLM) để đề xuất thẻ {{MA}} &amp; System Prompt. Bạn sẽ duyệt qua 2 bước trước khi ghi vào bản sao Google Doc.</string>
+    <string name="template_source_doc_label">Link hoặc ID Google Doc biểu mẫu gốc</string>
+    <string name="template_custom_name_label">Tên bản mẫu (để trống sẽ tự lấy theo tên Doc)</string>
+    <string name="template_custom_name_hint">Ví dụ: Nhật ký tự động công trình A</string>
+    <string name="template_doc_empty_error">Vui lòng dán Link hoặc ID Google Doc trước khi tạo mẫu tự động.</string>
+    <string name="template_creating_copy_loading">Đang tạo bản sao &amp; phân tích chỗ điền bằng AI...</string>
+    <string name="template_btn_analyze_auto">Phân Tích &amp; Duyệt Mẫu Tự Động (2 Bước)</string>
+    <string name="template_single_active_banner">Đang áp dụng Bản Mẫu Duy Nhất</string>
+    <string name="template_single_active_subtitle">Chỉnh sửa Form, các thẻ {{MA}} và System Prompt ngay bên dưới</string>
+    <string name="template_btn_change_doc">Đổi Doc gốc</string>
+    <string name="template_section_doc_title">1. Form &amp; Bản sao Google Doc</string>
+    <string name="template_safe_copy_doc_label">Link Bản Sao Google Doc (đã chèn thẻ {{MA}})</string>
+    <string name="template_edit_on_doc_title">Sửa Form &amp; vị trí thẻ {{MA}} trực tiếp trên Google Doc:</string>
+    <string name="template_edit_on_doc_desc">Mở bản sao Google Doc để xem hoặc tự tay dời/gõ các thẻ {{MA}} (VD: {{MAY_MOC}}, {{Y_KIEN_CDT}}), sau đó bấm Đồng bộ lại.</string>
+    <string name="template_browser_error">Không thể mở trình duyệt: %1$s</string>
+    <string name="template_sync_success">Đã đồng bộ %1$d thẻ từ Google Doc!</string>
+    <string name="template_sync_error">Lỗi đồng bộ từ Google Doc</string>
+    <string name="template_section_tags_title">2. Các mục &amp; Các thẻ {{MA}} trong mẫu</string>
+    <string name="template_tags_count">%1$d thẻ</string>
+    <string name="template_section_tags_desc">Chỉnh sửa mã thẻ {{MA}}, tên mục, kiểu dữ liệu, nguồn ghi chú và vị trí neo trong Google Doc.</string>
+    <string name="template_new_field_default_label">Trường mới %1$d</string>
+    <string name="template_section_prompt_title">3. System Prompt &amp; Nhiệt độ AI</string>
+    <string name="template_render_prompt_empty_error">Cần ít nhất 1 thẻ ở mục 2 để Render System Prompt.</string>
+    <string name="template_temperature_legend">0.00 = bám sát nguyên văn • 0.20 = mượt mà, không bịa số liệu • 0.80 = diễn đạt linh hoạt</string>
+    <string name="template_prompt_edit_hint">Bạn có thể sửa trực tiếp System Prompt bên dưới hoặc bấm \'Render System Prompt\' để cập nhật theo danh sách thẻ ở mục 2.</string>
+    <string name="template_name_required_error">Vui lòng nhập tên bản mẫu</string>
+    <string name="template_placeholder_required_error">Cần ít nhất một thẻ placeholder trong mẫu</string>
+    <string name="template_field_tag_label">Mã thẻ {{...}}</string>
+    <string name="template_field_display_name_label">Tên mục hiển thị</string>
+    <string name="template_btn_collapse_pos">Thu gọn</string>
+    <string name="template_btn_edit_pos">Sửa vị trí</string>
+    <string name="template_pos_heading_prefix">Đề mục: \"%1$s\" • </string>
+    <string name="template_pos_context">Trước: \"%1$s\" | Sau: \"%2$s\" </string>
+    <string name="template_pos_no_context">(Chưa có ngữ cảnh trước/sau) </string>
+    <string name="template_pos_index_range">[Ký tự #%1$d..#%2$d]</string>
+    <string name="template_field_type_label">Kiểu:</string>
+    <string name="template_field_source_label">Nguồn dữ liệu:</string>
+    <string name="template_field_max_lines_short">Dòng:</string>
+    <string name="template_field_chars_per_line_short">Ký tự/dòng:</string>
+    <string name="template_stepper_decrease_lines">Giảm dòng</string>
+    <string name="template_stepper_increase_lines">Tăng dòng</string>
+    <string name="template_stepper_decrease_chars">Giảm ký tự</string>
+    <string name="template_stepper_increase_chars">Tăng ký tự</string>
+
+    <!-- ==================== FORM SETUP DIALOG ==================== -->
+    <string name="form_setup_type_list">Danh sách</string>
+    <string name="form_setup_type_text">Văn bản</string>
+    <string name="form_setup_type_number">Số lượng</string>
+    <string name="form_setup_type_date">Ngày tháng</string>
+    <string name="form_setup_type_checkbox">Ô tích</string>
+    <string name="form_setup_source_thi_cong">Thi công</string>
+    <string name="form_setup_source_nghiem_thu">Nghiệm thu</string>
+    <string name="form_setup_source_an_toan">An toàn &amp; VSMT</string>
+    <string name="form_setup_source_nhap_tay">Nhập tay cuối ngày</string>
+    <string name="form_setup_source_vat_tu">Vật tư</string>
+    <string name="form_setup_source_may_moc">Máy móc</string>
+    <string name="form_setup_source_thoi_tiet">Thời tiết</string>
+    <string name="form_setup_source_nhan_luc">Nhân lực</string>
+    <string name="form_setup_source_y_kien_cdt">Ý kiến CĐT</string>
+    <string name="form_setup_source_y_kien_tvgs">Ý kiến TVGS</string>
+    <string name="form_setup_source_y_kien_nha_thau">Ý kiến Nhà thầu</string>
+    <string name="form_setup_type_auto">Tự động</string>
+    <string name="form_setup_source_general">Chung</string>
+    <string name="form_setup_default_template_name">Mẫu tự động</string>
+    <string name="form_setup_unnamed_label">(Chưa đặt tên nhãn)</string>
+    <string name="form_setup_heading_prefix">Đề mục: %1$s</string>
+    <string name="form_setup_anchor_summary">Neo vị trí (#%1$d..#%2$d): Trước \"%3$s\" | Sau \"%4$s\"</string>
+    <string name="form_setup_btn_edit">Sửa</string>
+    <string name="form_setup_edit_candidate_title">Chỉnh sửa chỗ điền #%1$d</string>
+    <string name="form_setup_tag_label">Mã thẻ placeholder (ghi vào Doc dạng {{...}}):</string>
+    <string name="form_setup_item_name_label">Tên mục hiển thị trong báo cáo:</string>
+    <string name="form_setup_data_type_label">Kiểu dữ liệu:</string>
+    <string name="form_setup_source_label">Nguồn dữ liệu bóc tách:</string>
+    <string name="form_setup_signal_label">Tín hiệu: %1$s</string>
+    <string name="form_setup_heading_field_label">Đề mục chứa chỗ điền (tieuDeGanNhat)</string>
+    <string name="form_setup_restore_candidate">Khôi phục vị trí này</string>
+    <string name="form_setup_skip_candidate">Bỏ qua vị trí này</string>
+    <string name="form_setup_done">Xong</string>
+
+    <!-- ==================== VIEWMODEL ERRORS & NOTIFICATIONS ==================== -->
+    <string name="vm_error_audio_file_not_found">Tệp âm thanh không tồn tại</string>
+    <string name="vm_error_missing_llm_key">Chưa cài đặt API Key phân loại / LLM trong Cài đặt.</string>
+    <string name="vm_error_synthesis_failed">Lỗi khi tổng hợp báo cáo</string>
+    <string name="vm_error_synthesis_system">Lỗi hệ thống khi tổng hợp</string>
+    <string name="vm_error_google_sign_in_required">Chưa đăng nhập tài khoản Google. Vui lòng mở Cài đặt và bấm \'Đăng nhập Google\' trước.</string>
+    <string name="vm_error_no_report_to_export">Chưa có bản tổng hợp nhật ký để xuất.</string>
+    <string name="vm_error_google_account_not_found">Không tìm thấy thông tin tài khoản Google.</string>
+    <string name="vm_error_google_access_token">Không thể lấy quyền truy cập Google: %1$s</string>
+    <string name="vm_error_export_failed">Lỗi khi xuất Google Doc</string>
+    <string name="vm_error_export_system">Lỗi hệ thống khi xuất Doc</string>
+    <string name="vm_error_invalid_doc_id">Link hoặc ID Google Doc không hợp lệ.</string>
+    <string name="vm_error_create_template_failed">Lỗi tạo mẫu tự động từ Google Doc</string>
+    <string name="vm_error_analyze_form_failed">Lỗi phân tích biểu mẫu</string>
+    <string name="vm_error_rescan_form_failed">Lỗi quét lại biểu mẫu</string>
+    <string name="vm_default_template_name">Bản mẫu</string>
+    <string name="vm_error_sync_fields_failed">Lỗi đồng bộ trường từ Google Doc</string>
+    <string name="vm_error_insert_placeholders_failed">Lỗi chèn placeholder</string>
+    <string name="vm_error_google_access_token_generic">Không thể lấy quyền truy cập Google</string>
+    <string name="vm_error_google_sign_in_doc">Chưa đăng nhập tài khoản Google. Vui lòng bấm \'Đăng nhập Google\' trong Cài đặt trước.</string>
+    <string name="vm_error_google_not_signed_in">Chưa đăng nhập tài khoản Google.</string>
+
 </resources>
