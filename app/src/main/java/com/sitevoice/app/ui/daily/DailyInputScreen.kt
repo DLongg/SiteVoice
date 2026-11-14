@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -34,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +41,10 @@ import androidx.compose.ui.unit.sp
 import com.sitevoice.app.R
 import com.sitevoice.app.data.DailyInputEntity
 import com.sitevoice.app.data.DailyReportEntity
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 @Composable
 fun DailyInputScreen(
@@ -79,43 +81,43 @@ fun DailyInputScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFFF8FAFC)
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(Spacing.lg)
                 .verticalScroll(rememberScrollState())
         ) {
             // Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = Spacing.md),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
                         text = stringResource(id = R.string.tab_report),
-                        fontSize = 20.sp,
+                        fontSize = TextSizes.title,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
                         text = "Ngày: $currentDate",
-                        fontSize = 13.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.body,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 if (isSavedNotification) {
                     Text(
                         text = "✓ Đã lưu",
-                        fontSize = 12.sp,
+                        fontSize = TextSizes.caption,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF16A34A)
+                        color = SiteVoiceTheme.colors.success
                     )
                 }
             }
@@ -124,40 +126,40 @@ fun DailyInputScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 14.dp)
+                    .padding(bottom = Spacing.lg)
                     .clickable { onOpenTemplateLibrary() },
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = MaterialTheme.shapes.medium,
                 border = CardDefaults.outlinedCardBorder()
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.md),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
                         Text(
                             text = "MẪU BÁO CÁO ÁP DỤNG",
-                            fontSize = 11.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(2.dp))
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         Text(
                             text = if (activeTemplateName != null) "📑 $activeTemplateName" else "✨ Chưa thiết lập Mẫu Google Doc",
-                            fontSize = 14.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     Text(
                         text = if (activeTemplateName != null) "Chỉnh sửa ▸" else "Tạo tự động ▸",
-                        fontSize = 12.sp,
+                        fontSize = TextSizes.caption,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFF2563EB)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -168,20 +170,20 @@ fun DailyInputScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp),
+                        .padding(bottom = Spacing.md),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isApproved) Color(0xFFDCFCE7) else Color(0xFFEFF6FF)
+                        containerColor = if (isApproved) SiteVoiceTheme.colors.successContainer else MaterialTheme.colorScheme.primaryContainer
                     ),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = MaterialTheme.shapes.medium,
                     border = androidx.compose.foundation.BorderStroke(
                         1.dp,
-                        if (isApproved) Color(0xFF86EFAC) else Color(0xFFBFDBFE)
+                        if (isApproved) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.outlineVariant
                     )
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(14.dp),
+                            .padding(Spacing.lg),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -189,41 +191,41 @@ fun DailyInputScreen(
                             val badgeTitle = if (isApproved) "✓ Đã duyệt nhật ký" else "📑 Bản dự thảo sẵn sàng"
                             Text(
                                 text = badgeTitle,
-                                fontSize = 14.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isApproved) Color(0xFF166534) else Color(0xFF1E40AF)
+                                color = if (isApproved) SiteVoiceTheme.colors.onSuccessContainer else MaterialTheme.colorScheme.onPrimaryContainer
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(Spacing.xs))
                             Text(
                                 text = if (isApproved) "Nhật ký đã được duyệt 1 lần duy nhất." else "Bấm để xem và duyệt trước khi xuất Doc.",
-                                fontSize = 12.sp,
-                                color = if (isApproved) Color(0xFF15803D) else Color(0xFF3B82F6)
+                                fontSize = TextSizes.caption,
+                                color = if (isApproved) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.primary
                             )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(Spacing.sm))
                         Button(
                             onClick = { onViewReportClick?.invoke() },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isApproved) Color(0xFF15803D) else Color(0xFF2563EB)
+                                containerColor = if (isApproved) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.primary
                             ),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = MaterialTheme.shapes.medium
                         ) {
-                            Text(text = "Xem", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(text = "Xem", fontSize = TextSizes.caption, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
 
             // Thẻ 1: Thời tiết trong ngày
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = MaterialTheme.shapes.large,
                 border = CardDefaults.outlinedCardBorder()
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(Spacing.lg)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -231,19 +233,19 @@ fun DailyInputScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.weather_title),
-                            fontSize = 15.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "{{SANG_*}} • {{CHIEU_*}} • {{TOI_*}}",
-                            fontSize = 10.sp,
+                            fontSize = TextSizes.caption,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(Spacing.lg))
 
                     // Buổi Sáng
                     WeatherRow(
@@ -256,7 +258,7 @@ fun DailyInputScreen(
                         onSelect = { weatherMorning = it }
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(Spacing.md))
 
                     // Buổi Chiều
                     WeatherRow(
@@ -269,7 +271,7 @@ fun DailyInputScreen(
                         onSelect = { weatherAfternoon = it }
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(Spacing.md))
 
                     // Buổi Tối
                     WeatherRow(
@@ -284,16 +286,16 @@ fun DailyInputScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
             // Thẻ 2: Lực lượng thi công
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = MaterialTheme.shapes.large,
                 border = CardDefaults.outlinedCardBorder()
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(Spacing.lg)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -301,32 +303,32 @@ fun DailyInputScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.staff_title),
-                            fontSize = 15.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "{{BAN_CHI_HUY}} • {{CONG_NHAN}}",
-                            fontSize = 10.sp,
+                            fontSize = TextSizes.caption,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(Spacing.md))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md)
                     ) {
                         OutlinedTextField(
                             value = if (commandStaffCount > 0) commandStaffCount.toString() else "",
                             onValueChange = {
                                 commandStaffCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
                             },
-                            label = { Text("Ban chỉ huy", fontSize = 12.sp) },
+                            label = { Text("Ban chỉ huy", fontSize = TextSizes.caption) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(8.dp),
+                            shape = MaterialTheme.shapes.medium,
                             modifier = Modifier.weight(1f)
                         )
 
@@ -335,14 +337,14 @@ fun DailyInputScreen(
                             onValueChange = {
                                 workerCount = it.filter { ch -> ch.isDigit() }.toIntOrNull() ?: 0
                             },
-                            label = { Text("Công nhân", fontSize = 12.sp) },
+                            label = { Text("Công nhân", fontSize = TextSizes.caption) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(8.dp),
+                            shape = MaterialTheme.shapes.medium,
                             modifier = Modifier.weight(1f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(Spacing.lg))
 
                     // Máy móc - Thiết bị
                     Row(
@@ -352,19 +354,19 @@ fun DailyInputScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.equipment_title),
-                            fontSize = 13.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF334155)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "{{MAY_MOC}}",
-                            fontSize = 10.sp,
+                            fontSize = TextSizes.caption,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            color = Color(0xFF2563EB)
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(Spacing.sm))
 
                     OutlinedTextField(
                         value = equipmentList,
@@ -372,11 +374,11 @@ fun DailyInputScreen(
                         placeholder = {
                             Text(
                                 text = stringResource(id = R.string.equipment_hint),
-                                fontSize = 12.sp,
-                                color = Color(0xFF94A3B8)
+                                fontSize = TextSizes.caption,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = MaterialTheme.shapes.medium,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(88.dp),
@@ -385,7 +387,7 @@ fun DailyInputScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(Spacing.xl))
 
             // Nút Lưu thông tin cố định
             OutlinedButton(
@@ -403,16 +405,16 @@ fun DailyInputScreen(
                     isSavedNotification = true
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     text = stringResource(id = R.string.btn_save_daily_input),
-                    color = Color(0xFF1E293B),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
             // Nút Lớn: Tổng hợp nhật ký hôm nay
             Button(
@@ -433,8 +435,8 @@ fun DailyInputScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B))
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface)
             ) {
                 val btnText = if (dailyReport != null) {
                     "🔄 " + stringResource(id = R.string.report_btn_resynthesize)
@@ -443,13 +445,13 @@ fun DailyInputScreen(
                 }
                 Text(
                     text = btnText,
-                    fontSize = 15.sp,
+                    fontSize = TextSizes.subtitle,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(Spacing.xxl))
         }
     }
 }
@@ -471,15 +473,15 @@ fun WeatherRow(
     ) {
         Text(
             text = periodLabel,
-            fontSize = 13.sp,
+            fontSize = TextSizes.body,
             fontWeight = FontWeight.Medium,
-            color = Color(0xFF475569),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(60.dp)
         )
 
         Row(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             WeatherChip(
                 label = option1Label,
@@ -505,21 +507,21 @@ fun WeatherChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val bg = if (isSelected) Color(0xFFEFF6FF) else Color(0xFFF8FAFC)
-    val borderCol = if (isSelected) Color(0xFF2563EB) else Color(0xFFE2E8F0)
-    val textCol = if (isSelected) Color(0xFF1D4ED8) else Color(0xFF64748B)
+    val bg = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
+    val borderCol = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+    val textCol = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
         modifier = modifier
-            .background(bg, RoundedCornerShape(8.dp))
-            .border(1.dp, borderCol, RoundedCornerShape(8.dp))
+            .background(bg, MaterialTheme.shapes.medium)
+            .border(1.dp, borderCol, MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .padding(vertical = Spacing.sm),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = label,
-            fontSize = 12.sp,
+            fontSize = TextSizes.caption,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             color = textCol
         )
