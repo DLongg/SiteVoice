@@ -327,11 +327,14 @@ fun RecordScreen(
                                 )
                             }
                     ) {
-                        Text(
-                            text = if (isRecording) "■" else "●",
-                            color = if (isRecording) colors.onError else colors.onPrimary,
-                            style = type.displaySmall,
-                            fontWeight = FontWeight.Bold
+                        // Ký hiệu vẽ bằng hình (không dùng ký tự font): chấm tròn = sẵn sàng, ô vuông = đang ghi
+                        Box(
+                            modifier = Modifier
+                                .size(if (isRecording) 28.dp else 32.dp)
+                                .background(
+                                    color = if (isRecording) colors.onError else colors.onPrimary,
+                                    shape = if (isRecording) shapes.small else CircleShape
+                                )
                         )
                     }
                 }
