@@ -10,9 +10,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -118,10 +124,10 @@ fun MainScreen(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     icon = {
-                        Text(
-                            text = "🎙️",
-                            fontSize = TextSizes.title,
-                            lineHeight = TextSizes.titleLine
+                        Icon(
+                            imageVector = Icons.Default.Mic,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -154,10 +160,10 @@ fun MainScreen(
                                 }
                             }
                         ) {
-                            Text(
-                                text = "📋",
-                                fontSize = TextSizes.title,
-                                lineHeight = TextSizes.titleLine
+                            Icon(
+                                imageVector = Icons.Default.Assignment,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     },
@@ -179,10 +185,10 @@ fun MainScreen(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
                     icon = {
-                        Text(
-                            text = "📑",
-                            fontSize = TextSizes.title,
-                            lineHeight = TextSizes.titleLine
+                        Icon(
+                            imageVector = Icons.Default.Description,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
