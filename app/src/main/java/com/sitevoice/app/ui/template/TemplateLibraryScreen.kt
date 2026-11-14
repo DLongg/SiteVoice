@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +37,10 @@ import androidx.compose.ui.unit.sp
 import com.sitevoice.app.R
 import com.sitevoice.app.data.TemplateItemEntity
 import com.sitevoice.app.template.TemplateSchema
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 @Composable
 fun TemplateLibraryScreen(
@@ -58,8 +60,8 @@ fun TemplateLibraryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(Spacing.lg)
     ) {
         // Header
         Row(
@@ -70,44 +72,44 @@ fun TemplateLibraryScreen(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(id = R.string.template_library_title),
-                    fontSize = 20.sp,
+                    fontSize = TextSizes.title,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = stringResource(id = R.string.template_library_subtitle),
-                    fontSize = 13.sp,
-                    color = Color(0xFF64748B)
+                    fontSize = TextSizes.body,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onClose) {
-                Text(text = "✕", fontSize = 18.sp, color = Color(0xFF475569))
+                Text(text = "✕", fontSize = TextSizes.title, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Khối Tạo Mẫu Tự Động từ Google Doc (Gọi Docs API + LLM API trước)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(10.dp))
-                .border(1.dp, Color(0xFFCBD5E1), shape = RoundedCornerShape(10.dp))
-                .padding(14.dp)
+                .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                .border(1.dp, MaterialTheme.colorScheme.outline, shape = MaterialTheme.shapes.medium)
+                .padding(Spacing.lg)
         ) {
             Text(
                 text = stringResource(id = R.string.template_library_auto_setup_card_title),
-                fontSize = 15.sp,
+                fontSize = TextSizes.subtitle,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF0F172A)
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = stringResource(id = R.string.template_library_auto_setup_card_desc),
-                fontSize = 12.sp,
-                color = Color(0xFF475569)
+                fontSize = TextSizes.caption,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             OutlinedTextField(
                 value = docUrlInput,
@@ -115,22 +117,22 @@ fun TemplateLibraryScreen(
                     docUrlInput = it
                     docUrlError = null
                 },
-                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = 12.sp) },
+                placeholder = { Text("Dán link hoặc ID Google Doc biểu mẫu vào đây...", fontSize = TextSizes.caption) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+                shape = MaterialTheme.shapes.medium
             )
 
             docUrlError?.let { err ->
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "⚠️ $err", fontSize = 11.sp, color = Color(0xFFDC2626))
+                Spacer(modifier = Modifier.height(Spacing.xs))
+                Text(text = "⚠️ $err", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.error)
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 Button(
                     onClick = {
@@ -141,38 +143,38 @@ fun TemplateLibraryScreen(
                         }
                     },
                     modifier = Modifier.weight(1.4f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                    shape = RoundedCornerShape(8.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
                         text = stringResource(id = R.string.template_library_auto_setup_btn),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = Color.White
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
                 OutlinedButton(
                     onClick = onCreateNewTemplate,
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
                         text = stringResource(id = R.string.template_btn_create_new),
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp,
-                        color = Color(0xFF0F172A)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         // Danh sách mẫu
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
             items(templates, key = { it.id }) { template ->
                 TemplateCardItem(
@@ -199,7 +201,7 @@ fun TemplateLibraryScreen(
             text = {
                 Text(
                     text = stringResource(id = R.string.template_delete_confirm_msg, target.name),
-                    color = Color(0xFF334155)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             confirmButton = {
@@ -208,7 +210,7 @@ fun TemplateLibraryScreen(
                         onDeleteTemplate(target.id)
                         templateToDelete = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text(text = stringResource(id = R.string.notes_delete))
                 }
@@ -239,15 +241,15 @@ fun TemplateCardItem(
     }
 
     val isActive = template.isActive
-    val borderColor = if (isActive) Color(0xFF2563EB) else Color(0xFFE2E8F0)
+    val borderColor = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
     val borderWidth = if (isActive) 1.5.dp else 1.dp
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(10.dp))
-            .border(borderWidth, borderColor, shape = RoundedCornerShape(10.dp))
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+            .border(borderWidth, borderColor, shape = MaterialTheme.shapes.medium)
+            .padding(Spacing.lg)
     ) {
         // Hàng trên: Tên + Badge
         Row(
@@ -258,35 +260,35 @@ fun TemplateCardItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = template.name,
-                    fontSize = 16.sp,
+                    fontSize = TextSizes.subtitle,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (template.description.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
                         text = template.description,
-                        fontSize = 13.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.body,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.sm))
 
             // Badge Trạng thái
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 if (isActive) {
                     Box(
                         modifier = Modifier
-                            .background(Color(0xFFDCFCE7), shape = RoundedCornerShape(4.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .background(SiteVoiceTheme.colors.successContainer, shape = MaterialTheme.shapes.small)
+                            .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                     ) {
                         Text(
                             text = "✓ " + stringResource(id = R.string.template_badge_active),
-                            fontSize = 11.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF15803D)
+                            color = SiteVoiceTheme.colors.success
                         )
                     }
                 }
@@ -294,24 +296,24 @@ fun TemplateCardItem(
                 Box(
                     modifier = Modifier
                         .background(
-                            if (template.isBuiltIn) Color(0xFFF1F5F9) else Color(0xFFEFF6FF),
-                            shape = RoundedCornerShape(4.dp)
+                            if (template.isBuiltIn) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.small
                         )
-                        .padding(horizontal = 6.dp, vertical = 4.dp)
+                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                 ) {
                     Text(
                         text = stringResource(
                             id = if (template.isBuiltIn) R.string.template_badge_builtin else R.string.template_badge_custom
                         ),
-                        fontSize = 11.sp,
+                        fontSize = TextSizes.caption,
                         fontWeight = FontWeight.Medium,
-                        color = if (template.isBuiltIn) Color(0xFF475569) else Color(0xFF2563EB)
+                        color = if (template.isBuiltIn) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Thống kê các trường
         schema?.let { s ->
@@ -319,12 +321,12 @@ fun TemplateCardItem(
             val maxPages = s.maxPages
             Text(
                 text = "📄 Giới hạn: $maxPages trang • Có $fieldCount trường tổng hợp: ${s.summaryFields.keys.take(3).joinToString(", ")}${if (fieldCount > 3) "..." else ""}",
-                fontSize = 12.sp,
-                color = Color(0xFF475569)
+                fontSize = TextSizes.caption,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Hàng nút thao tác
         Row(
@@ -335,52 +337,52 @@ fun TemplateCardItem(
             if (!isActive) {
                 Button(
                     onClick = onActivate,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                    shape = MaterialTheme.shapes.small,
                     modifier = Modifier.height(36.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.template_btn_activate),
-                        fontSize = 12.sp,
+                        fontSize = TextSizes.caption,
                         fontWeight = FontWeight.Medium
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(Spacing.sm))
             }
 
             OutlinedButton(
                 onClick = onEdit,
-                shape = RoundedCornerShape(6.dp),
+                shape = MaterialTheme.shapes.small,
                 modifier = Modifier.height(36.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.template_btn_edit),
-                    fontSize = 12.sp,
-                    color = Color(0xFF334155)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.sm))
 
             OutlinedButton(
                 onClick = onDuplicate,
-                shape = RoundedCornerShape(6.dp),
+                shape = MaterialTheme.shapes.small,
                 modifier = Modifier.height(36.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.template_btn_duplicate),
-                    fontSize = 12.sp,
-                    color = Color(0xFF334155)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             if (!template.isBuiltIn) {
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(Spacing.sm))
                 IconButton(
                     onClick = onDelete,
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Text(text = "🗑️", fontSize = 14.sp)
+                    Text(text = "🗑️", fontSize = TextSizes.body)
                 }
             }
         }
