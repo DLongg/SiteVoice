@@ -640,7 +640,7 @@ Quy tắc bắt buộc:
                                                                 )
                                                             )
                                                         }
-                                                        syncStatusMessage = "✓ Đã đồng bộ ${fields.size} thẻ từ Google Doc!"
+                                                        syncStatusMessage = "Đã đồng bộ ${fields.size} thẻ từ Google Doc!"
                                                     } else {
                                                         errorMessage = result.exceptionOrNull()?.message ?: "Lỗi đồng bộ từ Google Doc"
                                                     }
@@ -890,7 +890,7 @@ Quy tắc bắt buộc:
                     }
 
                     Text(
-                        text = "Bạn có thể sửa trực tiếp System Prompt bên dưới hoặc bấm '🔄 Render Prompt từ các trường tổng hợp' để cập nhật theo danh sách thẻ ở mục 2.",
+                        text = "Bạn có thể sửa trực tiếp System Prompt bên dưới hoặc bấm 'Render System Prompt' để cập nhật theo danh sách thẻ ở mục 2.",
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
