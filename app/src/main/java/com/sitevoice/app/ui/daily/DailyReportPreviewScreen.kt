@@ -88,6 +88,7 @@ fun DailyReportPreviewScreen(
                     Text(
                         text = stringResource(id = R.string.report_synthesizing_loading),
                         fontSize = TextSizes.subtitle,
+                        lineHeight = TextSizes.subtitleLine,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -95,6 +96,7 @@ fun DailyReportPreviewScreen(
                     Text(
                         text = stringResource(id = R.string.report_synthesizing_budget_note),
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
@@ -114,6 +116,7 @@ fun DailyReportPreviewScreen(
                     Text(
                         text = "Chưa có bản tổng hợp nào cho ngày $currentDate",
                         fontSize = TextSizes.body,
+                        lineHeight = TextSizes.bodyLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(Spacing.lg))
@@ -157,7 +160,7 @@ fun DailyReportPreviewScreen(
                     onClick = onBackToEditClick,
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = "← " + stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption)
+                    Text(text = "← " + stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                 }
 
                 // Status Chip
@@ -170,6 +173,7 @@ fun DailyReportPreviewScreen(
             Text(
                 text = stringResource(id = R.string.report_preview_title),
                 fontSize = TextSizes.title,
+                lineHeight = TextSizes.titleLine,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -177,6 +181,7 @@ fun DailyReportPreviewScreen(
             Text(
                 text = "Ngày: $currentDate • Mẫu: $templateDisplayName",
                 fontSize = TextSizes.caption,
+                lineHeight = TextSizes.captionLine,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
@@ -191,11 +196,12 @@ fun DailyReportPreviewScreen(
                         .padding(Spacing.md)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "✓", fontSize = TextSizes.subtitle, fontWeight = FontWeight.Bold, color = SiteVoiceTheme.colors.success)
+                        Text(text = "✓", fontSize = TextSizes.subtitle, lineHeight = TextSizes.subtitleLine, fontWeight = FontWeight.Bold, color = SiteVoiceTheme.colors.success)
                         Spacer(modifier = Modifier.width(Spacing.sm))
                         Text(
                             text = stringResource(id = R.string.report_approved_banner),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Medium,
                             color = SiteVoiceTheme.colors.onSuccessContainer
                         )
@@ -219,6 +225,7 @@ fun DailyReportPreviewScreen(
                         Text(
                             text = stringResource(id = R.string.report_section_general),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -239,19 +246,19 @@ fun DailyReportPreviewScreen(
                                 append(" ($tq)")
                             }
                         }
-                        Text(text = "Thời tiết: $weatherText", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = "Thời tiết: $weatherText", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         Spacer(modifier = Modifier.height(Spacing.xs))
                         val bch = content.allFields["ng_ch"]?.toString()?.toIntOrNull() ?: dailyInput?.commandStaffCount ?: 0
                         val cn = content.allFields["ng_cn"]?.toString()?.toIntOrNull() ?: dailyInput?.workerCount ?: 0
-                        Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = "Lực lượng: Ban chỉ huy: $bch người  |  Công nhân: $cn người", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         Spacer(modifier = Modifier.height(Spacing.xs))
                         val mayMocFromLlm = content.allFields["may_moc"]?.let {
                             if (it is List<*>) it.filterNotNull().joinToString(", ") else it.toString()
                         }
                         val eq = if (!mayMocFromLlm.isNullOrBlank()) mayMocFromLlm else (dailyInput?.equipmentList?.ifBlank { "Không ghi nhận máy móc chính" } ?: "Không ghi nhận máy móc chính")
-                        Text(text = "Thiết bị: $eq", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = "Thiết bị: $eq", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -295,6 +302,7 @@ fun DailyReportPreviewScreen(
                         Text(
                             text = stringResource(id = R.string.report_section_opinions),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -337,12 +345,14 @@ fun DailyReportPreviewScreen(
                                     Text(
                                         text = readableTitle,
                                         fontSize = TextSizes.body,
+                                        lineHeight = TextSizes.bodyLine,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = placeholderTag,
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         fontFamily = FontFamily.Monospace,
                                         color = MaterialTheme.colorScheme.primary
                                     )
@@ -351,6 +361,7 @@ fun DailyReportPreviewScreen(
                                 Text(
                                     text = value.toString().ifBlank { stringResource(id = R.string.report_empty_field) },
                                     fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -378,12 +389,14 @@ fun DailyReportPreviewScreen(
                             Text(
                                 text = "⚠️ " + stringResource(id = R.string.report_section_unclassified),
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
                                 color = SiteVoiceTheme.colors.warning
                             )
                             Text(
                                 text = "${content.chuaPhanLoai.size} mục",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
                                 color = SiteVoiceTheme.colors.warning
                             )
@@ -393,6 +406,7 @@ fun DailyReportPreviewScreen(
                         Text(
                             text = stringResource(id = R.string.report_unclassified_hint),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = SiteVoiceTheme.colors.onWarningContainer
                         )
 
@@ -401,6 +415,7 @@ fun DailyReportPreviewScreen(
                             Text(
                                 text = "• $item",
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 color = SiteVoiceTheme.colors.onWarningContainer,
                                 modifier = Modifier.padding(vertical = Spacing.xs)
                             )
@@ -425,6 +440,7 @@ fun DailyReportPreviewScreen(
                     Text(
                         text = stringResource(id = R.string.report_btn_approve),
                         fontSize = TextSizes.subtitle,
+                        lineHeight = TextSizes.subtitleLine,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -441,7 +457,7 @@ fun DailyReportPreviewScreen(
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(text = "🔄 " + stringResource(id = R.string.report_btn_resynthesize), fontSize = TextSizes.caption)
+                        Text(text = "🔄 " + stringResource(id = R.string.report_btn_resynthesize), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                     }
 
                     OutlinedButton(
@@ -449,7 +465,7 @@ fun DailyReportPreviewScreen(
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(text = stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption)
+                        Text(text = stringResource(id = R.string.report_btn_back_to_edit), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                     }
                 }
             } else {
@@ -469,6 +485,7 @@ fun DailyReportPreviewScreen(
                             Text(
                                 text = "✓ " + stringResource(id = R.string.report_export_success),
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -476,6 +493,7 @@ fun DailyReportPreviewScreen(
                             Text(
                                 text = "Bản sao đã được tạo tại Google Drive cá nhân của bạn.",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(Spacing.md))
@@ -488,6 +506,7 @@ fun DailyReportPreviewScreen(
                                 Text(
                                     text = stringResource(id = R.string.report_btn_open_doc),
                                     fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onPrimary
                                 )
@@ -515,6 +534,7 @@ fun DailyReportPreviewScreen(
                         Text(
                             text = stringResource(id = R.string.report_exporting_loading),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
@@ -526,6 +546,7 @@ fun DailyReportPreviewScreen(
                         Text(
                             text = exportBtnText,
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
@@ -539,7 +560,7 @@ fun DailyReportPreviewScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = stringResource(id = R.string.report_edit_again), fontSize = TextSizes.caption)
+                    Text(text = stringResource(id = R.string.report_edit_again), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine)
                 }
             }
 
@@ -574,6 +595,7 @@ fun DailyReportPreviewScreen(
                             Text(
                                 text = "🛠️ Dữ liệu JSON do LLM trả về:",
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -584,13 +606,14 @@ fun DailyReportPreviewScreen(
                                     saveMessage = "Đã sao chép JSON vào bộ nhớ tạm!"
                                 }
                             ) {
-                                Text("📋 Sao chép", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.primary)
+                                Text("📋 Sao chép", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.primary)
                             }
                         }
 
                         Text(
                             text = "Dữ liệu JSON nguyên bản bóc tách từ ghi chú. Bạn có thể sửa trực tiếp rồi bấm Lưu.",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
@@ -608,6 +631,7 @@ fun DailyReportPreviewScreen(
                             maxLines = 18,
                             textStyle = androidx.compose.ui.text.TextStyle(
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontFamily = FontFamily.Monospace
                             )
                         )
@@ -624,7 +648,7 @@ fun DailyReportPreviewScreen(
                                 shape = MaterialTheme.shapes.small,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("💾 Lưu sửa đổi JSON vào Báo cáo", fontSize = TextSizes.caption, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                                Text("💾 Lưu sửa đổi JSON vào Báo cáo", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
 
@@ -633,6 +657,7 @@ fun DailyReportPreviewScreen(
                             Text(
                                 text = "✓ $msg",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = SiteVoiceTheme.colors.success,
                                 fontWeight = FontWeight.Medium
                             )
@@ -663,6 +688,7 @@ fun StatusBadge(status: String) {
         Text(
             text = label,
             fontSize = TextSizes.caption,
+            lineHeight = TextSizes.captionLine,
             fontWeight = FontWeight.Bold,
             color = textCol
         )
@@ -692,12 +718,14 @@ fun ReportSectionList(
                 Text(
                     text = title,
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = badgeText,
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -709,6 +737,7 @@ fun ReportSectionList(
                 Text(
                     text = stringResource(id = R.string.report_empty_field),
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -723,6 +752,7 @@ fun ReportSectionList(
                         Text(
                             text = "•",
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.width(14.dp)
@@ -746,6 +776,7 @@ fun OpinionRow(label: String, content: String) {
         Text(
             text = label,
             fontSize = TextSizes.caption,
+            lineHeight = TextSizes.captionLine,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -753,6 +784,7 @@ fun OpinionRow(label: String, content: String) {
         Text(
             text = content.ifBlank { stringResource(id = R.string.report_empty_field) },
             fontSize = TextSizes.body,
+            lineHeight = TextSizes.bodyLine,
             color = if (content.isNotBlank()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
             fontStyle = if (content.isNotBlank()) androidx.compose.ui.text.font.FontStyle.Normal else androidx.compose.ui.text.font.FontStyle.Italic
         )
