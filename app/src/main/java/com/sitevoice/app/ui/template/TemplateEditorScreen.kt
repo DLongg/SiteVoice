@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +57,10 @@ import com.sitevoice.app.template.TemplateSchema
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
+import androidx.compose.material3.MaterialTheme
+import com.sitevoice.app.ui.theme.SiteVoiceTheme
+import com.sitevoice.app.ui.theme.TextSizes
+import com.sitevoice.app.ui.theme.Spacing
 
 data class FieldEditorState(
     var key: String,
@@ -203,8 +205,8 @@ Quy tắc bắt buộc:
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(Spacing.lg)
     ) {
         // TopBar
         Row(
@@ -217,46 +219,46 @@ Quy tắc bắt buộc:
                 modifier = Modifier.weight(1f)
             ) {
                 IconButton(onClick = onClose) {
-                    Text(text = "←", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0F172A))
+                    Text(text = "←", fontSize = TextSizes.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(Spacing.xs))
                 Column {
                     Text(
                         text = if (template == null) "Thiết lập Nhật ký tự động" else "Nhật ký tự động & Chỉnh sửa Mẫu",
-                        fontSize = 18.sp,
+                        fontSize = TextSizes.title,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = if (template == null)
                             "Dán link Google Doc để tạo bản mẫu tự động một lần"
                         else
                             "Một bản mẫu duy nhất • Sửa Form, các thẻ {{MA}} và System Prompt",
-                        fontSize = 11.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Nội dung cuộn
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(Spacing.lg)
         ) {
             // Khối Tạo Mẫu Tự Động 1 Lần từ Link Google Doc (hiện mặc định khi chưa có mẫu hoặc khi bấm Đổi file Doc gốc)
             if (template == null || showNewDocImporter) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFEFF6FF), shape = RoundedCornerShape(10.dp))
-                        .border(1.5.dp, Color(0xFF93C5FD), shape = RoundedCornerShape(10.dp))
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.medium)
+                        .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.medium)
+                        .padding(Spacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -265,26 +267,26 @@ Quy tắc bắt buộc:
                     ) {
                         Text(
                             text = "✨ Tạo Mẫu Tự Động Từ Google Doc",
-                            fontSize = 16.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E3A8A)
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         if (template != null) {
                             TextButton(
                                 onClick = { showNewDocImporter = false },
-                                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                                contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = 0.dp),
                                 modifier = Modifier.height(26.dp)
                             ) {
-                                Text("Đóng ▲", fontSize = 12.sp, color = Color(0xFF1D4ED8))
+                                Text("Đóng ▲", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     }
 
                     Text(
                         text = "Lưu ý minh bạch: Ứng dụng sẽ tạo 1 bản sao trên Google Drive của bạn (tuyệt đối không sửa file gốc), quét các chỗ điền (...) và gửi danh sách vị trí cho nhà cung cấp AI (LLM) để đề xuất thẻ {{MA}} & System Prompt. Bạn sẽ duyệt qua 2 bước trước khi ghi vào bản sao Google Doc.",
-                        fontSize = 12.sp,
-                        color = Color(0xFF1E40AF),
-                        lineHeight = 17.sp
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        lineHeight = TextSizes.bodyLine
                     )
 
                     OutlinedTextField(
@@ -294,34 +296,34 @@ Quy tắc bắt buộc:
                             errorMessage = null
                         },
                         label = { Text("Link hoặc ID Google Doc biểu mẫu gốc") },
-                        placeholder = { Text("https://docs.google.com/document/d/...", fontSize = 12.sp) },
+                        placeholder = { Text("https://docs.google.com/document/d/...", fontSize = TextSizes.caption) },
                         singleLine = true,
                         enabled = !isAutoCreating,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(8.dp)),
-                        shape = RoundedCornerShape(8.dp)
+                            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium),
+                        shape = MaterialTheme.shapes.medium
                     )
 
                     OutlinedTextField(
                         value = sourceCustomNameInput,
                         onValueChange = { sourceCustomNameInput = it },
                         label = { Text("Tên bản mẫu (để trống sẽ tự lấy theo tên Doc)") },
-                        placeholder = { Text("Ví dụ: Nhật ký tự động công trình A", fontSize = 12.sp) },
+                        placeholder = { Text("Ví dụ: Nhật ký tự động công trình A", fontSize = TextSizes.caption) },
                         singleLine = true,
                         enabled = !isAutoCreating,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(8.dp)),
-                        shape = RoundedCornerShape(8.dp)
+                            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium),
+                        shape = MaterialTheme.shapes.medium
                     )
 
                     autoCreateError?.let { err ->
                         Text(
                             text = "⚠️ $err",
-                            fontSize = 12.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFFDC2626)
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
 
@@ -344,28 +346,28 @@ Quy tắc bắt buộc:
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                        shape = RoundedCornerShape(8.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         if (isAutoCreating) {
                             CircularProgressIndicator(
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 strokeWidth = 2.dp,
                                 modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(Spacing.md))
                             Text(
                                 text = "Đang tạo bản sao & phân tích chỗ điền bằng AI...",
-                                fontSize = 13.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
                             Text(
                                 text = "✨ Phân Tích & Duyệt Mẫu Tự Động (2 Bước)",
-                                fontSize = 14.sp,
+                                fontSize = TextSizes.body,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
@@ -378,36 +380,36 @@ Quy tắc bắt buộc:
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFDCFCE7), RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFF86EFAC), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                        .background(SiteVoiceTheme.colors.successContainer, MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium)
+                        .padding(horizontal = Spacing.md, vertical = Spacing.md),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "✓ Đang áp dụng Bản Mẫu Duy Nhất",
-                            fontSize = 13.sp,
+                            fontSize = TextSizes.body,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF166534)
+                            color = SiteVoiceTheme.colors.onSuccessContainer
                         )
                         Text(
                             text = "Chỉnh sửa Form, các thẻ {{MA}} và System Prompt ngay bên dưới",
-                            fontSize = 11.sp,
-                            color = Color(0xFF15803D)
+                            fontSize = TextSizes.caption,
+                            color = SiteVoiceTheme.colors.success
                         )
                     }
                     if (!showNewDocImporter) {
                         OutlinedButton(
                             onClick = { showNewDocImporter = true },
-                            shape = RoundedCornerShape(6.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                            shape = MaterialTheme.shapes.small,
+                            contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.xs)
                         ) {
                             Text(
                                 text = "Đổi Doc gốc",
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF166534)
+                                color = SiteVoiceTheme.colors.onSuccessContainer
                             )
                         }
                     }
@@ -417,16 +419,16 @@ Quy tắc bắt buộc:
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFFE2E8F0), shape = RoundedCornerShape(8.dp))
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                        .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.medium)
+                        .padding(Spacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
                     Text(
                         text = "1. Form & Bản sao Google Doc",
-                        fontSize = 15.sp,
+                        fontSize = TextSizes.subtitle,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     OutlinedTextField(
@@ -462,30 +464,30 @@ Quy tắc bắt buộc:
                     // Khối thao tác sửa vị trí trực tiếp bằng tay trên Google Doc & Đồng bộ ngược
                     if (docTemplateUrl.isNotBlank()) {
                         Surface(
-                            color = Color(0xFFF8FAFC),
-                            shape = RoundedCornerShape(8.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.medium,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
-                                modifier = Modifier.padding(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                modifier = Modifier.padding(Spacing.md),
+                                verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                             ) {
                                 Text(
                                     text = "🛠️ Sửa Form & vị trí thẻ {{MA}} trực tiếp trên Google Doc:",
-                                    fontSize = 12.sp,
+                                    fontSize = TextSizes.caption,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0F172A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "Mở bản sao Google Doc để xem hoặc tự tay dời/gõ các thẻ {{MA}} (VD: {{MAY_MOC}}, {{Y_KIEN_CDT}}), sau đó bấm Đồng bộ lại.",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF475569)
+                                    fontSize = TextSizes.caption,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                                 ) {
                                     OutlinedButton(
                                         onClick = {
@@ -501,14 +503,14 @@ Quy tắc bắt buộc:
                                             }
                                         },
                                         modifier = Modifier.weight(1f),
-                                        shape = RoundedCornerShape(6.dp),
-                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                        shape = MaterialTheme.shapes.small,
+                                        contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                     ) {
                                         Text(
                                             text = stringResource(id = R.string.template_editor_open_doc_btn),
-                                            fontSize = 11.sp,
+                                            fontSize = TextSizes.caption,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = Color(0xFF1D4ED8)
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
                                         )
                                     }
 
@@ -549,23 +551,23 @@ Quy tắc bắt buộc:
                                             },
                                             enabled = !isSyncingDoc,
                                             modifier = Modifier.weight(1f),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                                            shape = RoundedCornerShape(6.dp),
-                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                                            shape = MaterialTheme.shapes.small,
+                                            contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                         ) {
                                             if (isSyncingDoc) {
                                                 CircularProgressIndicator(
-                                                    color = Color.White,
+                                                    color = MaterialTheme.colorScheme.onPrimary,
                                                     strokeWidth = 2.dp,
                                                     modifier = Modifier.size(14.dp)
                                                 )
-                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Spacer(modifier = Modifier.width(Spacing.sm))
                                             }
                                             Text(
                                                 text = stringResource(id = R.string.template_editor_rescan_doc_btn),
-                                                fontSize = 11.sp,
+                                                fontSize = TextSizes.caption,
                                                 fontWeight = FontWeight.SemiBold,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.onPrimary
                                             )
                                         }
                                     }
@@ -574,9 +576,9 @@ Quy tắc bắt buộc:
                                 syncStatusMessage?.let { msg ->
                                     Text(
                                         text = msg,
-                                        fontSize = 11.sp,
+                                        fontSize = TextSizes.caption,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF15803D)
+                                        color = SiteVoiceTheme.colors.success
                                     )
                                 }
                             }
@@ -588,10 +590,10 @@ Quy tắc bắt buộc:
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFFE2E8F0), shape = RoundedCornerShape(8.dp))
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                        .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.medium)
+                        .padding(Spacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -600,46 +602,46 @@ Quy tắc bắt buộc:
                     ) {
                         Text(
                             text = "2. Các mục & Các thẻ {{MA}} trong mẫu",
-                            fontSize = 15.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "${fields.size} thẻ",
-                            fontSize = 12.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2563EB)
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
                     Text(
                         text = "Chỉnh sửa mã thẻ {{MA}}, tên mục, kiểu dữ liệu, nguồn ghi chú và vị trí neo trong Google Doc.",
-                        fontSize = 12.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     if (fields.isEmpty()) {
                         Surface(
-                            color = Color(0xFFF8FAFC),
-                            shape = RoundedCornerShape(8.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                            color = MaterialTheme.colorScheme.background,
+                            shape = MaterialTheme.shapes.medium,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(Spacing.lg),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.template_editor_empty_fields_title),
-                                    fontSize = 14.sp,
+                                    fontSize = TextSizes.body,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1E293B)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(Spacing.xs))
                                 Text(
                                     text = stringResource(id = R.string.template_editor_empty_fields_desc),
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF64748B)
+                                    fontSize = TextSizes.caption,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -669,9 +671,9 @@ Quy tắc bắt buộc:
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(6.dp)
+                        shape = MaterialTheme.shapes.small
                     ) {
-                        Text(text = stringResource(id = R.string.template_btn_add_field), fontSize = 13.sp)
+                        Text(text = stringResource(id = R.string.template_btn_add_field), fontSize = TextSizes.body)
                     }
                 }
 
@@ -679,10 +681,10 @@ Quy tắc bắt buộc:
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                        .border(1.dp, Color(0xFFE2E8F0), shape = RoundedCornerShape(8.dp))
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                        .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.medium)
+                        .padding(Spacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -691,9 +693,9 @@ Quy tắc bắt buộc:
                     ) {
                         Text(
                             text = "3. System Prompt & Nhiệt độ AI",
-                            fontSize = 15.sp,
+                            fontSize = TextSizes.subtitle,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A),
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f)
                         )
 
@@ -706,27 +708,27 @@ Quy tắc bắt buộc:
                                     systemPrompt = renderPromptFromCurrentFields()
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
-                            shape = RoundedCornerShape(6.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            shape = MaterialTheme.shapes.small,
+                            contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.sm)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.template_editor_render_prompt_btn),
-                                fontSize = 11.sp,
+                                fontSize = TextSizes.caption,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
 
                     // Thanh trượt Nhiệt độ AI ngay trong màn hình sửa bản mẫu
                     Surface(
-                        color = Color(0xFFF8FAFC),
-                        shape = RoundedCornerShape(8.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        color = MaterialTheme.colorScheme.background,
+                        shape = MaterialTheme.shapes.medium,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
+                        Column(modifier = Modifier.padding(Spacing.md)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -734,20 +736,20 @@ Quy tắc bắt buộc:
                             ) {
                                 Text(
                                     text = "Nhiệt độ tổng hợp (Temperature):",
-                                    fontSize = 12.sp,
+                                    fontSize = TextSizes.caption,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF1E293B)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Box(
                                     modifier = Modifier
-                                        .background(Color(0xFFDBEAFE), RoundedCornerShape(4.dp))
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                                        .background(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small)
+                                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                                 ) {
                                     Text(
                                         text = String.format(Locale.US, "%.2f", temperature),
-                                        fontSize = 12.sp,
+                                        fontSize = TextSizes.caption,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF1D4ED8)
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                 }
                             }
@@ -761,16 +763,16 @@ Quy tắc bắt buộc:
                             )
                             Text(
                                 text = "0.00 = bám sát nguyên văn • 0.20 = mượt mà, không bịa số liệu • 0.80 = diễn đạt linh hoạt",
-                                fontSize = 11.sp,
-                                color = Color(0xFF64748B)
+                                fontSize = TextSizes.caption,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
                     Text(
                         text = "Bạn có thể sửa trực tiếp System Prompt bên dưới hoặc bấm '🔄 Render Prompt từ các trường tổng hợp' để cập nhật theo danh sách thẻ ở mục 2.",
-                        fontSize = 12.sp,
-                        color = Color(0xFF64748B)
+                        fontSize = TextSizes.caption,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     OutlinedTextField(
@@ -787,8 +789,8 @@ Quy tắc bắt buộc:
             errorMessage?.let { msg ->
                 Text(
                     text = "⚠️ $msg",
-                    color = Color(0xFFDC2626),
-                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -796,7 +798,7 @@ Quy tắc bắt buộc:
 
         // Nút Lưu Bản Mẫu Duy Nhất (chỉ hiển thị khi đã tạo mẫu)
         if (template != null) {
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
             Button(
                 onClick = {
                     if (name.isBlank()) {
@@ -891,13 +893,13 @@ Quy tắc bắt buộc:
                     onSaveTemplate(updated)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A)),
-                shape = RoundedCornerShape(8.dp)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     text = stringResource(id = R.string.template_btn_save_template),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp
+                    fontSize = TextSizes.subtitle
                 )
             }
         }
@@ -926,16 +928,16 @@ fun FieldItemEditor(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF8FAFC), shape = RoundedCornerShape(8.dp))
-            .border(1.dp, Color(0xFFCBD5E1), shape = RoundedCornerShape(8.dp))
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .background(MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.medium)
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape = MaterialTheme.shapes.medium)
+            .padding(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm)
     ) {
         // Hàng 1: Mã placeholder + Tên mục + Nút xóa
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             OutlinedTextField(
                 value = key,
@@ -943,7 +945,7 @@ fun FieldItemEditor(
                     key = it
                     fieldState.key = it
                 },
-                label = { Text("Mã thẻ {{...}}", fontSize = 11.sp) },
+                label = { Text("Mã thẻ {{...}}", fontSize = TextSizes.caption) },
                 modifier = Modifier.weight(1f),
                 singleLine = true
             )
@@ -954,28 +956,28 @@ fun FieldItemEditor(
                     label = it
                     fieldState.label = it
                 },
-                label = { Text("Tên mục hiển thị", fontSize = 11.sp) },
+                label = { Text("Tên mục hiển thị", fontSize = TextSizes.caption) },
                 modifier = Modifier.weight(1.2f),
                 singleLine = true
             )
 
             if (canDelete) {
                 IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                    Text(text = "🗑️", fontSize = 14.sp)
+                    Text(text = "🗑️", fontSize = TextSizes.body)
                 }
             }
         }
 
         // Khung tóm tắt & nút mở sửa Vị trí trong bản mẫu Google Doc
         Surface(
-            color = Color.White,
-            shape = RoundedCornerShape(6.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+            color = MaterialTheme.colorScheme.surface,
+            shape = MaterialTheme.shapes.small,
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { showPositionEditor = !showPositionEditor }
         ) {
-            Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -983,20 +985,20 @@ fun FieldItemEditor(
                 ) {
                     Text(
                         text = stringResource(id = R.string.field_position_section_title),
-                        fontSize = 11.sp,
+                        fontSize = TextSizes.caption,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     TextButton(
                         onClick = { showPositionEditor = !showPositionEditor },
-                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                        contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = 0.dp),
                         modifier = Modifier.height(24.dp)
                     ) {
                         Text(
                             text = if (showPositionEditor) "Thu gọn ▲" else "Sửa vị trí ✏️",
-                            fontSize = 11.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2563EB)
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -1014,12 +1016,12 @@ fun FieldItemEditor(
                 }
                 Text(
                     text = posSummary,
-                    fontSize = 11.sp,
-                    color = Color(0xFF475569)
+                    fontSize = TextSizes.caption,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (showPositionEditor) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(Spacing.sm))
 
                     OutlinedTextField(
                         value = tieuDeGanNhat,
@@ -1027,16 +1029,16 @@ fun FieldItemEditor(
                             tieuDeGanNhat = it
                             fieldState.tieuDeGanNhat = it
                         },
-                        label = { Text(stringResource(id = R.string.field_position_heading_label), fontSize = 10.sp) },
+                        label = { Text(stringResource(id = R.string.field_position_heading_label), fontSize = TextSizes.caption) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(Spacing.sm))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
                         OutlinedTextField(
                             value = truoc,
@@ -1044,7 +1046,7 @@ fun FieldItemEditor(
                                 truoc = it
                                 fieldState.truoc = it
                             },
-                            label = { Text(stringResource(id = R.string.field_position_before_label), fontSize = 10.sp) },
+                            label = { Text(stringResource(id = R.string.field_position_before_label), fontSize = TextSizes.caption) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1055,17 +1057,17 @@ fun FieldItemEditor(
                                 sau = it
                                 fieldState.sau = it
                             },
-                            label = { Text(stringResource(id = R.string.field_position_after_label), fontSize = 10.sp) },
+                            label = { Text(stringResource(id = R.string.field_position_after_label), fontSize = TextSizes.caption) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(Spacing.sm))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
                         OutlinedTextField(
                             value = if (startIndex >= 0) startIndex.toString() else "",
@@ -1074,7 +1076,7 @@ fun FieldItemEditor(
                                 startIndex = v
                                 fieldState.startIndex = v
                             },
-                            label = { Text(stringResource(id = R.string.field_position_start_index), fontSize = 10.sp) },
+                            label = { Text(stringResource(id = R.string.field_position_start_index), fontSize = TextSizes.caption) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1086,7 +1088,7 @@ fun FieldItemEditor(
                                 endIndex = v
                                 fieldState.endIndex = v
                             },
-                            label = { Text(stringResource(id = R.string.field_position_end_index), fontSize = 10.sp) },
+                            label = { Text(stringResource(id = R.string.field_position_end_index), fontSize = TextSizes.caption) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1098,10 +1100,10 @@ fun FieldItemEditor(
         // Hàng 2: Chọn kiểu dữ liệu
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Kiểu:", fontSize = 12.sp, color = Color(0xFF475569))
+            Text(text = "Kiểu:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             FilterChip(
                 selected = type == "danh_sach",
@@ -1109,10 +1111,10 @@ fun FieldItemEditor(
                     type = "danh_sach"
                     fieldState.type = "danh_sach"
                 },
-                label = { Text(stringResource(id = R.string.template_field_type_list), fontSize = 11.sp) },
+                label = { Text(stringResource(id = R.string.template_field_type_list), fontSize = TextSizes.caption) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = Color(0xFF2563EB),
-                    selectedLabelColor = Color.White
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
 
@@ -1122,32 +1124,32 @@ fun FieldItemEditor(
                     type = "van_ban"
                     fieldState.type = "van_ban"
                 },
-                label = { Text(stringResource(id = R.string.template_field_type_text), fontSize = 11.sp) },
+                label = { Text(stringResource(id = R.string.template_field_type_text), fontSize = TextSizes.caption) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = Color(0xFF2563EB),
-                    selectedLabelColor = Color.White
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
 
         // Hàng 2b: Chọn Nguồn dữ liệu
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Nguồn dữ liệu:", fontSize = 11.sp, color = Color(0xFF475569))
-            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "Nguồn dữ liệu:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 EDITOR_SOURCE_OPTIONS.forEach { (srcKey, srcLabel) ->
                     val isSelected = source.equals(srcKey, ignoreCase = true)
                     Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = if (isSelected) Color(0xFF1D4ED8) else Color.White,
+                        shape = MaterialTheme.shapes.small,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                         border = androidx.compose.foundation.BorderStroke(
                             1.dp,
-                            if (isSelected) Color(0xFF1E40AF) else Color(0xFFCBD5E1)
+                            if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.outline
                         ),
                         modifier = Modifier.clickable {
                             source = srcKey
@@ -1156,10 +1158,10 @@ fun FieldItemEditor(
                     ) {
                         Text(
                             text = srcLabel,
-                            fontSize = 11.sp,
+                            fontSize = TextSizes.caption,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) Color.White else Color(0xFF334155),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                         )
                     }
                 }
@@ -1173,8 +1175,8 @@ fun FieldItemEditor(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Dòng:", fontSize = 12.sp, color = Color(0xFF475569))
-                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "Dòng:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.width(Spacing.xs))
                 IconButton(
                     onClick = {
                         if (maxLines > 1) {
@@ -1184,14 +1186,14 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "−", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "−", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
                 }
                 Text(
                     text = "$maxLines",
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = Spacing.xs)
                 )
                 IconButton(
                     onClick = {
@@ -1200,13 +1202,13 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "+", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "+", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
                 }
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Ký tự/dòng:", fontSize = 12.sp, color = Color(0xFF475569))
-                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "Ký tự/dòng:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.width(Spacing.xs))
                 IconButton(
                     onClick = {
                         if (maxCharsPerLine > 30) {
@@ -1216,14 +1218,14 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "−", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "−", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
                 }
                 Text(
                     text = "$maxCharsPerLine",
-                    fontSize = 13.sp,
+                    fontSize = TextSizes.body,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = Spacing.xs)
                 )
                 IconButton(
                     onClick = {
@@ -1232,7 +1234,7 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "+", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "+", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
                 }
             }
         }
