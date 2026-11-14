@@ -18,11 +18,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -85,7 +92,12 @@ fun TemplateLibraryScreen(
                 )
             }
             IconButton(onClick = onClose) {
-                Text(text = "✕", fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(id = R.string.btn_close),
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
@@ -129,7 +141,18 @@ fun TemplateLibraryScreen(
 
             docUrlError?.let { err ->
                 Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(text = "⚠️ $err", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.error)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Text(text = err, fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.error)
+                }
             }
 
             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -292,13 +315,24 @@ fun TemplateCardItem(
                             .background(SiteVoiceTheme.colors.successContainer, shape = MaterialTheme.shapes.small)
                             .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                     ) {
-                        Text(
-                            text = "✓ " + stringResource(id = R.string.template_badge_active),
-                            fontSize = TextSizes.caption,
-                            lineHeight = TextSizes.captionLine,
-                            fontWeight = FontWeight.Bold,
-                            color = SiteVoiceTheme.colors.success
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = SiteVoiceTheme.colors.success
+                            )
+                            Text(
+                                text = stringResource(id = R.string.template_badge_active),
+                                fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
+                                fontWeight = FontWeight.Bold,
+                                color = SiteVoiceTheme.colors.success
+                            )
+                        }
                     }
                 }
 
@@ -329,12 +363,23 @@ fun TemplateCardItem(
         schema?.let { s ->
             val fieldCount = s.summaryFields.size
             val maxPages = s.maxPages
-            Text(
-                text = "📄 Giới hạn: $maxPages trang • Có $fieldCount trường tổng hợp: ${s.summaryFields.keys.take(3).joinToString(", ")}${if (fieldCount > 3) "..." else ""}",
-                fontSize = TextSizes.caption,
-                lineHeight = TextSizes.captionLine,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Description,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "Giới hạn: $maxPages trang • Có $fieldCount trường tổng hợp: ${s.summaryFields.keys.take(3).joinToString(", ")}${if (fieldCount > 3) "..." else ""}",
+                    fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(Spacing.md))
@@ -396,7 +441,12 @@ fun TemplateCardItem(
                     onClick = onDelete,
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Text(text = "🗑️", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine)
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(id = R.string.template_btn_delete),
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
