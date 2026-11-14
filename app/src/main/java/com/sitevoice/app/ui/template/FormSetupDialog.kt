@@ -41,33 +41,37 @@ import com.sitevoice.app.ui.theme.TextSizes
 import com.sitevoice.app.ui.theme.Spacing
 
 private val LOAI_OPTIONS = listOf(
-    "danh_sach" to "Danh sách",
-    "van_ban" to "Văn bản",
-    "so" to "Số lượng",
-    "ngay" to "Ngày tháng",
-    "o_tich" to "Ô tích"
+    "danh_sach" to R.string.form_setup_type_list,
+    "van_ban" to R.string.form_setup_type_text,
+    "so" to R.string.form_setup_type_number,
+    "ngay" to R.string.form_setup_type_date,
+    "o_tich" to R.string.form_setup_type_checkbox
 )
 
 private val NGUON_OPTIONS = listOf(
-    "thi_cong" to "Thi công",
-    "nghiem_thu" to "Nghiệm thu",
-    "an_toan" to "An toàn & VSMT",
-    "nhap_tay" to "Nhập tay cuối ngày",
-    "vat_tu" to "Vật tư",
-    "may_moc" to "Máy móc",
-    "thoi_tiet" to "Thời tiết",
-    "nhan_luc" to "Nhân lực",
-    "y_kien_cdt" to "Ý kiến CĐT",
-    "y_kien_tvgs" to "Ý kiến TVGS",
-    "y_kien_nha_thau" to "Ý kiến Nhà thầu"
+    "thi_cong" to R.string.form_setup_source_thi_cong,
+    "nghiem_thu" to R.string.form_setup_source_nghiem_thu,
+    "an_toan" to R.string.form_setup_source_an_toan,
+    "nhap_tay" to R.string.form_setup_source_nhap_tay,
+    "vat_tu" to R.string.form_setup_source_vat_tu,
+    "may_moc" to R.string.form_setup_source_may_moc,
+    "thoi_tiet" to R.string.form_setup_source_thoi_tiet,
+    "nhan_luc" to R.string.form_setup_source_nhan_luc,
+    "y_kien_cdt" to R.string.form_setup_source_y_kien_cdt,
+    "y_kien_tvgs" to R.string.form_setup_source_y_kien_tvgs,
+    "y_kien_nha_thau" to R.string.form_setup_source_y_kien_nha_thau
 )
 
+@Composable
 private fun formatLoaiLabel(loai: String): String {
-    return LOAI_OPTIONS.firstOrNull { it.first.equals(loai, ignoreCase = true) }?.second ?: loai.ifBlank { "Tự động" }
+    val resId = LOAI_OPTIONS.firstOrNull { it.first.equals(loai, ignoreCase = true) }?.second
+    return if (resId != null) stringResource(resId) else loai.ifBlank { stringResource(R.string.form_setup_type_auto) }
 }
 
+@Composable
 private fun formatNguonLabel(nguon: String): String {
-    return NGUON_OPTIONS.firstOrNull { it.first.equals(nguon, ignoreCase = true) }?.second ?: nguon.ifBlank { "Chung" }
+    val resId = NGUON_OPTIONS.firstOrNull { it.first.equals(nguon, ignoreCase = true) }?.second
+    return if (resId != null) stringResource(resId) else nguon.ifBlank { stringResource(R.string.form_setup_source_general) }
 }
 
 enum class FormSetupStep {
@@ -89,8 +93,9 @@ fun FormSetupDialog(
     val securePrefs = remember(context) { SecurePreferences(context) }
 
     var currentStep by remember { mutableStateOf(FormSetupStep.STEP_1_TAGS) }
+    val defaultTemplateName = stringResource(R.string.form_setup_default_template_name)
     var templateName by remember(analysis) {
-        mutableStateOf(analysis?.originalDocTitle?.replace("[SiteVoice Mẫu] ", "") ?: "Mẫu tự động")
+        mutableStateOf(analysis?.originalDocTitle?.replace("[SiteVoice Mẫu] ", "") ?: defaultTemplateName)
     }
 
     // Danh sách ứng viên có thể bật/tắt hoặc chỉnh sửa tay trực tiếp
@@ -422,7 +427,7 @@ fun FormSetupDialog(
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.medium
                             ) {
-                                Text("Hủy", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
 
                             Button(
@@ -746,7 +751,7 @@ private fun CandidateCard(
                         Spacer(modifier = Modifier.height(Spacing.xs))
 
                         Text(
-                            text = candidate.ten.ifBlank { "(Chưa đặt tên nhãn)" },
+                            text = candidate.ten.ifBlank { stringResource(R.string.form_setup_unnamed_label) },
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Medium,
@@ -774,7 +779,7 @@ private fun CandidateCard(
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Text(
-                                            text = "Đề mục: ${candidate.tieuDeGanNhat}",
+                                            text = stringResource(R.string.form_setup_heading_prefix, candidate.tieuDeGanNhat),
                                             fontSize = TextSizes.caption,
                                             lineHeight = TextSizes.captionLine,
                                             fontWeight = FontWeight.SemiBold,
@@ -784,7 +789,7 @@ private fun CandidateCard(
                                     }
                                 }
                                 Text(
-                                    text = "Neo vị trí (#${candidate.startIndex}..#${candidate.endIndex}): Trước \"${candidate.truoc}\" | Sau \"${candidate.sau}\"",
+                                    text = stringResource(R.string.form_setup_anchor_summary, candidate.startIndex, candidate.endIndex, candidate.truoc, candidate.sau),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -806,7 +811,7 @@ private fun CandidateCard(
                             horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
                         ) {
                             Text(
-                                text = "Sửa",
+                                text = stringResource(R.string.form_setup_btn_edit),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
@@ -839,7 +844,7 @@ private fun CandidateCard(
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Chỉnh sửa chỗ điền #${candidate.id}",
+                            text = stringResource(R.string.form_setup_edit_candidate_title, candidate.id),
                             fontSize = TextSizes.body,
                             lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Bold,
@@ -864,7 +869,7 @@ private fun CandidateCard(
 
                 // 1. Mã placeholder
                 Text(
-                    text = "Mã thẻ placeholder (ghi vào Doc dạng {{...}}):",
+                    text = stringResource(R.string.form_setup_tag_label),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
@@ -896,7 +901,7 @@ private fun CandidateCard(
 
                 // 2. Tên mục
                 Text(
-                    text = "Tên mục hiển thị trong báo cáo:",
+                    text = stringResource(R.string.form_setup_item_name_label),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
@@ -915,7 +920,7 @@ private fun CandidateCard(
 
                 // 3. Kiểu dữ liệu (loai)
                 Text(
-                    text = "Kiểu dữ liệu:",
+                    text = stringResource(R.string.form_setup_data_type_label),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
@@ -928,7 +933,7 @@ private fun CandidateCard(
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
-                    LOAI_OPTIONS.forEach { (key, label) ->
+                    LOAI_OPTIONS.forEach { (key, labelRes) ->
                         val isSelected = candidate.loai.equals(key, ignoreCase = true)
                         Surface(
                             shape = MaterialTheme.shapes.small,
@@ -942,7 +947,7 @@ private fun CandidateCard(
                             }
                         ) {
                             Text(
-                                text = label,
+                                text = stringResource(labelRes),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
@@ -957,7 +962,7 @@ private fun CandidateCard(
 
                 // 4. Nguồn dữ liệu (nguon)
                 Text(
-                    text = "Nguồn dữ liệu bóc tách:",
+                    text = stringResource(R.string.form_setup_source_label),
                     fontSize = TextSizes.caption,
                     lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
@@ -970,7 +975,7 @@ private fun CandidateCard(
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
-                    NGUON_OPTIONS.forEach { (key, label) ->
+                    NGUON_OPTIONS.forEach { (key, labelRes) ->
                         val isSelected = candidate.nguon.equals(key, ignoreCase = true)
                         Surface(
                             shape = MaterialTheme.shapes.small,
@@ -984,7 +989,7 @@ private fun CandidateCard(
                             }
                         ) {
                             Text(
-                                text = label,
+                                text = stringResource(labelRes),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
@@ -1021,7 +1026,7 @@ private fun CandidateCard(
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Vị trí neo trong bản mẫu Google Doc:",
+                                    text = stringResource(R.string.field_position_section_title),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Bold,
@@ -1029,7 +1034,7 @@ private fun CandidateCard(
                                 )
                             }
                             Text(
-                                text = "Tín hiệu: ${candidate.tinHieu.ifBlank { "dong_cham" }}",
+                                text = stringResource(R.string.form_setup_signal_label, candidate.tinHieu.ifBlank { "dong_cham" }),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1041,7 +1046,7 @@ private fun CandidateCard(
                         OutlinedTextField(
                             value = candidate.tieuDeGanNhat,
                             onValueChange = { onUpdate(candidate.copy(tieuDeGanNhat = it)) },
-                            label = { Text("Đề mục chứa chỗ điền (tieuDeGanNhat)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                            label = { Text(stringResource(R.string.form_setup_heading_field_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.small
@@ -1056,7 +1061,7 @@ private fun CandidateCard(
                             OutlinedTextField(
                                 value = candidate.truoc,
                                 onValueChange = { onUpdate(candidate.copy(truoc = it)) },
-                                label = { Text("Ngữ cảnh trước (truoc)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                                label = { Text(stringResource(R.string.field_position_before_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -1064,7 +1069,7 @@ private fun CandidateCard(
                             OutlinedTextField(
                                 value = candidate.sau,
                                 onValueChange = { onUpdate(candidate.copy(sau = it)) },
-                                label = { Text("Ngữ cảnh sau (sau)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                                label = { Text(stringResource(R.string.field_position_after_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -1083,7 +1088,7 @@ private fun CandidateCard(
                                     val idx = str.filter { it.isDigit() || it == '-' }.toIntOrNull() ?: candidate.startIndex
                                     onUpdate(candidate.copy(startIndex = idx))
                                 },
-                                label = { Text("Ký tự bắt đầu (startIndex)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                                label = { Text(stringResource(R.string.field_position_start_index), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -1094,7 +1099,7 @@ private fun CandidateCard(
                                     val idx = str.filter { it.isDigit() || it == '-' }.toIntOrNull() ?: candidate.endIndex
                                     onUpdate(candidate.copy(endIndex = idx))
                                 },
-                                label = { Text("Ký tự kết thúc (endIndex)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                                label = { Text(stringResource(R.string.field_position_end_index), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -1132,7 +1137,7 @@ private fun CandidateCard(
                                 tint = if (candidate.boQua) SiteVoiceTheme.colors.success else MaterialTheme.colorScheme.onErrorContainer
                             )
                             Text(
-                                text = if (candidate.boQua) "Khôi phục vị trí này" else "Bỏ qua vị trí này",
+                                text = if (candidate.boQua) stringResource(R.string.form_setup_restore_candidate) else stringResource(R.string.form_setup_skip_candidate),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Medium
@@ -1157,7 +1162,7 @@ private fun CandidateCard(
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
-                                text = "Xong",
+                                text = stringResource(R.string.form_setup_done),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Bold,
