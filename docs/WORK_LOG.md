@@ -666,5 +666,30 @@ A templates/schema-chung.md
   + Đã cài đặt (`adb install -r app\build\outputs\apk\debug\app-debug.apk` -> `Success`) và khởi chạy ứng dụng (`com.sitevoice.app/.MainActivity`) thành công trên điện thoại thật `33c4f658` (`model:PKS110`).
 - Còn lại: Người dùng trải nghiệm trực tiếp các tính năng mới trên điện thoại.
 
+## 2026-11-14 — Triển khai Quyết định 0008 (Một Bản Mẫu Tự Động Duy Nhất) & Khắc phục 4 Vấn đề Đồng bộ ID / Duyệt 2 Bước (Phương án A) — Hoàn thành
+
+- Kết quả:
+  + **Triển khai Quyết định 0008 (Một Bản Mẫu Tự Động Duy Nhất từ Google Doc)**:
+    * `TemplateDao.kt`, `TemplateRepository.kt`, `MainActivity.kt`: Thêm `deleteAllBuiltInTemplates()`, `deleteAllExcept()`, `purgeBuiltInAndEnsureSingleActive()` và `saveSingleAutoTemplate()` để dọn sạch 2 mẫu mặc định (`nhat-ky-cong-truong`, `nhat-ky-ca-nhan`) khi khởi chạy và chỉ duy trì duy nhất một bản mẫu tự động đang kích hoạt (`SINGLE_AUTO_TEMPLATE_ID = "auto_single_template"`).
+    * `RecordScreen.kt`, `DailyInputScreen.kt`, `TemplateEditorScreen.kt`: Bỏ danh sách nhiều mẫu mặc định; mở thẳng không gian làm việc của bản mẫu tự động duy nhất (hoặc màn hình khởi tạo từ link Google Doc khi chưa có mẫu).
+  + **Khắc phục 4 vấn đề phát hiện khi rà soát dự án (theo Phương án A người dùng đã chốt)**:
+    1. **Giữ quy trình Duyệt 2 Bước (`FormSetupDialog`) trước khi ghi placeholder vào Google Doc**: Kết nối nút khởi tạo/quét lại trong `TemplateEditorScreen.kt` và `MainScreen.kt` với `MainViewModel.startFormSetup(context, docUrlOrId, customName)` và `FormSetupDialog` (Bước 1: duyệt/sửa thẻ `{{MA}}` & vị trí neo; Bước 2: duyệt/sửa System Prompt & nhiệt độ AI) trước khi gọi `confirmAndApplyFormSetup` ghi vào bản sao Google Doc và lưu `saveSingleAutoTemplate`.
+    2. **Đồng bộ ID giữa `TemplateItemEntity.id` và `schemaJson["id"]`**: Cập nhật `FormSetupService.kt` và `DefaultTemplateRepository.normalizeSchemaId()` để luôn chuẩn hóa `"id"` bên trong `schemaJson` thành `SINGLE_AUTO_TEMPLATE_ID` (`"auto_single_template"`), đồng thời `MainViewModel.synthesizeDailyReport` lưu `DailyReportEntity.templateId = currentTemplate?.id ?: SINGLE_AUTO_TEMPLATE_ID`, giúp `ExportWorker` luôn tìm thấy đúng bản mẫu trong Room mà không bị lệch sang `"custom_auto_<timestamp>"`.
+    3. **Cập nhật giá trị mặc định `DailyReportEntity.templateId`**: Đổi mặc định trong `DailyReportEntity.kt` từ `"nhat-ky-cong-truong"` sang `DefaultTemplateRepository.SINGLE_AUTO_TEMPLATE_ID`.
+    4. **Bổ sung kiểm thử & hoàn thiện tài liệu**: Cập nhật `TemplateRepositoryTest.kt` kiểm tra chuẩn hóa `schemaJson.id` sang `SINGLE_AUTO_TEMPLATE_ID`, cập nhật `docs/quyet-dinh/0008-mot-ban-mau-tu-dong-duy-nhat.md`, `docs/SUMMARY.md` và `docs/WORK_LOG.md`.
+- File sửa / thêm:
+  + `docs/quyet-dinh/0008-mot-ban-mau-tu-dong-duy-nhat.md`
+  + `app/src/main/java/com/sitevoice/app/MainActivity.kt`
+  + `app/src/main/java/com/sitevoice/app/data/TemplateDao.kt`, `DailyReportEntity.kt`
+  + `app/src/main/java/com/sitevoice/app/template/TemplateRepository.kt`
+  + `app/src/main/java/com/sitevoice/app/formsetup/FormSetupService.kt`
+  + `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt`, `MainScreen.kt`, `record/RecordScreen.kt`, `daily/DailyInputScreen.kt`, `template/TemplateEditorScreen.kt`
+  + `app/src/test/java/com/sitevoice/app/TemplateRepositoryTest.kt`
+- Kiểm tra:
+  + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon`: **BUILD SUCCESSFUL** (mã thoát `0`), pass 100% toàn bộ unit tests (bao gồm `TemplateRepositoryTest.testPurgeBuiltInAndSaveSingleAutoTemplate`) và tạo `app\build\outputs\apk\debug\app-debug.apk`.
+  + Chưa cài đặt/chạy kiểm tra bản build mới này trên thiết bị thật trong phiên hiện tại (cần kết nối ADB thiết bị thật khi người dùng muốn cài đặt).
+- Còn lại: Người dùng kiểm thử luồng tạo & duyệt 2 bước bản mẫu tự động duy nhất trên thiết bị.
+
+
 
 
