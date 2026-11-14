@@ -67,18 +67,18 @@ import com.sitevoice.app.ui.theme.Spacing
 
 data class CategoryOption(
     val key: String,
-    val title: String,
+    val titleRes: Int,
     val icon: ImageVector
 )
 
 val CATEGORY_OPTIONS = listOf(
-    CategoryOption(NoteClassifier.LABEL_THI_CONG, "Thi công", Icons.Default.Engineering),
-    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, "Nghiệm thu", Icons.Default.Rule),
-    CategoryOption(NoteClassifier.LABEL_AN_TOAN, "An toàn & Vệ sinh", Icons.Default.HealthAndSafety),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, "Ý kiến Chủ đầu tư", Icons.Default.AccountBalance),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, "Ý kiến TVGS", Icons.Default.Assignment),
-    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, "Ý kiến Nhà thầu", Icons.Default.Apartment),
-    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, "Chưa phân loại", Icons.Default.HelpOutline)
+    CategoryOption(NoteClassifier.LABEL_THI_CONG, R.string.notes_category_thi_cong, Icons.Default.Engineering),
+    CategoryOption(NoteClassifier.LABEL_NGHIEM_THU, R.string.notes_category_nghiem_thu, Icons.Default.Rule),
+    CategoryOption(NoteClassifier.LABEL_AN_TOAN, R.string.notes_category_an_toan, Icons.Default.HealthAndSafety),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_CDT, R.string.notes_category_y_kien_cdt, Icons.Default.AccountBalance),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_TVGS, R.string.notes_category_y_kien_tvgs, Icons.Default.Assignment),
+    CategoryOption(NoteClassifier.LABEL_Y_KIEN_NHA_THAU, R.string.notes_category_y_kien_nha_thau, Icons.Default.Apartment),
+    CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, R.string.notes_unclassified, Icons.Default.HelpOutline)
 )
 
 @Composable
@@ -332,7 +332,7 @@ fun NoteItemCard(
                     else -> {
                         // Nhãn mục có thể bấm để đổi khi đã hoàn thành phân loại
                         val currentCategory = CATEGORY_OPTIONS.find { it.key == note.label }
-                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, stringResource(id = R.string.notes_unclassified), Icons.Default.HelpOutline)
+                            ?: CategoryOption(NoteClassifier.LABEL_CHUA_PHAN_LOAI, R.string.notes_unclassified, Icons.Default.HelpOutline)
 
                         val isUnclassified = note.label.isNullOrBlank() ||
                                 note.label == NoteClassifier.LABEL_CHUA_PHAN_LOAI ||
@@ -357,7 +357,7 @@ fun NoteItemCard(
                                 )
                                 Spacer(modifier = Modifier.width(Spacing.xs))
                                 Text(
-                                    text = currentCategory.title,
+                                    text = stringResource(id = currentCategory.titleRes),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Medium,
@@ -390,7 +390,7 @@ fun NoteItemCard(
                                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = option.title,
+                                                    text = stringResource(id = option.titleRes),
                                                     fontSize = TextSizes.body,
                                                     lineHeight = TextSizes.bodyLine,
                                                     fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
@@ -422,7 +422,7 @@ fun NoteItemCard(
                             .padding(Spacing.md)
                     ) {
                         Text(
-                            text = "Lỗi nhận diện: ${note.error}",
+                            text = stringResource(id = R.string.notes_stt_error_prefix, note.error ?: ""),
                             fontSize = TextSizes.body,
                             lineHeight = TextSizes.bodyLine,
                             color = MaterialTheme.colorScheme.error
@@ -506,7 +506,7 @@ fun NoteItemCard(
                     )
                     Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
-                        text = if (isPlaying) "Dừng" else "${durationSec}s",
+                        text = if (isPlaying) stringResource(id = R.string.notes_audio_stop) else stringResource(id = R.string.notes_audio_play_duration, durationSec),
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
