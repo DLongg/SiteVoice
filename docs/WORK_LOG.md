@@ -719,3 +719,8 @@ A templates/schema-chung.md
 - Lỗi và xử lý: Thử đặt `bodyLarge.lineHeight = 1.5.em` để sửa giãn dòng chữ nhỏ → crash `IllegalArgumentException: Cannot perform operation for Em and Sp` ở `OutlinedTextField` (`TemplateEditorScreen`); đã hoàn tác, không commit. Thiết bị `33c4f658` mất kết nối adb giữa chừng, người dùng cắm lại.
 - Kiểm tra: `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon` thành công, 223/223 test đạt; cài lên `33c4f658`, chụp tab Ghi âm/Ghi chú/Nhật ký cuối ngày, hộp Cài đặt và màn Sửa mẫu hiển thị đúng, logcat `AndroidRuntime:E` trống sau khi hoàn tác. Chưa kiểm tra: luồng ghi âm thật, Thiết lập Biểu mẫu 2 bước, Xem trước báo cáo có dữ liệu, cỡ chữ lớn, TalkBack.
 - Còn lại: tồn đọng ghi trong `design-system/sitevoice/MASTER.md` (giãn dòng chữ nhỏ, 2 nút chính nền tối, emoji làm icon, chuỗi viết cứng).
+
+## 2026-11-14 — Nút hành động chính dùng màu primary — Hoàn thành
+- Kết quả: 8 nút chính đang nền mực tối (`onSurface`, kế thừa `#0F172A` cũ) chuyển sang `primary` `#2563EB` theo MASTER: Lưu (EditNoteDialog), Đồng bộ lại vị trí và Lưu mẫu (TemplateEditorScreen), Kích hoạt (TemplateLibraryScreen), Tạo báo cáo và Phê duyệt (DailyReportPreviewScreen), Lưu cài đặt (SettingsDialog), Tổng hợp nhật ký (DailyInputScreen). Người dùng chốt đổi cả 8 thay vì 2 nút ban đầu.
+- Kiểm tra: `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon` thành công; cài lên `33c4f658`, chụp tab Nhật ký cuối ngày và màn Sửa mẫu thấy nút xanh, logcat `AndroidRuntime:E` trống. Chưa xem trên máy: Phê duyệt/Tạo báo cáo (cần dữ liệu báo cáo), Kích hoạt (thư viện mẫu ẩn theo QĐ 0008), Lưu trong sửa ghi chú.
+- Còn lại: giãn dòng chữ nhỏ, emoji làm icon, chuỗi viết cứng (MASTER).
