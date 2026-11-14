@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -32,6 +33,18 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -219,7 +232,12 @@ Quy tắc bắt buộc:
                 modifier = Modifier.weight(1f)
             ) {
                 IconButton(onClick = onClose) {
-                    Text(text = "←", fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = stringResource(id = R.string.btn_close),
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 Column {
@@ -267,20 +285,42 @@ Quy tắc bắt buộc:
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "✨ Tạo Mẫu Tự Động Từ Google Doc",
-                            fontSize = TextSizes.subtitle,
-                            lineHeight = TextSizes.subtitleLine,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "Tạo Mẫu Tự Động Từ Google Doc",
+                                fontSize = TextSizes.subtitle,
+                                lineHeight = TextSizes.subtitleLine,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
                         if (template != null) {
                             TextButton(
                                 onClick = { showNewDocImporter = false },
                                 contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = 0.dp),
                                 modifier = Modifier.height(26.dp)
                             ) {
-                                Text("Đóng ▲", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                                ) {
+                                    Text("Đóng", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowUp,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
                             }
                         }
                     }
@@ -322,13 +362,24 @@ Quy tắc bắt buộc:
                     )
 
                     autoCreateError?.let { err ->
-                        Text(
-                            text = "⚠️ $err",
-                            fontSize = TextSizes.caption,
-                            lineHeight = TextSizes.captionLine,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                            Text(
+                                text = err,
+                                fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
 
                     Button(
@@ -368,13 +419,24 @@ Quy tắc bắt buộc:
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
-                            Text(
-                                text = "✨ Phân Tích & Duyệt Mẫu Tự Động (2 Bước)",
-                                fontSize = TextSizes.body,
-                                lineHeight = TextSizes.bodyLine,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    text = "Phân Tích & Duyệt Mẫu Tự Động (2 Bước)",
+                                    fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
                     }
                 }
@@ -393,13 +455,24 @@ Quy tắc bắt buộc:
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "✓ Đang áp dụng Bản Mẫu Duy Nhất",
-                            fontSize = TextSizes.body,
-                            lineHeight = TextSizes.bodyLine,
-                            fontWeight = FontWeight.Bold,
-                            color = SiteVoiceTheme.colors.onSuccessContainer
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = SiteVoiceTheme.colors.onSuccessContainer
+                            )
+                            Text(
+                                text = "Đang áp dụng Bản Mẫu Duy Nhất",
+                                fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
+                                fontWeight = FontWeight.Bold,
+                                color = SiteVoiceTheme.colors.onSuccessContainer
+                            )
+                        }
                         Text(
                             text = "Chỉnh sửa Form, các thẻ {{MA}} và System Prompt ngay bên dưới",
                             fontSize = TextSizes.caption,
@@ -483,13 +556,24 @@ Quy tắc bắt buộc:
                                 modifier = Modifier.padding(Spacing.md),
                                 verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                             ) {
-                                Text(
-                                    text = "🛠️ Sửa Form & vị trí thẻ {{MA}} trực tiếp trên Google Doc:",
-                                    fontSize = TextSizes.caption,
-                                    lineHeight = TextSizes.captionLine,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Build,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Sửa Form & vị trí thẻ {{MA}} trực tiếp trên Google Doc:",
+                                        fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
                                 Text(
                                     text = "Mở bản sao Google Doc để xem hoặc tự tay dời/gõ các thẻ {{MA}} (VD: {{MAY_MOC}}, {{Y_KIEN_CDT}}), sau đó bấm Đồng bộ lại.",
                                     fontSize = TextSizes.caption,
@@ -588,13 +672,24 @@ Quy tắc bắt buộc:
                                 }
 
                                 syncStatusMessage?.let { msg ->
-                                    Text(
-                                        text = msg,
-                                        fontSize = TextSizes.caption,
-                                        lineHeight = TextSizes.captionLine,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = SiteVoiceTheme.colors.success
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp),
+                                            tint = SiteVoiceTheme.colors.success
+                                        )
+                                        Text(
+                                            text = msg,
+                                            fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = SiteVoiceTheme.colors.success
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -813,13 +908,24 @@ Quy tắc bắt buộc:
 
             // Báo lỗi nếu có
             errorMessage?.let { msg ->
-                Text(
-                    text = "⚠️ $msg",
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = TextSizes.body,
-                    lineHeight = TextSizes.bodyLine,
-                    fontWeight = FontWeight.Medium
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Text(
+                        text = msg,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = TextSizes.body,
+                        lineHeight = TextSizes.bodyLine,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
 
@@ -991,7 +1097,12 @@ fun FieldItemEditor(
 
             if (canDelete) {
                 IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                    Text(text = "🗑️", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine)
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(id = R.string.notes_delete),
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
@@ -1023,13 +1134,24 @@ fun FieldItemEditor(
                         contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = 0.dp),
                         modifier = Modifier.height(24.dp)
                     ) {
-                        Text(
-                            text = if (showPositionEditor) "Thu gọn ▲" else "Sửa vị trí ✏️",
-                            fontSize = TextSizes.caption,
-                            lineHeight = TextSizes.captionLine,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                        ) {
+                            Text(
+                                text = if (showPositionEditor) "Thu gọn" else "Sửa vị trí",
+                                fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = if (showPositionEditor) Icons.Default.KeyboardArrowUp else Icons.Default.Edit,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
 
@@ -1218,7 +1340,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "−", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
+                    Icon(
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = "Giảm dòng",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 Text(
                     text = "$maxLines",
@@ -1235,7 +1362,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "+", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Tăng dòng",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
 
@@ -1251,7 +1383,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "−", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
+                    Icon(
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = "Giảm ký tự",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 Text(
                     text = "$maxCharsPerLine",
@@ -1268,7 +1405,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "+", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Tăng ký tự",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }
