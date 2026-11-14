@@ -5,7 +5,11 @@ Cập nhật: 2026-11-14. Nguồn chính cho token giao diện (màu, chữ, kho
 - Nguyên tắc thẩm mỹ bắt buộc vẫn là skill `design-taste-frontend` và mục *Thiết kế giao diện* trong [docs/03-kien-truc.md](../../docs/03-kien-truc.md). File này chỉ cụ thể hóa thành token; khi mâu thuẫn, hai nguồn kia thắng.
 - Đối chiếu dữ liệu skill `ui-ux-pro-max` (style *Minimalism & Swiss*, stack `jetpack-compose`: "Material3 tokens, không hardcode màu/sp"). Phần landing page/GSAP/CSS của kết quả skill không áp dụng cho app.
 - Phạm vi đã chốt với người dùng: **giữ bảng màu slate + xanh hiện có**, **font hệ thống (Roboto)**, **chỉ giao diện sáng** (dark mode để sau).
-- Trạng thái (2026-11-14): **đã triển khai một phần**. Có `ui/theme/` (`SiteVoiceTheme` bọc toàn app trong `MainActivity`); `RecordScreen` đã chuyển hết sang token. 10 file `ui/` còn lại vẫn viết cứng `Color(0x…)`/`sp`/bo góc, chuyển dần từng màn hình.
+- Trạng thái (2026-11-14): **đã áp dụng toàn bộ `ui/`**. `ui/theme/` (`SiteVoiceTheme`, `TextSizes`, `Spacing`) bọc toàn app; cả 11 file màn hình không còn `Color(0x…)`, `x.sp`, `RoundedCornerShape(x.dp)` viết cứng.
+- Tồn đọng đã biết (chưa xử lý):
+  - Text chỉ đặt `fontSize` (không đặt `style`/`lineHeight`) kế thừa dòng 24sp của `bodyLarge` nên chữ 12–14sp giãn rộng. Không dùng `lineHeight` dạng `em` cho `bodyLarge`: làm crash `OutlinedTextField` (nội suy nhãn em↔sp). Cách sửa: thêm `lineHeight = TextSizes.*Line` tại call site hoặc chuyển sang `style`.
+  - Hai nút hành động chính "Tổng hợp nhật ký thi công" và "Đồng bộ lại vị trí" giữ nền mực tối (`onSurface`) từ thiết kế cũ, chưa theo quy tắc nút chính = `primary`.
+  - Emoji còn dùng làm icon (thanh điều hướng, nút) và chuỗi viết cứng ngoài `strings.xml`.
 - Trang có quy tắc riêng đặt ở `design-system/sitevoice/pages/<ten-man-hinh>.md` và ghi đè file này cho màn hình đó.
 
 ## 1. Màu (Material3 `lightColorScheme`)
