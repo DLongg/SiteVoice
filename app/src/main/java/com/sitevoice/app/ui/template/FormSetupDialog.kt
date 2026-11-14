@@ -129,17 +129,19 @@ fun FormSetupDialog(
                         Text(
                             text = stringResource(R.string.form_setup_dialog_title),
                             fontSize = TextSizes.title,
+                            lineHeight = TextSizes.titleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = stringResource(R.string.form_setup_dialog_subtitle),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onDismiss, enabled = !isLoading) {
-                        Text("✕", fontSize = TextSizes.title, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("✕", fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -162,12 +164,14 @@ fun FormSetupDialog(
                             Text(
                                 text = stringResource(R.string.form_setup_loading_title),
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = stringResource(R.string.form_setup_loading_subtitle),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -192,7 +196,7 @@ fun FormSetupDialog(
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
                                 Spacer(modifier = Modifier.height(Spacing.xs))
-                                Text(text = errorMessage, fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onErrorContainer)
+                                Text(text = errorMessage, fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onErrorContainer)
                             }
                         }
                     }
@@ -218,6 +222,7 @@ fun FormSetupDialog(
                                     stringResource(R.string.form_setup_step2_indicator)
                                 },
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -247,6 +252,7 @@ fun FormSetupDialog(
                         Text(
                             text = stringResource(R.string.form_setup_template_name_label),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -278,11 +284,13 @@ fun FormSetupDialog(
                                         Text(
                                             text = stringResource(R.string.form_setup_safe_copy_label),
                                             fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Text(
                                             text = analysis.originalDocTitle,
                                             fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.onSurface,
                                             maxLines = 1
@@ -310,6 +318,7 @@ fun FormSetupDialog(
                                         Text(
                                             text = stringResource(R.string.form_setup_open_in_docs),
                                             fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
@@ -325,6 +334,7 @@ fun FormSetupDialog(
                                         Text(
                                             text = stringResource(R.string.form_setup_rescan),
                                             fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
@@ -335,6 +345,7 @@ fun FormSetupDialog(
                                 Text(
                                     text = stringResource(R.string.form_setup_rescan_hint),
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -348,6 +359,7 @@ fun FormSetupDialog(
                         Text(
                             text = stringResource(R.string.form_setup_candidates_header, activeCount, skippedCount),
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -355,6 +367,7 @@ fun FormSetupDialog(
                         Text(
                             text = stringResource(R.string.form_setup_candidates_hint),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = Spacing.sm)
                         )
@@ -441,6 +454,7 @@ fun FormSetupDialog(
                                         Text(
                                             text = stringResource(R.string.form_setup_temperature_title),
                                             fontSize = TextSizes.body,
+                                            lineHeight = TextSizes.bodyLine,
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
@@ -453,6 +467,7 @@ fun FormSetupDialog(
                                             Text(
                                                 text = String.format(Locale.US, "%.2f", temperature),
                                                 fontSize = TextSizes.caption,
+                                                lineHeight = TextSizes.captionLine,
                                                 fontWeight = FontWeight.Bold,
                                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                                 modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
@@ -464,6 +479,7 @@ fun FormSetupDialog(
                                     Text(
                                         text = stringResource(R.string.form_setup_temperature_desc),
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
 
@@ -486,6 +502,7 @@ fun FormSetupDialog(
                                     Text(
                                         text = stringResource(R.string.form_setup_temperature_hint),
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -502,6 +519,7 @@ fun FormSetupDialog(
                                 Text(
                                     text = stringResource(R.string.form_setup_prompt_label),
                                     fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.weight(1f)
@@ -517,6 +535,7 @@ fun FormSetupDialog(
                                     Text(
                                         text = stringResource(R.string.form_setup_step2_regenerate),
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
@@ -526,6 +545,7 @@ fun FormSetupDialog(
                             Text(
                                 text = stringResource(R.string.form_setup_prompt_hint),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
@@ -671,6 +691,7 @@ private fun CandidateCard(
                                 text = "{{${candidate.ma}}}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 color = if (isIncluded) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
@@ -687,6 +708,7 @@ private fun CandidateCard(
                                     Text(
                                         text = formatLoaiLabel(candidate.loai),
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                                     )
@@ -701,6 +723,7 @@ private fun CandidateCard(
                                     Text(
                                         text = formatNguonLabel(candidate.nguon),
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                                         modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
                                     )
@@ -713,6 +736,7 @@ private fun CandidateCard(
                         Text(
                             text = candidate.ten.ifBlank { "(Chưa đặt tên nhãn)" },
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Medium,
                             color = if (isIncluded) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -730,6 +754,7 @@ private fun CandidateCard(
                                     Text(
                                         text = "📍 Đề mục: ${candidate.tieuDeGanNhat}",
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1
@@ -738,6 +763,7 @@ private fun CandidateCard(
                                 Text(
                                     text = "Neo vị trí (#${candidate.startIndex}..#${candidate.endIndex}): Trước \"${candidate.truoc}\" | Sau \"${candidate.sau}\"",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 1
                                 )
@@ -755,6 +781,7 @@ private fun CandidateCard(
                         Text(
                             text = "Sửa ✏️",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -770,6 +797,7 @@ private fun CandidateCard(
                     Text(
                         text = "✏️ Chỉnh sửa chỗ điền #${candidate.id}",
                         fontSize = TextSizes.body,
+                        lineHeight = TextSizes.bodyLine,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -778,7 +806,7 @@ private fun CandidateCard(
                         onClick = onToggleExpand,
                         modifier = Modifier.size(24.dp)
                     ) {
-                        Text("✕", fontSize = TextSizes.body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("✕", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -788,6 +816,7 @@ private fun CandidateCard(
                 Text(
                     text = "Mã thẻ placeholder (ghi vào Doc dạng {{...}}):",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -805,6 +834,7 @@ private fun CandidateCard(
                         Text(
                             text = "{{${candidate.ma}}}",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(end = Spacing.sm)
@@ -818,6 +848,7 @@ private fun CandidateCard(
                 Text(
                     text = "Tên mục hiển thị trong báo cáo:",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -836,6 +867,7 @@ private fun CandidateCard(
                 Text(
                     text = "Kiểu dữ liệu:",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -862,6 +894,7 @@ private fun CandidateCard(
                             Text(
                                 text = label,
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm)
@@ -876,6 +909,7 @@ private fun CandidateCard(
                 Text(
                     text = "Nguồn dữ liệu bóc tách:",
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -902,6 +936,7 @@ private fun CandidateCard(
                             Text(
                                 text = label,
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm)
@@ -928,12 +963,14 @@ private fun CandidateCard(
                             Text(
                                 text = "📍 Vị trí neo trong bản mẫu Google Doc:",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Tín hiệu: ${candidate.tinHieu.ifBlank { "dong_cham" }}",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -943,7 +980,7 @@ private fun CandidateCard(
                         OutlinedTextField(
                             value = candidate.tieuDeGanNhat,
                             onValueChange = { onUpdate(candidate.copy(tieuDeGanNhat = it)) },
-                            label = { Text("Đề mục chứa chỗ điền (tieuDeGanNhat)", fontSize = TextSizes.caption) },
+                            label = { Text("Đề mục chứa chỗ điền (tieuDeGanNhat)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.small
@@ -958,7 +995,7 @@ private fun CandidateCard(
                             OutlinedTextField(
                                 value = candidate.truoc,
                                 onValueChange = { onUpdate(candidate.copy(truoc = it)) },
-                                label = { Text("Ngữ cảnh trước (truoc)", fontSize = TextSizes.caption) },
+                                label = { Text("Ngữ cảnh trước (truoc)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -966,7 +1003,7 @@ private fun CandidateCard(
                             OutlinedTextField(
                                 value = candidate.sau,
                                 onValueChange = { onUpdate(candidate.copy(sau = it)) },
-                                label = { Text("Ngữ cảnh sau (sau)", fontSize = TextSizes.caption) },
+                                label = { Text("Ngữ cảnh sau (sau)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -985,7 +1022,7 @@ private fun CandidateCard(
                                     val idx = str.filter { it.isDigit() || it == '-' }.toIntOrNull() ?: candidate.startIndex
                                     onUpdate(candidate.copy(startIndex = idx))
                                 },
-                                label = { Text("Ký tự bắt đầu (startIndex)", fontSize = TextSizes.caption) },
+                                label = { Text("Ký tự bắt đầu (startIndex)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -996,7 +1033,7 @@ private fun CandidateCard(
                                     val idx = str.filter { it.isDigit() || it == '-' }.toIntOrNull() ?: candidate.endIndex
                                     onUpdate(candidate.copy(endIndex = idx))
                                 },
-                                label = { Text("Ký tự kết thúc (endIndex)", fontSize = TextSizes.caption) },
+                                label = { Text("Ký tự kết thúc (endIndex)", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.small
@@ -1026,6 +1063,7 @@ private fun CandidateCard(
                         Text(
                             text = if (candidate.boQua) "✓ Khôi phục vị trí này" else "✕ Bỏ qua vị trí này",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -1039,6 +1077,7 @@ private fun CandidateCard(
                         Text(
                             text = "✓ Xong",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
