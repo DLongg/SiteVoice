@@ -724,3 +724,23 @@ A templates/schema-chung.md
 - Kết quả: 8 nút chính đang nền mực tối (`onSurface`, kế thừa `#0F172A` cũ) chuyển sang `primary` `#2563EB` theo MASTER: Lưu (EditNoteDialog), Đồng bộ lại vị trí và Lưu mẫu (TemplateEditorScreen), Kích hoạt (TemplateLibraryScreen), Tạo báo cáo và Phê duyệt (DailyReportPreviewScreen), Lưu cài đặt (SettingsDialog), Tổng hợp nhật ký (DailyInputScreen). Người dùng chốt đổi cả 8 thay vì 2 nút ban đầu.
 - Kiểm tra: `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon` thành công; cài lên `33c4f658`, chụp tab Nhật ký cuối ngày và màn Sửa mẫu thấy nút xanh, logcat `AndroidRuntime:E` trống. Chưa xem trên máy: Phê duyệt/Tạo báo cáo (cần dữ liệu báo cáo), Kích hoạt (thư viện mẫu ẩn theo QĐ 0008), Lưu trong sửa ghi chú.
 - Còn lại: giãn dòng chữ nhỏ, emoji làm icon, chuỗi viết cứng (MASTER).
+
+
+## 2026-11-15 — Milestone R3: Tách toàn bộ chuỗi tiếng Việt vào strings.xml — Hoàn thành
+- Kết quả: Đã tách sạch sẽ 100% các chuỗi literal tiếng Việt hardcoded hiển thị trực tiếp từ 10 file Compose UI và `MainViewModel.kt` vào `app/src/main/res/values/strings.xml` (~130 khóa mới). Đảm bảo giữ nguyên các ràng buộc sản phẩm: không tách System Prompt LLM trong `TemplateEditorScreen`, giữ nguyên các thẻ neo Google Docs `{{...}}`, JSON keys và Room status enums. Toàn bộ 11 commits riêng lẻ đã được tạo và push trực tiếp lên `origin/main`.
+- Files sửa:
+  + `app/src/main/res/values/strings.xml` (Commit `58b6ba5`)
+  + `app/src/main/java/com/sitevoice/app/ui/MainScreen.kt` (Commit `e92ac4f`)
+  + `app/src/main/java/com/sitevoice/app/ui/record/RecordScreen.kt` (Commit `17fadb0`)
+  + `app/src/main/java/com/sitevoice/app/ui/notes/NotesListScreen.kt` (Commit `118f9fc`)
+  + `app/src/main/java/com/sitevoice/app/ui/daily/DailyInputScreen.kt` (Commit `3f271e5`)
+  + `app/src/main/java/com/sitevoice/app/ui/daily/DailyReportPreviewScreen.kt` (Commit `76c423e`)
+  + `app/src/main/java/com/sitevoice/app/ui/settings/SettingsDialog.kt` (Commit `3bef249`)
+  + `app/src/main/java/com/sitevoice/app/ui/template/TemplateLibraryScreen.kt` (Commit `e0f30c2`)
+  + `app/src/main/java/com/sitevoice/app/ui/template/TemplateEditorScreen.kt` (Commit `8d53844`)
+  + `app/src/main/java/com/sitevoice/app/ui/template/FormSetupDialog.kt` (Commit `872506b`)
+  + `app/src/main/java/com/sitevoice/app/ui/MainViewModel.kt` (Commit `40ce73b`)
+- Kiểm tra:
+  + Chạy `verify_strings.py` regex scan: 0 chuỗi UI tiếng Việt hardcoded còn sót lại trong toàn bộ package `ui`.
+  + Chạy `.\gradlew.bat testDebugUnitTest assembleDebug --no-daemon`: **BUILD SUCCESSFUL**, pass 100% unit tests (223/223), sinh file APK `app\build\outputs\apk\debug\app-debug.apk` (20,540,036 bytes).
+- Còn lại: Milestone R4 (QA & kiểm thử trên thiết bị thật `33c4f658`).
