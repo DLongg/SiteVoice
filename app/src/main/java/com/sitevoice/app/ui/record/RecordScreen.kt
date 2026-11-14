@@ -178,10 +178,10 @@ fun RecordScreen(
                 val hasStt = !securePreferences.groqApiKey.isNullOrBlank()
                 val hasClassify = !securePreferences.geminiApiKey.isNullOrBlank()
                 val (statusText, statusColor) = when {
-                    hasStt && hasClassify -> "STT OK | Gemini OK" to extraColors.success
-                    hasStt -> "STT OK | Phân loại: Groq" to extraColors.success
-                    hasClassify -> "Thiếu STT Key" to extraColors.warning
-                    else -> "Cài API Key" to colors.error
+                    hasStt && hasClassify -> stringResource(id = R.string.record_status_ready_all) to extraColors.success
+                    hasStt -> stringResource(id = R.string.record_status_ready_groq) to extraColors.success
+                    hasClassify -> stringResource(id = R.string.record_status_missing_stt_key) to extraColors.warning
+                    else -> stringResource(id = R.string.record_status_no_keys) to colors.error
                 }
 
                 OutlinedButton(
@@ -219,7 +219,7 @@ fun RecordScreen(
                             tint = colors.primary
                         )
                         Text(
-                            text = if (activeTemplateName != null) "Mẫu: $activeTemplateName (Sửa)" else "Thiết lập Nhật ký tự động",
+                            text = if (activeTemplateName != null) stringResource(id = R.string.record_btn_active_template, activeTemplateName) else stringResource(id = R.string.record_btn_setup_auto_template),
                             style = type.labelLarge,
                             color = colors.onSurface
                         )
@@ -430,7 +430,7 @@ fun RecordScreen(
                         when (val state = sttStatus) {
                             is CurrentSttStatus.Idle -> {
                                 Text(
-                                    text = "Đã lưu vào danh sách ghi chú",
+                                    text = stringResource(id = R.string.record_stt_idle_saved),
                                     style = type.bodyMedium,
                                     color = colors.onSurfaceVariant
                                 )
@@ -450,7 +450,7 @@ fun RecordScreen(
                                     )
                                     Spacer(modifier = Modifier.width(spacing.md))
                                     Text(
-                                        text = "Đang chuyển văn bản qua Groq Whisper...",
+                                        text = stringResource(id = R.string.record_stt_transcribing_groq),
                                         style = type.bodyMedium,
                                         color = colors.onSurface
                                     )
@@ -462,9 +462,9 @@ fun RecordScreen(
                                         .fillMaxWidth()
                                         .background(colors.surfaceVariant, shapes.medium)
                                         .padding(spacing.md)
-                                ) {
+                                 ) {
                                     Text(
-                                        text = "Văn bản nhận diện (STT):",
+                                        text = stringResource(id = R.string.record_stt_result_title),
                                         style = type.labelMedium,
                                         fontWeight = FontWeight.SemiBold,
                                         color = extraColors.success
@@ -485,7 +485,7 @@ fun RecordScreen(
                                         .padding(spacing.md)
                                 ) {
                                     Text(
-                                        text = "Lỗi STT: ${state.message}",
+                                        text = stringResource(id = R.string.record_stt_error_message, state.message),
                                         style = type.bodyMedium,
                                         color = colors.onErrorContainer
                                     )
@@ -496,7 +496,7 @@ fun RecordScreen(
                                         },
                                         shape = shapes.small
                                     ) {
-                                        Text("Thử lại STT")
+                                        Text(text = stringResource(id = R.string.record_btn_retry_stt))
                                     }
                                 }
                             }
@@ -510,7 +510,7 @@ fun RecordScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Chưa có Groq API Key",
+                                        text = stringResource(id = R.string.record_stt_missing_key_warning),
                                         style = type.bodyMedium,
                                         color = extraColors.onWarningContainer
                                     )
@@ -522,7 +522,7 @@ fun RecordScreen(
                                             contentColor = extraColors.onWarning
                                         )
                                     ) {
-                                        Text("Cài đặt key")
+                                        Text(text = stringResource(id = R.string.record_btn_setup_key))
                                     }
                                 }
                             }
