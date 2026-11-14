@@ -101,6 +101,7 @@ fun NotesListScreen(
                 Text(
                     text = stringResource(id = R.string.notes_title),
                     fontSize = TextSizes.title,
+                    lineHeight = TextSizes.titleLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -108,6 +109,7 @@ fun NotesListScreen(
                 Text(
                     text = stringResource(id = R.string.notes_count, notes.size),
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -133,7 +135,8 @@ fun NotesListScreen(
                         ) {
                             Text(
                                 text = "📝",
-                                fontSize = TextSizes.display
+                                fontSize = TextSizes.display,
+                                lineHeight = TextSizes.displayLine
                             )
                         }
 
@@ -142,6 +145,7 @@ fun NotesListScreen(
                         Text(
                             text = stringResource(id = R.string.notes_empty_title),
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -249,6 +253,7 @@ fun NoteItemCard(
                 Text(
                     text = timeStr,
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -264,6 +269,7 @@ fun NoteItemCard(
                             Text(
                                 text = stringResource(id = R.string.queue_badge_error),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.error
                             )
@@ -279,6 +285,7 @@ fun NoteItemCard(
                             Text(
                                 text = stringResource(id = R.string.queue_badge_waiting),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
                                 color = SiteVoiceTheme.colors.warning
                             )
@@ -301,6 +308,7 @@ fun NoteItemCard(
                             Text(
                                 text = stringResource(id = R.string.queue_badge_classifying),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -329,6 +337,7 @@ fun NoteItemCard(
                                 Text(
                                     text = "${currentCategory.icon} ${currentCategory.title}",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Medium,
                                     color = labelColor
                                 )
@@ -336,6 +345,7 @@ fun NoteItemCard(
                                 Text(
                                     text = "▾",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = labelColor
                                 )
                             }
@@ -350,6 +360,7 @@ fun NoteItemCard(
                                             Text(
                                                 text = "${option.icon} ${option.title}",
                                                 fontSize = TextSizes.body,
+                                                lineHeight = TextSizes.bodyLine,
                                                 fontWeight = if (option.key == note.label) FontWeight.Bold else FontWeight.Normal
                                             )
                                         },
@@ -380,6 +391,7 @@ fun NoteItemCard(
                         Text(
                             text = "Lỗi nhận diện: ${note.error}",
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             color = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -390,6 +402,7 @@ fun NoteItemCard(
                             Text(
                                 text = stringResource(id = R.string.notes_retry_stt),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
@@ -414,6 +427,7 @@ fun NoteItemCard(
                             Text(
                                 text = stringResource(id = R.string.queue_status_waiting_network),
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -421,6 +435,7 @@ fun NoteItemCard(
                             Text(
                                 text = stringResource(id = R.string.queue_status_audio_saved_hint),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -453,6 +468,7 @@ fun NoteItemCard(
                     Text(
                         text = if (isPlaying) "■ Dừng" else "▶ ${durationSec}s",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -467,6 +483,7 @@ fun NoteItemCard(
                         Text(
                             text = stringResource(id = R.string.notes_edit),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -480,6 +497,7 @@ fun NoteItemCard(
                         Text(
                             text = stringResource(id = R.string.notes_delete),
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = MaterialTheme.colorScheme.error
                         )
                     }
