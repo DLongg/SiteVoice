@@ -219,13 +219,14 @@ Quy tắc bắt buộc:
                 modifier = Modifier.weight(1f)
             ) {
                 IconButton(onClick = onClose) {
-                    Text(text = "←", fontSize = TextSizes.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text(text = "←", fontSize = TextSizes.title, lineHeight = TextSizes.titleLine, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 Column {
                     Text(
                         text = if (template == null) "Thiết lập Nhật ký tự động" else "Nhật ký tự động & Chỉnh sửa Mẫu",
                         fontSize = TextSizes.title,
+                        lineHeight = TextSizes.titleLine,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -235,6 +236,7 @@ Quy tắc bắt buộc:
                         else
                             "Một bản mẫu duy nhất • Sửa Form, các thẻ {{MA}} và System Prompt",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -268,6 +270,7 @@ Quy tắc bắt buộc:
                         Text(
                             text = "✨ Tạo Mẫu Tự Động Từ Google Doc",
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -277,7 +280,7 @@ Quy tắc bắt buộc:
                                 contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = 0.dp),
                                 modifier = Modifier.height(26.dp)
                             ) {
-                                Text("Đóng ▲", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text("Đóng ▲", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     }
@@ -296,7 +299,7 @@ Quy tắc bắt buộc:
                             errorMessage = null
                         },
                         label = { Text("Link hoặc ID Google Doc biểu mẫu gốc") },
-                        placeholder = { Text("https://docs.google.com/document/d/...", fontSize = TextSizes.caption) },
+                        placeholder = { Text("https://docs.google.com/document/d/...", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         enabled = !isAutoCreating,
                         modifier = Modifier
@@ -309,7 +312,7 @@ Quy tắc bắt buộc:
                         value = sourceCustomNameInput,
                         onValueChange = { sourceCustomNameInput = it },
                         label = { Text("Tên bản mẫu (để trống sẽ tự lấy theo tên Doc)") },
-                        placeholder = { Text("Ví dụ: Nhật ký tự động công trình A", fontSize = TextSizes.caption) },
+                        placeholder = { Text("Ví dụ: Nhật ký tự động công trình A", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         enabled = !isAutoCreating,
                         modifier = Modifier
@@ -322,6 +325,7 @@ Quy tắc bắt buộc:
                         Text(
                             text = "⚠️ $err",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -359,6 +363,7 @@ Quy tắc bắt buộc:
                             Text(
                                 text = "Đang tạo bản sao & phân tích chỗ điền bằng AI...",
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
@@ -366,6 +371,7 @@ Quy tắc bắt buộc:
                             Text(
                                 text = "✨ Phân Tích & Duyệt Mẫu Tự Động (2 Bước)",
                                 fontSize = TextSizes.body,
+                                lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
@@ -390,12 +396,14 @@ Quy tắc bắt buộc:
                         Text(
                             text = "✓ Đang áp dụng Bản Mẫu Duy Nhất",
                             fontSize = TextSizes.body,
+                            lineHeight = TextSizes.bodyLine,
                             fontWeight = FontWeight.Bold,
                             color = SiteVoiceTheme.colors.onSuccessContainer
                         )
                         Text(
                             text = "Chỉnh sửa Form, các thẻ {{MA}} và System Prompt ngay bên dưới",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             color = SiteVoiceTheme.colors.success
                         )
                     }
@@ -408,6 +416,7 @@ Quy tắc bắt buộc:
                             Text(
                                 text = "Đổi Doc gốc",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
                                 color = SiteVoiceTheme.colors.onSuccessContainer
                             )
@@ -427,6 +436,7 @@ Quy tắc bắt buộc:
                     Text(
                         text = "1. Form & Bản sao Google Doc",
                         fontSize = TextSizes.subtitle,
+                        lineHeight = TextSizes.subtitleLine,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -476,12 +486,14 @@ Quy tắc bắt buộc:
                                 Text(
                                     text = "🛠️ Sửa Form & vị trí thẻ {{MA}} trực tiếp trên Google Doc:",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "Mở bản sao Google Doc để xem hoặc tự tay dời/gõ các thẻ {{MA}} (VD: {{MAY_MOC}}, {{Y_KIEN_CDT}}), sau đó bấm Đồng bộ lại.",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
@@ -509,6 +521,7 @@ Quy tắc bắt buộc:
                                         Text(
                                             text = stringResource(id = R.string.template_editor_open_doc_btn),
                                             fontSize = TextSizes.caption,
+                                            lineHeight = TextSizes.captionLine,
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onPrimaryContainer
                                         )
@@ -566,6 +579,7 @@ Quy tắc bắt buộc:
                                             Text(
                                                 text = stringResource(id = R.string.template_editor_rescan_doc_btn),
                                                 fontSize = TextSizes.caption,
+                                                lineHeight = TextSizes.captionLine,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = MaterialTheme.colorScheme.onPrimary
                                             )
@@ -577,6 +591,7 @@ Quy tắc bắt buộc:
                                     Text(
                                         text = msg,
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         fontWeight = FontWeight.SemiBold,
                                         color = SiteVoiceTheme.colors.success
                                     )
@@ -603,12 +618,14 @@ Quy tắc bắt buộc:
                         Text(
                             text = "2. Các mục & Các thẻ {{MA}} trong mẫu",
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "${fields.size} thẻ",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -617,6 +634,7 @@ Quy tắc bắt buộc:
                     Text(
                         text = "Chỉnh sửa mã thẻ {{MA}}, tên mục, kiểu dữ liệu, nguồn ghi chú và vị trí neo trong Google Doc.",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
@@ -634,6 +652,7 @@ Quy tắc bắt buộc:
                                 Text(
                                     text = stringResource(id = R.string.template_editor_empty_fields_title),
                                     fontSize = TextSizes.body,
+                                    lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -641,6 +660,7 @@ Quy tắc bắt buộc:
                                 Text(
                                     text = stringResource(id = R.string.template_editor_empty_fields_desc),
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -673,7 +693,7 @@ Quy tắc bắt buộc:
                         modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.small
                     ) {
-                        Text(text = stringResource(id = R.string.template_btn_add_field), fontSize = TextSizes.body)
+                        Text(text = stringResource(id = R.string.template_btn_add_field), fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine)
                     }
                 }
 
@@ -694,6 +714,7 @@ Quy tắc bắt buộc:
                         Text(
                             text = "3. System Prompt & Nhiệt độ AI",
                             fontSize = TextSizes.subtitle,
+                            lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f)
@@ -715,6 +736,7 @@ Quy tắc bắt buộc:
                             Text(
                                 text = stringResource(id = R.string.template_editor_render_prompt_btn),
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
@@ -737,6 +759,7 @@ Quy tắc bắt buộc:
                                 Text(
                                     text = "Nhiệt độ tổng hợp (Temperature):",
                                     fontSize = TextSizes.caption,
+                                    lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -748,6 +771,7 @@ Quy tắc bắt buộc:
                                     Text(
                                         text = String.format(Locale.US, "%.2f", temperature),
                                         fontSize = TextSizes.caption,
+                                        lineHeight = TextSizes.captionLine,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
@@ -764,6 +788,7 @@ Quy tắc bắt buộc:
                             Text(
                                 text = "0.00 = bám sát nguyên văn • 0.20 = mượt mà, không bịa số liệu • 0.80 = diễn đạt linh hoạt",
                                 fontSize = TextSizes.caption,
+                                lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -772,6 +797,7 @@ Quy tắc bắt buộc:
                     Text(
                         text = "Bạn có thể sửa trực tiếp System Prompt bên dưới hoặc bấm '🔄 Render Prompt từ các trường tổng hợp' để cập nhật theo danh sách thẻ ở mục 2.",
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
@@ -791,6 +817,7 @@ Quy tắc bắt buộc:
                     text = "⚠️ $msg",
                     color = MaterialTheme.colorScheme.error,
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -899,7 +926,8 @@ Quy tắc bắt buộc:
                 Text(
                     text = stringResource(id = R.string.template_btn_save_template),
                     fontWeight = FontWeight.Bold,
-                    fontSize = TextSizes.subtitle
+                    fontSize = TextSizes.subtitle,
+                    lineHeight = TextSizes.subtitleLine
                 )
             }
         }
@@ -945,7 +973,7 @@ fun FieldItemEditor(
                     key = it
                     fieldState.key = it
                 },
-                label = { Text("Mã thẻ {{...}}", fontSize = TextSizes.caption) },
+                label = { Text("Mã thẻ {{...}}", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 modifier = Modifier.weight(1f),
                 singleLine = true
             )
@@ -956,14 +984,14 @@ fun FieldItemEditor(
                     label = it
                     fieldState.label = it
                 },
-                label = { Text("Tên mục hiển thị", fontSize = TextSizes.caption) },
+                label = { Text("Tên mục hiển thị", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 modifier = Modifier.weight(1.2f),
                 singleLine = true
             )
 
             if (canDelete) {
                 IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                    Text(text = "🗑️", fontSize = TextSizes.body)
+                    Text(text = "🗑️", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine)
                 }
             }
         }
@@ -986,6 +1014,7 @@ fun FieldItemEditor(
                     Text(
                         text = stringResource(id = R.string.field_position_section_title),
                         fontSize = TextSizes.caption,
+                        lineHeight = TextSizes.captionLine,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -997,6 +1026,7 @@ fun FieldItemEditor(
                         Text(
                             text = if (showPositionEditor) "Thu gọn ▲" else "Sửa vị trí ✏️",
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -1017,6 +1047,7 @@ fun FieldItemEditor(
                 Text(
                     text = posSummary,
                     fontSize = TextSizes.caption,
+                    lineHeight = TextSizes.captionLine,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -1029,7 +1060,7 @@ fun FieldItemEditor(
                             tieuDeGanNhat = it
                             fieldState.tieuDeGanNhat = it
                         },
-                        label = { Text(stringResource(id = R.string.field_position_heading_label), fontSize = TextSizes.caption) },
+                        label = { Text(stringResource(id = R.string.field_position_heading_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -1046,7 +1077,7 @@ fun FieldItemEditor(
                                 truoc = it
                                 fieldState.truoc = it
                             },
-                            label = { Text(stringResource(id = R.string.field_position_before_label), fontSize = TextSizes.caption) },
+                            label = { Text(stringResource(id = R.string.field_position_before_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1057,7 +1088,7 @@ fun FieldItemEditor(
                                 sau = it
                                 fieldState.sau = it
                             },
-                            label = { Text(stringResource(id = R.string.field_position_after_label), fontSize = TextSizes.caption) },
+                            label = { Text(stringResource(id = R.string.field_position_after_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1076,7 +1107,7 @@ fun FieldItemEditor(
                                 startIndex = v
                                 fieldState.startIndex = v
                             },
-                            label = { Text(stringResource(id = R.string.field_position_start_index), fontSize = TextSizes.caption) },
+                            label = { Text(stringResource(id = R.string.field_position_start_index), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1088,7 +1119,7 @@ fun FieldItemEditor(
                                 endIndex = v
                                 fieldState.endIndex = v
                             },
-                            label = { Text(stringResource(id = R.string.field_position_end_index), fontSize = TextSizes.caption) },
+                            label = { Text(stringResource(id = R.string.field_position_end_index), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                             singleLine = true,
                             modifier = Modifier.weight(1f)
                         )
@@ -1103,7 +1134,7 @@ fun FieldItemEditor(
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Kiểu:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = "Kiểu:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             FilterChip(
                 selected = type == "danh_sach",
@@ -1111,7 +1142,7 @@ fun FieldItemEditor(
                     type = "danh_sach"
                     fieldState.type = "danh_sach"
                 },
-                label = { Text(stringResource(id = R.string.template_field_type_list), fontSize = TextSizes.caption) },
+                label = { Text(stringResource(id = R.string.template_field_type_list), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -1124,7 +1155,7 @@ fun FieldItemEditor(
                     type = "van_ban"
                     fieldState.type = "van_ban"
                 },
-                label = { Text(stringResource(id = R.string.template_field_type_text), fontSize = TextSizes.caption) },
+                label = { Text(stringResource(id = R.string.template_field_type_text), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -1134,7 +1165,7 @@ fun FieldItemEditor(
 
         // Hàng 2b: Chọn Nguồn dữ liệu
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Nguồn dữ liệu:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = "Nguồn dữ liệu:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(Spacing.xs))
             Row(
                 modifier = Modifier
@@ -1159,6 +1190,7 @@ fun FieldItemEditor(
                         Text(
                             text = srcLabel,
                             fontSize = TextSizes.caption,
+                            lineHeight = TextSizes.captionLine,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
@@ -1175,7 +1207,7 @@ fun FieldItemEditor(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Dòng:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = "Dòng:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 IconButton(
                     onClick = {
@@ -1186,11 +1218,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "−", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
+                    Text(text = "−", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
                 }
                 Text(
                     text = "$maxLines",
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = Spacing.xs)
@@ -1202,12 +1235,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "+", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
+                    Text(text = "+", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
                 }
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Ký tự/dòng:", fontSize = TextSizes.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = "Ký tự/dòng:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 IconButton(
                     onClick = {
@@ -1218,11 +1251,12 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "−", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
+                    Text(text = "−", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
                 }
                 Text(
                     text = "$maxCharsPerLine",
                     fontSize = TextSizes.body,
+                    lineHeight = TextSizes.bodyLine,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = Spacing.xs)
@@ -1234,7 +1268,7 @@ fun FieldItemEditor(
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
-                    Text(text = "+", fontSize = TextSizes.body, fontWeight = FontWeight.Bold)
+                    Text(text = "+", fontSize = TextSizes.body, lineHeight = TextSizes.bodyLine, fontWeight = FontWeight.Bold)
                 }
             }
         }
