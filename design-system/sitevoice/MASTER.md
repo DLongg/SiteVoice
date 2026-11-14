@@ -5,7 +5,7 @@ Cập nhật: 2026-11-14. Nguồn chính cho token giao diện (màu, chữ, kho
 - Nguyên tắc thẩm mỹ bắt buộc vẫn là skill `design-taste-frontend` và mục *Thiết kế giao diện* trong [docs/03-kien-truc.md](../../docs/03-kien-truc.md). File này chỉ cụ thể hóa thành token; khi mâu thuẫn, hai nguồn kia thắng.
 - Đối chiếu dữ liệu skill `ui-ux-pro-max` (style *Minimalism & Swiss*, stack `jetpack-compose`: "Material3 tokens, không hardcode màu/sp"). Phần landing page/GSAP/CSS của kết quả skill không áp dụng cho app.
 - Phạm vi đã chốt với người dùng: **giữ bảng màu slate + xanh hiện có**, **font hệ thống (Roboto)**, **chỉ giao diện sáng** (dark mode để sau).
-- Trạng thái: **mới là đặc tả**. Code hiện vẫn viết cứng ~370 giá trị `Color(0x…)` trong 11 file `ui/`; chưa có `ui/theme/`. Áp dụng vào code là task riêng, chưa thực hiện.
+- Trạng thái (2026-11-14): **đã triển khai một phần**. Có `ui/theme/` (`SiteVoiceTheme` bọc toàn app trong `MainActivity`); `RecordScreen` đã chuyển hết sang token. 10 file `ui/` còn lại vẫn viết cứng `Color(0x…)`/`sp`/bo góc, chuyển dần từng màn hình.
 - Trang có quy tắc riêng đặt ở `design-system/sitevoice/pages/<ten-man-hinh>.md` và ghi đè file này cho màn hình đó.
 
 ## 1. Màu (Material3 `lightColorScheme`)
