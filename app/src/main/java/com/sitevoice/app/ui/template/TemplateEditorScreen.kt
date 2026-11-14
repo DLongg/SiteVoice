@@ -91,13 +91,13 @@ data class FieldEditorState(
 )
 
 private val EDITOR_SOURCE_OPTIONS = listOf(
-    "thi_cong" to "Thi công",
-    "nghiem_thu" to "Nghiệm thu",
-    "an_toan" to "An toàn & VSMT",
-    "nhap_tay" to "Nhập tay cuối ngày",
-    "y_kien_cdt" to "Ý kiến CĐT",
-    "y_kien_tvgs" to "Ý kiến TVGS",
-    "y_kien_nha_thau" to "Ý kiến Nhà thầu"
+    "thi_cong" to R.string.template_source_thi_cong,
+    "nghiem_thu" to R.string.template_source_nghiem_thu,
+    "an_toan" to R.string.template_source_an_toan,
+    "nhap_tay" to R.string.template_source_nhap_tay,
+    "y_kien_cdt" to R.string.template_source_y_kien_cdt,
+    "y_kien_tvgs" to R.string.template_source_y_kien_tvgs,
+    "y_kien_nha_thau" to R.string.template_source_y_kien_nha_thau
 )
 
 @Composable
@@ -211,7 +211,7 @@ Quy tắc bắt buộc:
         }
         return FormLlmDescriber.generateUnifiedPrompt(
             candidates = candidates,
-            templateName = name.ifBlank { "Nhật ký tự động" }
+            templateName = name.ifBlank { context.getString(R.string.template_default_name) }
         )
     }
 
@@ -242,7 +242,7 @@ Quy tắc bắt buộc:
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 Column {
                     Text(
-                        text = if (template == null) "Thiết lập Nhật ký tự động" else "Nhật ký tự động & Chỉnh sửa Mẫu",
+                        text = if (template == null) stringResource(id = R.string.template_setup_auto_title) else stringResource(id = R.string.template_edit_title),
                         fontSize = TextSizes.title,
                         lineHeight = TextSizes.titleLine,
                         fontWeight = FontWeight.Bold,
@@ -250,9 +250,9 @@ Quy tắc bắt buộc:
                     )
                     Text(
                         text = if (template == null)
-                            "Dán link Google Doc để tạo bản mẫu tự động một lần"
+                            stringResource(id = R.string.template_setup_auto_subtitle)
                         else
-                            "Một bản mẫu duy nhất • Sửa Form, các thẻ {{MA}} và System Prompt",
+                            stringResource(id = R.string.template_edit_subtitle),
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -296,7 +296,7 @@ Quy tắc bắt buộc:
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Text(
-                                text = "Tạo Mẫu Tự Động Từ Google Doc",
+                                text = stringResource(id = R.string.template_create_auto_header),
                                 fontSize = TextSizes.subtitle,
                                 lineHeight = TextSizes.subtitleLine,
                                 fontWeight = FontWeight.Bold,
@@ -313,7 +313,7 @@ Quy tắc bắt buộc:
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
                                 ) {
-                                    Text("Đóng", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                    Text(stringResource(id = R.string.template_btn_collapse), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onPrimaryContainer)
                                     Icon(
                                         imageVector = Icons.Default.KeyboardArrowUp,
                                         contentDescription = null,
@@ -326,7 +326,7 @@ Quy tắc bắt buộc:
                     }
 
                     Text(
-                        text = "Lưu ý minh bạch: Ứng dụng sẽ tạo 1 bản sao trên Google Drive của bạn (tuyệt đối không sửa file gốc), quét các chỗ điền (...) và gửi danh sách vị trí cho nhà cung cấp AI (LLM) để đề xuất thẻ {{MA}} & System Prompt. Bạn sẽ duyệt qua 2 bước trước khi ghi vào bản sao Google Doc.",
+                        text = stringResource(id = R.string.template_transparency_note),
                         fontSize = TextSizes.caption,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         lineHeight = TextSizes.bodyLine
@@ -338,7 +338,7 @@ Quy tắc bắt buộc:
                             sourceDocLinkInput = it
                             errorMessage = null
                         },
-                        label = { Text("Link hoặc ID Google Doc biểu mẫu gốc") },
+                        label = { Text(stringResource(id = R.string.template_source_doc_label)) },
                         placeholder = { Text("https://docs.google.com/document/d/...", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         enabled = !isAutoCreating,
@@ -351,8 +351,8 @@ Quy tắc bắt buộc:
                     OutlinedTextField(
                         value = sourceCustomNameInput,
                         onValueChange = { sourceCustomNameInput = it },
-                        label = { Text("Tên bản mẫu (để trống sẽ tự lấy theo tên Doc)") },
-                        placeholder = { Text("Ví dụ: Nhật ký tự động công trình A", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                        label = { Text(stringResource(id = R.string.template_custom_name_label)) },
+                        placeholder = { Text(stringResource(id = R.string.template_custom_name_hint), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                         singleLine = true,
                         enabled = !isAutoCreating,
                         modifier = Modifier
@@ -385,7 +385,7 @@ Quy tắc bắt buộc:
                     Button(
                         onClick = {
                             if (sourceDocLinkInput.isBlank()) {
-                                errorMessage = "Vui lòng dán Link hoặc ID Google Doc trước khi tạo mẫu tự động."
+                                errorMessage = context.getString(R.string.template_doc_empty_error)
                             } else if (onAutoCreateOneShot != null) {
                                 errorMessage = null
                                 onAutoCreateOneShot(
@@ -412,7 +412,7 @@ Quy tắc bắt buộc:
                             )
                             Spacer(modifier = Modifier.width(Spacing.md))
                             Text(
-                                text = "Đang tạo bản sao & phân tích chỗ điền bằng AI...",
+                                text = stringResource(id = R.string.template_creating_copy_loading),
                                 fontSize = TextSizes.body,
                                 lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
@@ -430,7 +430,7 @@ Quy tắc bắt buộc:
                                     tint = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Text(
-                                    text = "Phân Tích & Duyệt Mẫu Tự Động (2 Bước)",
+                                    text = stringResource(id = R.string.template_btn_analyze_auto),
                                     fontSize = TextSizes.body,
                                     lineHeight = TextSizes.bodyLine,
                                     fontWeight = FontWeight.Bold,
@@ -466,7 +466,7 @@ Quy tắc bắt buộc:
                                 tint = SiteVoiceTheme.colors.onSuccessContainer
                             )
                             Text(
-                                text = "Đang áp dụng Bản Mẫu Duy Nhất",
+                                text = stringResource(id = R.string.template_single_active_banner),
                                 fontSize = TextSizes.body,
                                 lineHeight = TextSizes.bodyLine,
                                 fontWeight = FontWeight.Bold,
@@ -474,7 +474,7 @@ Quy tắc bắt buộc:
                             )
                         }
                         Text(
-                            text = "Chỉnh sửa Form, các thẻ {{MA}} và System Prompt ngay bên dưới",
+                            text = stringResource(id = R.string.template_single_active_subtitle),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             color = SiteVoiceTheme.colors.success
@@ -487,7 +487,7 @@ Quy tắc bắt buộc:
                             contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.xs)
                         ) {
                             Text(
-                                text = "Đổi Doc gốc",
+                                text = stringResource(id = R.string.template_btn_change_doc),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.SemiBold,
@@ -507,7 +507,7 @@ Quy tắc bắt buộc:
                     verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
                     Text(
-                        text = "1. Form & Bản sao Google Doc",
+                        text = stringResource(id = R.string.template_section_doc_title),
                         fontSize = TextSizes.subtitle,
                         lineHeight = TextSizes.subtitleLine,
                         fontWeight = FontWeight.Bold,
@@ -538,7 +538,7 @@ Quy tắc bắt buộc:
                             docTemplateUrl = it
                             errorMessage = null
                         },
-                        label = { Text("Link Bản Sao Google Doc (đã chèn thẻ {{MA}})") },
+                        label = { Text(stringResource(id = R.string.template_safe_copy_doc_label)) },
                         placeholder = { Text(stringResource(id = R.string.template_field_doc_url_hint)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
@@ -567,7 +567,7 @@ Quy tắc bắt buộc:
                                         tint = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "Sửa Form & vị trí thẻ {{MA}} trực tiếp trên Google Doc:",
+                                        text = stringResource(id = R.string.template_edit_on_doc_title),
                                         fontSize = TextSizes.caption,
                                         lineHeight = TextSizes.captionLine,
                                         fontWeight = FontWeight.Bold,
@@ -575,7 +575,7 @@ Quy tắc bắt buộc:
                                     )
                                 }
                                 Text(
-                                    text = "Mở bản sao Google Doc để xem hoặc tự tay dời/gõ các thẻ {{MA}} (VD: {{MAY_MOC}}, {{Y_KIEN_CDT}}), sau đó bấm Đồng bộ lại.",
+                                    text = stringResource(id = R.string.template_edit_on_doc_desc),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -595,7 +595,7 @@ Quy tắc bắt buộc:
                                                 }
                                                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                                             } catch (e: Exception) {
-                                                errorMessage = "Không thể mở trình duyệt: ${e.message}"
+                                                errorMessage = context.getString(R.string.template_browser_error, e.message ?: "")
                                             }
                                         },
                                         modifier = Modifier.weight(1f),
@@ -640,9 +640,9 @@ Quy tắc bắt buộc:
                                                                 )
                                                             )
                                                         }
-                                                        syncStatusMessage = "Đã đồng bộ ${fields.size} thẻ từ Google Doc!"
+                                                        syncStatusMessage = context.getString(R.string.template_sync_success, fields.size)
                                                     } else {
-                                                        errorMessage = result.exceptionOrNull()?.message ?: "Lỗi đồng bộ từ Google Doc"
+                                                        errorMessage = result.exceptionOrNull()?.message ?: context.getString(R.string.template_sync_error)
                                                     }
                                                 }
                                             },
@@ -711,14 +711,14 @@ Quy tắc bắt buộc:
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "2. Các mục & Các thẻ {{MA}} trong mẫu",
+                            text = stringResource(id = R.string.template_section_tags_title),
                             fontSize = TextSizes.subtitle,
                             lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "${fields.size} thẻ",
+                            text = stringResource(id = R.string.template_tags_count, fields.size),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = FontWeight.Bold,
@@ -727,7 +727,7 @@ Quy tắc bắt buộc:
                     }
 
                     Text(
-                        text = "Chỉnh sửa mã thẻ {{MA}}, tên mục, kiểu dữ liệu, nguồn ghi chú và vị trí neo trong Google Doc.",
+                        text = stringResource(id = R.string.template_section_tags_desc),
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -777,7 +777,7 @@ Quy tắc bắt buộc:
                             fields.add(
                                 FieldEditorState(
                                     key = "truong_moi_${fields.size + 1}",
-                                    label = "Trường mới ${fields.size + 1}",
+                                    label = context.getString(R.string.template_new_field_default_label, fields.size + 1),
                                     type = "danh_sach",
                                     source = "thi_cong",
                                     maxLines = 8,
@@ -807,7 +807,7 @@ Quy tắc bắt buộc:
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "3. System Prompt & Nhiệt độ AI",
+                            text = stringResource(id = R.string.template_section_prompt_title),
                             fontSize = TextSizes.subtitle,
                             lineHeight = TextSizes.subtitleLine,
                             fontWeight = FontWeight.Bold,
@@ -818,7 +818,7 @@ Quy tắc bắt buộc:
                         Button(
                             onClick = {
                                 if (fields.isEmpty()) {
-                                    errorMessage = "Cần ít nhất 1 thẻ ở mục 2 để Render System Prompt."
+                                    errorMessage = context.getString(R.string.template_render_prompt_empty_error)
                                 } else {
                                     errorMessage = null
                                     systemPrompt = renderPromptFromCurrentFields()
@@ -852,7 +852,7 @@ Quy tắc bắt buộc:
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "Nhiệt độ tổng hợp (Temperature):",
+                                    text = stringResource(id = R.string.form_setup_temperature_title),
                                     fontSize = TextSizes.caption,
                                     lineHeight = TextSizes.captionLine,
                                     fontWeight = FontWeight.SemiBold,
@@ -881,7 +881,7 @@ Quy tắc bắt buộc:
                                 valueRange = 0.0f..0.8f
                             )
                             Text(
-                                text = "0.00 = bám sát nguyên văn • 0.20 = mượt mà, không bịa số liệu • 0.80 = diễn đạt linh hoạt",
+                                text = stringResource(id = R.string.template_temperature_legend),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -890,7 +890,7 @@ Quy tắc bắt buộc:
                     }
 
                     Text(
-                        text = "Bạn có thể sửa trực tiếp System Prompt bên dưới hoặc bấm 'Render System Prompt' để cập nhật theo danh sách thẻ ở mục 2.",
+                        text = stringResource(id = R.string.template_prompt_edit_hint),
                         fontSize = TextSizes.caption,
                         lineHeight = TextSizes.captionLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -935,11 +935,11 @@ Quy tắc bắt buộc:
             Button(
                 onClick = {
                     if (name.isBlank()) {
-                        errorMessage = "Vui lòng nhập tên bản mẫu"
+                        errorMessage = context.getString(R.string.template_name_required_error)
                         return@Button
                     }
                     if (fields.isEmpty()) {
-                        errorMessage = "Cần ít nhất một thẻ placeholder trong mẫu"
+                        errorMessage = context.getString(R.string.template_placeholder_required_error)
                         return@Button
                     }
 
@@ -1058,6 +1058,7 @@ fun FieldItemEditor(
     var startIndex by remember(fieldState) { mutableIntStateOf(fieldState.startIndex) }
     var endIndex by remember(fieldState) { mutableIntStateOf(fieldState.endIndex) }
     var showPositionEditor by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -1079,7 +1080,7 @@ fun FieldItemEditor(
                     key = it
                     fieldState.key = it
                 },
-                label = { Text("Mã thẻ {{...}}", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                label = { Text(stringResource(id = R.string.template_field_tag_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 modifier = Modifier.weight(1f),
                 singleLine = true
             )
@@ -1090,7 +1091,7 @@ fun FieldItemEditor(
                     label = it
                     fieldState.label = it
                 },
-                label = { Text("Tên mục hiển thị", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
+                label = { Text(stringResource(id = R.string.template_field_display_name_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine) },
                 modifier = Modifier.weight(1.2f),
                 singleLine = true
             )
@@ -1139,7 +1140,7 @@ fun FieldItemEditor(
                             horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
                         ) {
                             Text(
-                                text = if (showPositionEditor) "Thu gọn" else "Sửa vị trí",
+                                text = if (showPositionEditor) stringResource(id = R.string.template_btn_collapse_pos) else stringResource(id = R.string.template_btn_edit_pos),
                                 fontSize = TextSizes.caption,
                                 lineHeight = TextSizes.captionLine,
                                 fontWeight = FontWeight.Bold,
@@ -1156,14 +1157,14 @@ fun FieldItemEditor(
                 }
 
                 val posSummary = buildString {
-                    if (tieuDeGanNhat.isNotBlank()) append("Đề mục: \"$tieuDeGanNhat\" • ")
+                    if (tieuDeGanNhat.isNotBlank()) append(context.getString(R.string.template_pos_heading_prefix, tieuDeGanNhat))
                     if (truoc.isNotBlank() || sau.isNotBlank()) {
-                        append("Trước: \"$truoc\" | Sau: \"$sau\" ")
+                        append(context.getString(R.string.template_pos_context, truoc, sau))
                     } else {
-                        append("(Chưa có ngữ cảnh trước/sau) ")
+                        append(context.getString(R.string.template_pos_no_context))
                     }
                     if (startIndex >= 0) {
-                        append("[Ký tự #$startIndex..#$endIndex]")
+                        append(context.getString(R.string.template_pos_index_range, startIndex, endIndex))
                     }
                 }
                 Text(
@@ -1256,7 +1257,7 @@ fun FieldItemEditor(
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Kiểu:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = stringResource(id = R.string.template_field_type_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             FilterChip(
                 selected = type == "danh_sach",
@@ -1287,7 +1288,7 @@ fun FieldItemEditor(
 
         // Hàng 2b: Chọn Nguồn dữ liệu
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Nguồn dữ liệu:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = stringResource(id = R.string.template_field_source_label), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(Spacing.xs))
             Row(
                 modifier = Modifier
@@ -1295,7 +1296,7 @@ fun FieldItemEditor(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
-                EDITOR_SOURCE_OPTIONS.forEach { (srcKey, srcLabel) ->
+                EDITOR_SOURCE_OPTIONS.forEach { (srcKey, srcLabelRes) ->
                     val isSelected = source.equals(srcKey, ignoreCase = true)
                     Surface(
                         shape = MaterialTheme.shapes.small,
@@ -1310,7 +1311,7 @@ fun FieldItemEditor(
                         }
                     ) {
                         Text(
-                            text = srcLabel,
+                            text = stringResource(id = srcLabelRes),
                             fontSize = TextSizes.caption,
                             lineHeight = TextSizes.captionLine,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
@@ -1329,7 +1330,7 @@ fun FieldItemEditor(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Dòng:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = stringResource(id = R.string.template_field_max_lines_short), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 IconButton(
                     onClick = {
@@ -1342,7 +1343,7 @@ fun FieldItemEditor(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = "Giảm dòng",
+                        contentDescription = stringResource(id = R.string.template_stepper_decrease_lines),
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
@@ -1364,7 +1365,7 @@ fun FieldItemEditor(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Tăng dòng",
+                        contentDescription = stringResource(id = R.string.template_stepper_increase_lines),
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
@@ -1372,7 +1373,7 @@ fun FieldItemEditor(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Ký tự/dòng:", fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = stringResource(id = R.string.template_field_chars_per_line_short), fontSize = TextSizes.caption, lineHeight = TextSizes.captionLine, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(Spacing.xs))
                 IconButton(
                     onClick = {
@@ -1385,7 +1386,7 @@ fun FieldItemEditor(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = "Giảm ký tự",
+                        contentDescription = stringResource(id = R.string.template_stepper_decrease_chars),
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
@@ -1407,7 +1408,7 @@ fun FieldItemEditor(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Tăng ký tự",
+                        contentDescription = stringResource(id = R.string.template_stepper_increase_chars),
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
