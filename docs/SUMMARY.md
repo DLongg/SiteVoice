@@ -11,7 +11,7 @@ Cập nhật: 2026-11-14. Đây là trạng thái hiện tại; quy tắc ở [A
 ## Kiến trúc và công nghệ dự kiến
 
 - Kotlin + Jetpack Compose, Room, WorkManager, EncryptedSharedPreferences, OkHttp; các module: `ui`, `audio`, `stt`, `llm`, `template`, `export`, `data`, `queue`, `settings`, `formsetup`. Xem [kiến trúc](03-kien-truc.md), [dữ liệu](04-du-lieu.md).
-- Giao diện UI: Chuẩn hóa theo skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), hiển thị rõ tọa độ neo Google Doc và huy hiệu `{{MA}}` xuyên suốt.
+- Giao diện UI: Chuẩn hóa theo skill `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`), hiển thị rõ tọa độ neo Google Doc và huy hiệu `{{MA}}` xuyên suốt. Token đã chốt (slate + xanh `#2563EB`, font hệ thống, chỉ giao diện sáng) ở [design-system/sitevoice/MASTER.md](../design-system/sitevoice/MASTER.md); **chưa áp dụng vào code** (còn ~370 `Color(0x…)` viết cứng, chưa có `ui/theme/`).
 - STT qua Groq Whisper + hiệu đính ngữ cảnh LLM (`NoteClassifier.correctedText`); LLM tổng hợp: Gemini 3.8 Flash (qua Vilao AI), fallback Groq. Xuất Google Doc: Google Drive API v3 copy file và Google Docs API v1 batchUpdate thay placeholder kèm cơ chế quét sạch 2 lớp.
 
 ## Đang triển khai và bàn giao
