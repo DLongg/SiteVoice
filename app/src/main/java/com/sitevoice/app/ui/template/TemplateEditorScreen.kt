@@ -551,7 +551,7 @@ Quy tắc bắt buộc:
                                             },
                                             enabled = !isSyncingDoc,
                                             modifier = Modifier.weight(1f),
-                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                             shape = MaterialTheme.shapes.small,
                                             contentPadding = PaddingValues(horizontal = Spacing.sm, vertical = Spacing.sm)
                                         ) {
@@ -893,7 +893,7 @@ Quy tắc bắt buộc:
                     onSaveTemplate(updated)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Text(
